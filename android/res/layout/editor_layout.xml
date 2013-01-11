@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btnBack" />
+
+        <Button
+            android:id="@+id/btnPost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btnPost" />
+
+    </LinearLayout>
+
+    <WebView
+        android:id="@+id/richedit_webview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout2"
+        android:layout_below="@+id/linearLayout1" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout3"
+        android:layout_alignParentLeft="true"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btnImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btnImage" />
+
+        <Button
+            android:id="@+id/btnRecord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btnRecord" />
+
+        <Button
+            android:id="@+id/btnLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btnLocation" />
+
+        <Button
+            android:id="@+id/btnMagic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btnMagic" />
+
+        <Button
+            android:id="@+id/btnGift"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btnGift" />
+
+        <Button
+            android:id="@+id/btnRandom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btnRandom" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btnWeibo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="新浪" />
+
+        <Button
+            android:id="@+id/btnQq"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="腾讯" />
+
+        <Button
+            android:id="@+id/btnRenren"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="人人" />
+
+        <Button
+            android:id="@+id/btnSohu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="搜狐" />
+
+        <Button
+            android:id="@+id/btnFacebook"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="脸谱" />
+
+        <Button
+            android:id="@+id/btnTwitter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="推特" />
+    </LinearLayout>
+
+</RelativeLayout>

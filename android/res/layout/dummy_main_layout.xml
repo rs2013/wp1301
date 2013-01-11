@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/txtMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="haXe Screen"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go Back" />
+
+    <Button
+        android:id="@+id/btnPicture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Take a Picture &amp; Back" />
+
+    <Button
+        android:id="@+id/btnMagic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Make a Magic &amp; Back" />
+
+    <Button
+        android:id="@+id/btnPlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Play a Magic &amp; Back" />
+
+</LinearLayout>

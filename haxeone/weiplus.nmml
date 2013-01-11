@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+
+  <app title="WeiPlus" file="weiplus" main="com.weiplus.client.Main" package="com.weiplus.client" version="1.0.0" company="WeiplusSuperTeam" />
+  <window width="640" height="960" fps="60"
+          orientation="portrait" background="0xffffff" resizable="false"
+          fullscreen="true"
+          hardware="true" />
+
+  <set name="BUILD_DIR" value="release" if="release"/>
+  <set name="BUILD_DIR" value="debug" if="debug"/>
+  <set name="SWF_VERSION" value="10.1" if="flash" />
+  <set name="SHOW_CONSOLE" value="1" />
+
+  <classpath name="src" />
+  
+  <haxedef name="fdb" if="target_flash" />
+  <haxedef name="network-sandbox" if="target_flash" />
+  <haxedef name="js_can_implement_array_access" if="html5" />
+  <!--window borderless="true" /-->
+
+  <haxelib name="nme" />
+  <haxelib name="actuate" />
+  <haxelib name="spritesheet" />
+
+  <icon path="res/icon.svg" />
+  <assets path="eng" include="*" if="cpp" />
+  <assets path="res" include="*" exclude="icon.svg" />
+
+  <include path="../android/haxe_include.nmml" if="android"/>
+  <template path="javasrc/com/weiplus/client/HaxeStub.java" if="android" />
+  <template path="javasrc/com/weiplus/client/MainActivity.java" if="android" />
+  <!--template path="src/org/haxe/nme/GameActivity.java" if="android" /-->
+  <template path="javasrc/org/haxe/nme/MainView.java" if="android" />
+  <template path="AndroidManifest.xml" if="android" />
+
+  <ndll name="std" />
+  <ndll name="nme" haxelib="nme" />
+
+</project>

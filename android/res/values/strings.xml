@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">WeiPlus</string>
+    <string name="btnBack">返回</string>
+    <string name="btnDone">完成</string>
+    <string name="btnWeibo">使用新浪微博账号登录</string>
+    <string name="btnQq">使用腾讯微博账号登录</string>
+    <string name="btnRenren">使用人人网账号登录</string>
+    <string name="btnRefresh">更新</string>
+    <string name="btnHome">首页</string>
+    <string name="btnSelected">精选</string>
+    <string name="btnWrite">发表</string>
+    <string name="btnMessage">消息</string>
+    <string name="btnAccount">账户</string>
+    <string name="btnPost">发表</string>
+    <string name="btnImage">图片</string>
+    <string name="btnRecord">录音</string>
+    <string name="btnLocation">位置</string>
+    <string name="btnMagic">魔法</string>
+    <string name="btnGift">礼物</string>
+    <string name="btnRandom">随便</string>
+    
+</resources>
