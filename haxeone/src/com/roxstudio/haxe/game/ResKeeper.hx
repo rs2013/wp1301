@@ -1,5 +1,7 @@
 package com.roxstudio.haxe.game;
 
+import nme.media.Sound;
+import nme.text.Font;
 import com.roxstudio.haxe.game.GameUtil;
 import nme.Assets;
 import nme.display.BitmapData;
@@ -32,12 +34,12 @@ class ResKeeper {
         set_currentBundle("default");
     }
 
-    public static function getBundle(?bundleId) : Array<Dynamic> {
+    public static function getBundle(?bundleId) : Hash<Dynamic> {
         if (bundleId == null) bundleId = currentBundle;
         var bundle = bundles.get(bundleId);
         if (bundle == null) return null;
-        var ret: Array<Dynamic> = [];
-        for (id in bundle) ret.push(map.get(id));
+        var ret = new Hash<Dynamic>();
+        for (id in bundle) ret.set(id, map.get(id));
         return ret;
     }
 
@@ -95,53 +97,145 @@ class ResKeeper {
             if (bmd != null) {
                 add("assets://" + path, bmd, bundleId);
             } else {
-                throw "Asset " + path + " not exist.";
+                throw "Asset image " + path + " not exist.";
             }
         }
         return bmd;
     }
 
+    public static function getAssetFont(path: String, ?bundleId: String) : Font {
+        var font: Font = cast(get("assets://" + path));
+        if (font == null) {
+            font = loadAssetFont(path);
+            if (font != null) {
+                add("assets://" + path, font, bundleId);
+            } else {
+                throw "Asset font " + path + " not exist.";
+            }
+        }
+        return font;
+    }
+
+    public static function getAssetData(path: String, ?bundleId: String) : ByteArray {
+        var data: ByteArray = cast(get("assets://" + path));
+        if (data == null) {
+            data = loadAssetData(path);
+            if (data != null) {
+                add("assets://" + path, data, bundleId);
+            } else {
+                throw "Asset data " + path + " not exist.";
+            }
+        }
+        return data;
+    }
+
+    public static function getAssetText(path: String, ?bundleId: String) : String {
+        var text: String = cast(get("assets://" + path));
+        if (text == null) {
+            text = loadAssetText(path);
+            if (text != null) {
+                add("assets://" + path, text, bundleId);
+            } else {
+                throw "Asset text " + path + " not exist.";
+            }
+        }
+        return text;
+    }
+
+    public static function getAssetSound(path: String, ?bundleId: String) : Sound {
+        var snd: Sound = cast(get("assets://" + path));
+        if (snd == null) {
+            snd = loadAssetSound(path);
+            if (snd != null) {
+                add("assets://" + path, snd, bundleId);
+            } else {
+                throw "Asset sound " + path + " not exist.";
+            }
+        }
+        return snd;
+    }
+
 #if cpp
+
+    /**
+    * local file: id-prefix "file://", e.g.: "file:///sdcard/myapp/image.jpg" or "file:///D:/myapp/image.jpg"
+    **/
     public static function getLocalImage(path: String, ?bundleId: String) : BitmapData {
-        var id: String = "";
-#if windows
-        path = path.replace("\\", "/");
-        if (path.length <= 3 || path.substr(1, 2) != ":/") path = FileSystem.fullPath(path);
-        id = "file:///" + path.replace("\\", "/");
-#else
-        if (!path.startsWith("/")) path = FileSystem.fullPath(path);
-        id = "file://" + path;
-#end
+        var id: String = path2url(path);
         var bmd: BitmapData = cast(get(id));
         if (bmd == null) {
             bmd = loadLocalImage(path);
             if (bmd != null) {
                 add(id, bmd, bundleId);
             } else {
-                throw "Local file " + path + " not exist.";
-        }
+                throw "Local image file " + path + " not exist.";
+            }
         }
         return bmd;
     }
 
-    /**
-    * local file: id-prefix "file://", e.g.: "file:///sdcard/myapp/image.jpg" or "file:///D:/myapp/image.jpg"
-    **/
-    public static function loadLocalImage(path: String) : BitmapData {
+    public static function getLocalText(path: String, ?bundleId: String) : String {
+        var id: String = path2url(path);
+        var txt: String = cast(get(id));
+        if (txt == null) {
+            txt = loadLocalText(path);
+            if (txt != null) {
+                add(id, txt, bundleId);
+            } else {
+                throw "Local text file " + path + " not exist.";
+            }
+        }
+        return txt;
+    }
+
+    public static function getLocalData(path: String, ?bundleId: String) : ByteArray {
+        var id: String = path2url(path);
+        var data: ByteArray = cast(get(id));
+        if (data == null) {
+            data = loadLocalData(path);
+            if (data != null) {
+                add(id, data, bundleId);
+            } else {
+                throw "Local binary file " + path + " not exist.";
+            }
+        }
+        return data;
+    }
+
+    public static inline function loadLocalImage(path: String) : BitmapData {
         var bb = File.getBytes(path);
         return bb != null ? BitmapData.loadFromHaxeBytes(bb) : null;
     }
+
+    public static inline function loadLocalText(path: String) : String {
+        return File.getContent(path);
+    }
+
+    public static inline function loadLocalData(path: String) : ByteArray {
+        return ByteArray.fromBytes(File.getBytes(path));
+    }
+
+    public static inline function url2path(url: String) : String {
+#if windows
+        return url.substr(8); // "file:///D:/xxx/xxx/xxx.xxx"
+#else
+        return url.substr(7); // "file:///mnt/sdcard/xxx/xxx.xxx"
+#end
+    }
+
+    public static inline function path2url(path: String) : String {
+#if windows
+        path = path.replace("\\", "/");
+        if (path.length <= 3 || path.substr(1, 2) != ":/") path = FileSystem.fullPath(path);
+        return "file:///" + path.replace("\\", "/");
+#else
+        if (!path.startsWith("/")) path = FileSystem.fullPath(path);
+        return "file://" + path;
+#end
+    }
+
 #end
 
-//    public static function getBitmapLoader(url: String) : RoxBitmapLoader {
-//        var ldr: RoxBitmapLoader = cast(map.get(url));
-//        if (ldr == null) {
-//            ldr = new RoxBitmapLoader(url);
-//            add(url, ldr);
-//        }
-//        return ldr;
-//    }
-//
     public static function loadAssetImage(inBitmapPath: String, ?inAlphaBitmapPath: String, ?inTransparentPixel: Point): BitmapData {
         var bmp: BitmapData = Assets.getBitmapData(inBitmapPath, false); // not using cache, image will be managed by engine
         var transparent = #if html5 true #else bmp.transparent #end ;
@@ -177,6 +271,22 @@ class ResKeeper {
             bmp.setPixels(rect, newbuf);
         }
         return bmp;
+    }
+
+    public static inline function loadAssetFont(path: String) : Font {
+        return Assets.getFont(path);
+    }
+
+    public static inline function loadAssetSound(path: String) : Sound {
+        return Assets.getSound(path);
+    }
+
+    public static inline function loadAssetData(path: String) : ByteArray {
+        return Assets.getBytes(path);
+    }
+
+    public static inline function loadAssetText(path: String) : String {
+        return Assets.getText(path);
     }
 
     private static inline function set_currentBundle(bundleId: String) : String {

@@ -27,8 +27,8 @@ class Main {
         var m = new RoxScreenManager();
 //        m.startScreen(Type.getClassName(com.weiplus.client.HomeScreen));
 //        m.startScreen(Type.getClassName(CameraScreen));
-        m.startScreen(Type.getClassName(TestGesture));
-//        m.startScreen(Type.getClassName(TestScreen));
+//        m.startScreen(Type.getClassName(TestGesture));
+        m.startScreen(Type.getClassName(TestScreen));
         RoxApp.stage.addChild(m);
 
         var fps = new FPS();

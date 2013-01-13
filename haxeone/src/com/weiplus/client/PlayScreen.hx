@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import com.roxstudio.haxe.ui.RoxPreloader;
 import com.weiplus.client.model.Status;
 import nme.events.Event;
 import nme.geom.Matrix;
@@ -25,6 +26,8 @@ class PlayScreen extends BaseScreen {
     private static inline var TOP_HEIGHT = 86;
     private static inline var BTN_SPACING = 12;
 
+    private var preloader: RoxPreloader;
+
     override public function onCreate() {
         designWidth = DESIGN_WIDTH;
         d2rScale = screenWidth / designWidth;
@@ -44,23 +47,28 @@ class PlayScreen extends BaseScreen {
         addChild(titleBar);
         var btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回", 0xFFFFFF, 36, "res/btn_dark.9.png", function(_) { finish(RoxScreen.OK); } );
         addTitleButton(btnBack, UiUtil.LEFT);
+
+        addEventListener(Event.DEACTIVATE, onDeactive);
     }
 
     override public function onNewRequest(data: Dynamic) {
         var st: Status = cast(data);
         var appdata = st.appData;
-        if (checkCache(appdata.type + "_" + appdata.id)) { // load from cache
-
+        var dir = appdata.type + "_" + appdata.id;
+        if (checkCache(dir)) {
+            loadFromCache(dir);
         } else { // load remotely
-
+            loadUrl(appdata.url);
+            saveToCache(dir);
         }
     }
 
     override public function onShown() {
-        addEventListener(Event.DEACTIVATE, onDeactive);
+        onResume();
     }
 
     override public function onHidden() {
+        onPause();
         onDeactive(null);
     }
 
@@ -72,14 +80,26 @@ class PlayScreen extends BaseScreen {
         content.graphics.endFill();
     }
 
-    public function onSave(saved: Dynamic) {
-        // this method should be overrided by subclasses
-    }
+/******************************** to be overrided *******************************/
+
+    public function onStart(data: Dynamic) {}
+
+    public function onSave(saved: Dynamic) {}
+
+    public function onPause() {}
+
+    public function onResume() {}
+
+/******************************** private methods ******************************/
 
     private function onDeactive(_) {
         var saved: Dynamic = { };
         onSave(saved);
         saved.lastUsage = Std.int(Date.now().getTime() / 1000.0);
+    }
+
+    private function loadUrl(url: String) {
+        preloader = new RoxPreloader([ url ], true);
     }
 
     private inline function checkCache(dirName: String) : Bool {
@@ -88,6 +108,18 @@ class PlayScreen extends BaseScreen {
 #else
         var filedir = CACHE_DIR + dirName;
         return false;
+#end
+    }
+
+    private function loadFromCache(dirName: String) {
+#if cpp
+
+#end
+    }
+
+    private function saveToCache(dirName: String) {
+#if cpp
+
 #end
     }
 

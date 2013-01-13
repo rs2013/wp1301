@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import nme.utils.ByteArray;
 import com.roxstudio.haxe.ui.RoxPreloader;
 import com.weiplus.client.model.User;
 import com.weiplus.client.model.AppData;
@@ -155,7 +156,26 @@ class TestScreen extends BaseScreen {
 //        for (i in nn) assets.push("assets://res/data/" + i + ".jpg");
 //        for (i in nn) assets.push("file:///D:/work/ws_haxe/weiplus-github/haxeone/res/data/" + i + ".jpg");
         for (i in nn) assets.push("http://rox.local/res/data/" + i + ".jpg");
-        var ldr = new RoxPreloader(assets);
+        assets.push("http://rox.local/res/data/data.zip");
+        var ldr = new RoxPreloader(assets, "mybundle", true);
+        ldr.addEventListener(Event.COMPLETE, function(_) {
+            var map = ResKeeper.getBundle("mybundle");
+            trace("================ done ==================");
+            for (id in map.keys()) {
+                var val = map.get(id);
+                if (Std.is(val, BitmapData)) {
+                    trace(">>" + id + "=IMG(" + val.width + "," + val.height + ")");
+                } else if (Std.is(val, String)) {
+                    trace(">>" + id + "=STR(" + val + ")");
+                } else if (Std.is(val, ByteArray)) {
+                    trace(">>" + id + "=DATA[" + val.length + "]");
+                }
+            }
+        });
+
+//        var bb = ResKeeper.loadAssetData("res/data/1.jpg.dat");
+//        var img = BitmapData.loadFromBytes(bb);
+//        trace("img="+img.width+","+img.height);
         return content;
     }
 
