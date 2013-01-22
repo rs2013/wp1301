@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import nme.geom.Rectangle;
 import nme.utils.ByteArray;
 import com.roxstudio.haxe.ui.RoxPreloader;
 import com.weiplus.client.model.User;
@@ -35,6 +36,7 @@ import nme.geom.Rectangle;
 import nme.display.Sprite;
 import com.roxstudio.haxe.ui.RoxScreen;
 
+using com.roxstudio.haxe.game.GfxUtil;
 using com.roxstudio.haxe.ui.UiUtil;
 
 class TestScreen extends BaseScreen {
@@ -153,10 +155,10 @@ class TestScreen extends BaseScreen {
 //        content.addChild(postit.rox_move(12, 12));
         var nn = [ 1, 3, 4, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17 ];
         var assets = [ ];
-//        for (i in nn) assets.push("assets://res/data/" + i + ".jpg");
+        for (i in nn) assets.push("assets://res/data/" + i + ".jpg");
 //        for (i in nn) assets.push("file:///D:/work/ws_haxe/weiplus-github/haxeone/res/data/" + i + ".jpg");
-        for (i in nn) assets.push("http://rox.local/res/data/" + i + ".jpg");
-        assets.push("http://rox.local/res/data/data.zip");
+//        for (i in nn) assets.push("http://rox.local/res/data/" + i + ".jpg");
+//        assets.push("http://rox.local/res/data/data.zip");
         var ldr = new RoxPreloader(assets, "mybundle", true);
         ldr.addEventListener(Event.COMPLETE, function(_) {
             var map = ResKeeper.getBundle("mybundle");
@@ -176,6 +178,13 @@ class TestScreen extends BaseScreen {
 //        var bb = ResKeeper.loadAssetData("res/data/1.jpg.dat");
 //        var img = BitmapData.loadFromBytes(bb);
 //        trace("img="+img.width+","+img.height);
+
+        var img = ResKeeper.getAssetImage("res/shape.png");
+        var rt = new Sprite();
+//        rt.graphics.rox_drawImage(img, new Matrix(1, 0, 0, 1, 25, 25), 25, 25, 300, 300);
+        rt.graphics.rox_drawRegion(img, new Rectangle(275, 25, 200, 200),  10, 10, 240, 160);
+        content.addChild(rt);
+
         return content;
     }
 

@@ -28,6 +28,18 @@ class IOUtil {
 
 #end
 
+    public static inline function fileExt(s: String, ?lowerCase: Bool = false) : String {
+        var idx = s.lastIndexOf(".");
+        if (lowerCase) s = s.toLowerCase();
+        return idx > 0 ? s.substr(idx + 1) : "";
+    }
+
+    public static inline function fileName(s: String) : String {
+        var i1 = s.lastIndexOf("/"), i2 = s.lastIndexOf(".");
+        if (i2 < 0) i2 = s.length;
+        return s.substr(i1 + 1, i2 - i1 - 1);
+    }
+
     public static inline function rox_toByteArray(bytes: Bytes) {
         return #if flash bytes.getData() #else ByteArray.fromBytes(bytes) #end;
     }

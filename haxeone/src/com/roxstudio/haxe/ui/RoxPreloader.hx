@@ -81,8 +81,8 @@ class RoxPreloader extends EventDispatcher {
             return;
         }
         var s = list.pop();
-        trace("update: assets=" + s);
-        var data: Dynamic = switch (ext(s)) {
+//        trace("update: assets=" + s);
+        var data: Dynamic = switch (IOUtil.fileExt(s, true)) {
             case DYN: {};
             case "png": ResKeeper.loadAssetImage(s);
             case "jpg": ResKeeper.loadAssetImage(s);
@@ -95,12 +95,16 @@ class RoxPreloader extends EventDispatcher {
             case "ogg": ResKeeper.loadAssetSound(s);
             default: ResKeeper.loadAssetData(s);
         }
-        addData(s, data);
+        if (data != null) {
+            addData(s, data);
+        } else {
+            throw "RoxPreloader: load asset " + s + " failed.";
+        }
     }
 
     private function download(url: String) {
-        trace("download: url=" + url + ",ext="+ext(url));
-        var type = switch (ext(url)) {
+//        trace("download: url=" + url + ",ext="+IOUtil.fileExt(url, true));
+        var type = switch (IOUtil.fileExt(url, true)) {
             case "png": RoxURLLoader.IMAGE;
             case "jpg": RoxURLLoader.IMAGE;
             case "jpeg": RoxURLLoader.IMAGE;
@@ -114,17 +118,21 @@ class RoxPreloader extends EventDispatcher {
     }
 
     private inline function onComplete(e: Dynamic) {
-        trace("oncomplete: e.target=" + e.target);
+//        trace("oncomplete: e.target=" + e.target);
         var ldr = cast(e.target, RoxURLLoader);
-        addData(ldr.url, ldr.data);
+        if (ldr.status == RoxURLLoader.OK) {
+            addData(ldr.url, ldr.data);
+        } else {
+            throw "RoxPreloader: download " + ldr.url + " failed.";
+        }
     }
 
 #if cpp
     private function load(d: Dynamic) {
-        trace("load: d=" + d);
+//        trace("load: d=" + d);
         var url = d.url;
         var path = ResKeeper.url2path(url);
-        var data: Dynamic = switch (ext(path)) {
+        var data: Dynamic = switch (IOUtil.fileExt(path, true)) {
             case DYN: {};
             case "png": ResKeeper.loadLocalImage(path);
             case "jpg": ResKeeper.loadLocalImage(path);
@@ -138,8 +146,12 @@ class RoxPreloader extends EventDispatcher {
     }
 
     private function loadComplete(d: Dynamic) {
-        trace("loadComp: d=" + d);
-        addData(d.url, d.data);
+//        trace("loadComp: d=" + d);
+        if (d.data != null) {
+            addData(d.url, d.data);
+        } else {
+            throw "RoxPreloader: load local file " + d.url + " failed.";
+        }
     }
 #end
 
@@ -153,10 +165,10 @@ class RoxPreloader extends EventDispatcher {
             for (e in zipdata) {
                 var bytes: Bytes;
                 if ((bytes = e.data) == null) continue; // directory
-                trace("entry " + e.fileName +",len=" + e.fileSize+",data="+e.data.length+",datasize="+e.dataSize);
+//                trace("entry " + e.fileName +",len=" + e.fileSize+",data="+e.data.length+",datasize="+e.dataSize);
                 var name = prefix + e.fileName;
 //                trace("zipentry: name=" + e.fileName + ",id=" + name);
-                var data: Dynamic = switch (ext(name)) {
+                var data: Dynamic = switch (IOUtil.fileExt(name, true)) {
                     case DYN: {};
                     case "png": bytes2image(name, bytes); null;
                     case "jpg": bytes2image(name, bytes); null;
@@ -204,11 +216,6 @@ class RoxPreloader extends EventDispatcher {
         }
         if (progress + step > 1 && Lambda.count(zipImages) == 0)
             dispatchEvent(new Event(Event.COMPLETE));
-    }
-
-    private inline static function ext(s: String) : String {
-        var idx = s.lastIndexOf(".");
-        return idx > 0 ? s.toLowerCase().substr(idx + 1) : "";
     }
 
 }

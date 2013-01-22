@@ -47,8 +47,9 @@ class BaseScreen extends RoxScreen {
         if (hasBack) {
             addTitleButton(btnBack, UiUtil.LEFT);
         }
-        content = createContent((designHeight - TOP_HEIGHT) * d2rScale);
-        content.rox_move(0, TOP_HEIGHT * d2rScale);
+        var conth = (designHeight - TOP_HEIGHT) * d2rScale;
+        content = createContent(conth);
+        content.rox_move(0, screenHeight - conth);
         addChild(content);
         graphics.beginBitmapFill(ResKeeper.getAssetImage("res/bg_main.jpg"));
         graphics.drawRect(0, 0, screenWidth, screenHeight);
@@ -78,7 +79,7 @@ class BaseScreen extends RoxScreen {
     }
 
     public function createContent(height: Float) : Sprite {
-        return null;
+        return new Sprite();
     }
 
 }
