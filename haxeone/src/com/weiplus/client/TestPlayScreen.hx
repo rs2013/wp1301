@@ -9,6 +9,7 @@ class TestPlayScreen extends PlayScreen {
 
     override public function onStart(saved: Dynamic) {
         trace("onstart: saved = " + saved);
+        trace(">>bundle=" + ResKeeper.getBundle());
         var img = ResKeeper.get("data/14.jpg");
         var bmp = new Bitmap(img);
         content.addChild(bmp.rox_move(100, 100));

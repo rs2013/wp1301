@@ -1,28 +1,22 @@
-package com.roxstudio.haxe.ui;
+package com.roxstudio.haxe.game;
 
 #if cpp
 import com.roxstudio.haxe.utils.SimpleJob;
 import com.roxstudio.haxe.utils.Worker;
 #end
 import com.roxstudio.haxe.game.ResKeeper;
+import com.roxstudio.haxe.io.FileUtil;
+import com.roxstudio.haxe.io.Unzipper;
 import com.roxstudio.haxe.net.RoxURLLoader;
-import format.zip.Reader;
-import haxe.io.Bytes;
-import haxe.io.BytesInput;
-import Lambda;
+import haxe.Timer;
 import nme.events.Event;
 import nme.events.EventDispatcher;
 import nme.events.ProgressEvent;
-import nme.display.Bitmap;
-import nme.display.BitmapData;
-import nme.display.Loader;
-import nme.display.Sprite;
 import nme.utils.ByteArray;
 
 using StringTools;
-using com.roxstudio.haxe.io.IOUtil;
 
-class RoxPreloader extends EventDispatcher {
+class Preloader extends EventDispatcher {
 
     public var progress: Float = 0.0;
 
@@ -32,7 +26,7 @@ class RoxPreloader extends EventDispatcher {
     private var list: List<String>;
     private var bundleId: String;
     private var idmap: Hash<String>;
-    private var zipImages: Hash<Loader>;
+    private var timer: Timer;
 #if cpp
     private var worker: Worker;
 #end
@@ -48,20 +42,20 @@ class RoxPreloader extends EventDispatcher {
 
         step = 1 / urls.length;
         list = new List<String>();
-        zipImages = new Hash<Loader>();
 #if cpp
         worker = new Worker();
 #end
         for (i in 0...urls.length) {
             var url = urls[i];
+            trace(">>>>>>>>url=" + url);
             var prefix = url.length > 7 ? url.substr(0, 7) : "";
             switch (prefix) {
                 case "http://":
                     download(url);
                 case "https:/":
                     download(url);
-#if cpp
                 case "file://":
+#if cpp
                     worker.addJob(new SimpleJob<Dynamic>({ url: url, data: null }, load, loadComplete));
 #end
                 case "assets:":
@@ -71,18 +65,20 @@ class RoxPreloader extends EventDispatcher {
             }
         }
         if (list.length > 0) {
-            nme.Lib.current.stage.addEventListener(Event.ENTER_FRAME, update);
+            timer = new Timer(1);
+            timer.run = loadAsset;
         }
     }
 
-    private function update(_) {
+    private function loadAsset() {
         if (list.length == 0) {
-            nme.Lib.current.stage.removeEventListener(Event.ENTER_FRAME, update);
+            timer.stop();
+            timer = null;
             return;
         }
         var s = list.pop();
 //        trace("update: assets=" + s);
-        var data: Dynamic = switch (IOUtil.fileExt(s, true)) {
+        var data: Dynamic = switch (FileUtil.fileExt(s, true)) {
             case DYN: {};
             case "png": ResKeeper.loadAssetImage(s);
             case "jpg": ResKeeper.loadAssetImage(s);
@@ -96,15 +92,15 @@ class RoxPreloader extends EventDispatcher {
             default: ResKeeper.loadAssetData(s);
         }
         if (data != null) {
-            addData(s, data);
+            addData("assets://" + s, data);
         } else {
-            throw "RoxPreloader: load asset " + s + " failed.";
+            throw "Preloader: load asset " + s + " failed.";
         }
     }
 
     private function download(url: String) {
-//        trace("download: url=" + url + ",ext="+IOUtil.fileExt(url, true));
-        var type = switch (IOUtil.fileExt(url, true)) {
+//        trace("download: url=" + url + ",ext="+FileUtil.fileExt(url, true));
+        var type = switch (FileUtil.fileExt(url, true)) {
             case "png": RoxURLLoader.IMAGE;
             case "jpg": RoxURLLoader.IMAGE;
             case "jpeg": RoxURLLoader.IMAGE;
@@ -114,16 +110,16 @@ class RoxPreloader extends EventDispatcher {
             default: RoxURLLoader.BINARY;
         }
         var ldr = new RoxURLLoader(url, type);
-        ldr.addEventListener(Event.COMPLETE, onComplete);
+        ldr.addEventListener(Event.COMPLETE, downComplete);
     }
 
-    private inline function onComplete(e: Dynamic) {
-//        trace("oncomplete: e.target=" + e.target);
+    private inline function downComplete(e: Dynamic) {
+//        trace("downComplete: e.target=" + e.target);
         var ldr = cast(e.target, RoxURLLoader);
         if (ldr.status == RoxURLLoader.OK) {
             addData(ldr.url, ldr.data);
         } else {
-            throw "RoxPreloader: download " + ldr.url + " failed.";
+            throw "Preloader: download " + ldr.url + " failed.";
         }
     }
 
@@ -132,7 +128,7 @@ class RoxPreloader extends EventDispatcher {
 //        trace("load: d=" + d);
         var url = d.url;
         var path = ResKeeper.url2path(url);
-        var data: Dynamic = switch (IOUtil.fileExt(path, true)) {
+        var data: Dynamic = switch (FileUtil.fileExt(path, true)) {
             case DYN: {};
             case "png": ResKeeper.loadLocalImage(path);
             case "jpg": ResKeeper.loadLocalImage(path);
@@ -150,7 +146,7 @@ class RoxPreloader extends EventDispatcher {
         if (d.data != null) {
             addData(d.url, d.data);
         } else {
-            throw "RoxPreloader: load local file " + d.url + " failed.";
+            throw "Preloader: load local file " + d.url + " failed.";
         }
     }
 #end
@@ -158,64 +154,26 @@ class RoxPreloader extends EventDispatcher {
     private function addData(id: String, data: Dynamic) {
         if (!autoUnzip || !id.endsWith(".zip")) {
             ResKeeper.add(idmap.get(id), data, bundleId);
+            doProgress(null);
         } else {
-            var r = new Reader(new BytesInput(cast(data, ByteArray).rox_toBytes()));
-            var prefix = idmap.get(id) + "/";
-            var zipdata = r.read();
-            for (e in zipdata) {
-                var bytes: Bytes;
-                if ((bytes = e.data) == null) continue; // directory
-//                trace("entry " + e.fileName +",len=" + e.fileSize+",data="+e.data.length+",datasize="+e.dataSize);
-                var name = prefix + e.fileName;
-//                trace("zipentry: name=" + e.fileName + ",id=" + name);
-                var data: Dynamic = switch (IOUtil.fileExt(name, true)) {
-                    case DYN: {};
-                    case "png": bytes2image(name, bytes); null;
-                    case "jpg": bytes2image(name, bytes); null;
-                    case "jpeg": bytes2image(name, bytes); null;
-                    case "txt": bytes.readString(0, bytes.length);
-                    case "xml": bytes.readString(0, bytes.length);
-                    case "json": bytes.readString(0, bytes.length);
-                    default: bytes.rox_toByteArray();
-                }
-                if (data != null) ResKeeper.add(name, data, bundleId);
+            var unz = new Unzipper(cast(data, ByteArray), idmap.get(id) + "/");
+            unz.addEventListener(Event.COMPLETE, doProgress);
+        }
+    }
+
+    private function doProgress(e: Dynamic) {
+        if (e != null) {
+            var files = cast(e.target, Unzipper).files;
+            for (f in files.keys()) {
+                ResKeeper.add(f, files.get(f), bundleId);
             }
         }
-
-//        trace(">>>>progress=" + progress);
         progress += step;
         if (progress + step > 1) {
-            zipImageDone();
+            dispatchEvent(new Event(Event.COMPLETE));
         } else {
             dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, Std.int(progress * 100), 100));
         }
-    }
-
-    private function bytes2image(id: String, bytes: Bytes) {
-        var bb = bytes.rox_toByteArray();
-        var ldr = new Loader();
-        ldr.loadBytes(bb);
-        zipImages.set(id, ldr);
-        var imageDone = function(_) {
-            zipImageDone(id);
-        }
-        if (ldr.content != null) {
-            imageDone(null);
-        } else {
-            var ldri = ldr.contentLoaderInfo;
-            ldri.addEventListener(Event.COMPLETE, imageDone);
-        }
-    }
-
-    private function zipImageDone(?id: String) {
-        if (id != null) {
-            var ldr = zipImages.get(id);
-            var data = cast(ldr.content, Bitmap).bitmapData;
-            ResKeeper.add(id, data, bundleId);
-            zipImages.remove(id);
-        }
-        if (progress + step > 1 && Lambda.count(zipImages) == 0)
-            dispatchEvent(new Event(Event.COMPLETE));
     }
 
 }

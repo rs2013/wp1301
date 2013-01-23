@@ -1,8 +1,9 @@
 package com.weiplus.client;
 
+import com.roxstudio.haxe.game.Preloader;
 import com.roxstudio.haxe.game.ResKeeper;
+import com.roxstudio.haxe.io.FileUtil;
 import com.roxstudio.haxe.ui.RoxFlowPane;
-import com.roxstudio.haxe.ui.RoxPreloader;
 import com.roxstudio.haxe.ui.RoxScreen;
 import com.weiplus.client.model.Status;
 import nme.display.Sprite;
@@ -10,6 +11,10 @@ import nme.events.Event;
 import nme.geom.Matrix;
 import nme.geom.Rectangle;
 import nme.net.SharedObject;
+#if cpp
+import sys.FileSystem;
+import sys.io.File;
+#end
 
 using com.roxstudio.haxe.game.GfxUtil;
 using com.roxstudio.haxe.ui.UiUtil;
@@ -20,12 +25,13 @@ class PlayScreen extends BaseScreen {
     public var viewHeight: Float;
 
 #if android
-    private static inline var CACHE_DIR = "/sdcard/.harryphoto/savedgames/";
+    private static inline var CACHE_DIR = "/sdcard/.harryphoto/savedgames";
 #elseif windows
-    private static inline var CACHE_DIR = "D:/tmp/.harryphoto/savedgames/";
+    private static inline var CACHE_DIR = "savedgames";
 #end
 
     private static inline var SAVED_DATA_NAME = "harryphoto.savedData";
+    private static inline var CACHE_EXPIRE = 2592000; // one month = 3600 * 24 * 30
 
     private static inline var DESIGN_WIDTH = 640;
     private static inline var TOP_HEIGHT = 86;
@@ -111,14 +117,11 @@ class PlayScreen extends BaseScreen {
         var saved = onSave();
         if (saved == null) saved = {};
         Reflect.setField(saved, "lastUsage", Std.int(Date.now().getTime() / 1000.0));
-        var appData = status.appData;
-        var appId = appData.type + "_" + appData.id;
-        Reflect.setField(globalSo.data, appId, saved);
-        globalSo.flush();
+        saveAndScan(saved);
     }
 
     private function loadUrl(url: String) {
-        var preloader = new RoxPreloader([ url ], [ "data" ], true);
+        var preloader = new Preloader([ url ], [ "data" ], true);
         preloader.addEventListener(Event.COMPLETE, function(_) {
             content.removeChildAt(content.numChildren - 1); // remove mask
             onStart(getSavedData());
@@ -126,12 +129,12 @@ class PlayScreen extends BaseScreen {
     }
 
     private inline function checkCache(dirName: String) : Bool {
-#if (flash || html5)
+//#if (flash || html5)
         return false;
-#else
-        var filedir = CACHE_DIR + dirName;
-        return sys.FileSystem.exists(filedir);
-#end
+//#else
+//        var filedir = CACHE_DIR + "/" + dirName;
+//        return FileSystem.exists(filedir);
+//#end
     }
 
     private function loadFromCache(dirName: String) {
@@ -141,6 +144,13 @@ class PlayScreen extends BaseScreen {
     }
 
     private function saveToCache(dirName: String) {
+#if cpp
+        var filedir = CACHE_DIR + "/" + dirName;
+        if (!FileSystem.exists(filedir)) FileUtil.mkdirs(filedir);
+#end
+    }
+
+    private function removeCache(dirName: String) {
 #if cpp
 
 #end
@@ -152,6 +162,22 @@ class PlayScreen extends BaseScreen {
         }
         var appId = status.appData.type + "_" + status.appData.id;
         return Reflect.field(globalSo.data, appId);
+    }
+
+    private function saveAndScan(saved: Dynamic) {
+        var appId = status.appData.type + "_" + status.appData.id;
+        var data = globalSo.data;
+        Reflect.setField(data, appId, saved);
+        var now = Date.now().getTime() / 1000;
+        for (id in Reflect.fields(data)) {
+            var val = Reflect.field(data, id);
+            if (!Reflect.hasField(val, "lastUsage")) continue;
+            var lastUsage: Float = Reflect.field(val, "lastUsage");
+            if (now - lastUsage <= CACHE_EXPIRE) continue; // not expired
+            removeCache(id);
+            Reflect.deleteField(data, id);
+        }
+        globalSo.flush();
     }
 
 }

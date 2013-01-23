@@ -36,7 +36,8 @@ class Main {
         var data = st.appData = new AppData();
         data.type = "test";
         data.id = "1111";
-        data.url = "http://rox.local/res/data/data.zip";
+//        data.url = "http://rox.local/res/data/data.zip";
+        data.url = "assets://res/data/data.zip";
         m.startScreen(Type.getClassName(TestPlayScreen), st);
         RoxApp.stage.addChild(m);
 

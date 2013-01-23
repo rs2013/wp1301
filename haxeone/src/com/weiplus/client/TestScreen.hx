@@ -2,7 +2,7 @@ package com.weiplus.client;
 
 import nme.geom.Rectangle;
 import nme.utils.ByteArray;
-import com.roxstudio.haxe.ui.RoxPreloader;
+import com.roxstudio.haxe.game.Preloader;
 import com.weiplus.client.model.User;
 import com.weiplus.client.model.AppData;
 import com.weiplus.client.model.Status;
@@ -159,7 +159,7 @@ class TestScreen extends BaseScreen {
 //        for (i in nn) assets.push("file:///D:/work/ws_haxe/weiplus-github/haxeone/res/data/" + i + ".jpg");
 //        for (i in nn) assets.push("http://rox.local/res/data/" + i + ".jpg");
 //        assets.push("http://rox.local/res/data/data.zip");
-        var ldr = new RoxPreloader(assets, "mybundle", true);
+        var ldr = new Preloader(assets, "mybundle", true);
         ldr.addEventListener(Event.COMPLETE, function(_) {
             var map = ResKeeper.getBundle("mybundle");
             trace("================ done ==================");

@@ -219,8 +219,4 @@ class GameUtil {
         return hasharr;
     }
 
-    public static inline function loadSound(inSoundPath: String) : Sound {
-        return Assets.getSound(inSoundPath);
-    }
-
 }
