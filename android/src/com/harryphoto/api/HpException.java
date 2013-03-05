@@ -1,33 +1,33 @@
 
-package com.weiplus.api;
+package com.harryphoto.api;
 
 
 /**
  * 
  */
-public class WeiplusException extends Exception {
+public class HpException extends Exception {
 
     private static final long serialVersionUID = 7795696349481341783L;
     private int statusCode = -1;
 	
-    public WeiplusException(String msg) {
+    public HpException(String msg) {
         super(msg);
     }
 
-    public WeiplusException(Exception cause) {
+    public HpException(Exception cause) {
         super(cause);
     }
 
-    public WeiplusException(String msg, int statusCode) {
+    public HpException(String msg, int statusCode) {
         super(msg);
         this.statusCode = statusCode;
     }
 
-    public WeiplusException(String msg, Exception cause) {
+    public HpException(String msg, Exception cause) {
         super(msg, cause);
     }
 
-    public WeiplusException(String msg, Exception cause, int statusCode) {
+    public HpException(String msg, Exception cause, int statusCode) {
         super(msg, cause);
         this.statusCode = statusCode;
     }
@@ -37,19 +37,19 @@ public class WeiplusException extends Exception {
     }
     
     
-	public WeiplusException() {
+	public HpException() {
 		super(); 
 	}
 
-	public WeiplusException(String detailMessage, Throwable throwable) {
+	public HpException(String detailMessage, Throwable throwable) {
 		super(detailMessage, throwable);
 	}
 
-	public WeiplusException(Throwable throwable) {
+	public HpException(Throwable throwable) {
 		super(throwable);
 	}
 
-	public WeiplusException(int statusCode) {
+	public HpException(int statusCode) {
 		super();
 		this.statusCode = statusCode;
 	}

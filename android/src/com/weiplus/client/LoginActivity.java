@@ -1,12 +1,15 @@
 package com.weiplus.client;
 
-import com.weibo.sdk.android.Oauth2AccessToken;
-import com.weibo.sdk.android.Weibo;
-import com.weibo.sdk.android.WeiboAuthListener;
-import com.weibo.sdk.android.WeiboDialogError;
-import com.weibo.sdk.android.WeiboException;
-import com.weibo.sdk.android.sso.SsoHandler;
-import com.weibo.sdk.android.util.Utility;
+import java.io.IOException;
+
+import org.json.*;
+
+import com.harryphoto.api.AuthAPI;
+import com.harryphoto.api.HpAccessToken;
+import com.harryphoto.api.HpException;
+import com.harryphoto.api.HpListener;
+import com.harryphoto.api.Utility;
+import com.harryphoto.bind.Binding;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -19,93 +22,83 @@ import android.widget.Toast;
 
 public class LoginActivity extends Activity {
 
-    private Weibo mWeibo;
-    private static final String CONSUMER_KEY = "2392272878";
-    private static final String REDIRECT_URL = "http://hi.baidu.com/new/rockswang";
-    private Intent it = null;
     private Button btnWeibo, btnQQ, btnRenren;
-    public static Oauth2AccessToken accessToken;
-    public static final String TAG = "mydemo";
-    /**
-     * SsoHandler 仅当sdk支持sso时有效，
-     */
-    SsoHandler mSsoHandler;
+    public static final String TAG = "LoginActivity";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_layout);
-        mWeibo = Weibo.getInstance(CONSUMER_KEY, REDIRECT_URL);
 
         btnWeibo = (Button) findViewById(R.id.btnWeibo);
-        try {
-            Class sso = Class.forName("com.weibo.sdk.android.sso.SsoHandler");
-        } catch (ClassNotFoundException e) {
-            // e.printStackTrace();
-            Log.i(TAG, "com.weibo.sdk.android.sso.SsoHandler not found");
-
-        }
         btnWeibo.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                /**
-                 * 下面两个注释掉的代码，仅当sdk支持sso时有效，
-                 */
+                HpManager.getBinding(Binding.Type.SINA_WEIBO).startAuth(LoginActivity.this, new HpListener() {
+                    @Override
+                    public void onComplete(String response) {
+                        Log.i(TAG, "SinaWeibo - onComplete: " + response);
+                        if ("ok".equals(response)) {
+                            Binding b = HpManager.getBinding(Binding.Type.SINA_WEIBO);
+                            new AuthAPI(HpManager.getAccessToken()).bind(Binding.Type.SINA_WEIBO, b.getToken(), new HpListener() {
 
-                mSsoHandler = new SsoHandler(LoginActivity.this, mWeibo);
-                mSsoHandler.authorize(new AuthDialogListener());
+                                @Override
+                                public void onComplete(String response) {
+                                    Log.i(TAG, "SinaWeiboBind - onComplete: " + response);
+                                    try {
+                                        JSONObject json = new JSONObject(response);
+                                        if (json.getInt("code") == 200) {
+                                            HpAccessToken tok = new HpAccessToken();
+                                            tok.setToken(json.getString("accessToken"));
+                                            tok.setRefreshToken(json.getString("refreshToken"));
+                                            tok.setExpiresTime(Long.MAX_VALUE);
+                                            tok.setUid("" + json.getJSONArray("users").getJSONObject(0).getLong("id"));
+                                            HpManager.setAccessToken(tok);
+                                        }
+                                    } catch (JSONException e) {
+                                        onError(new HpException(e));
+                                    }
+                                    Utility.safeToast(LoginActivity.this, "新浪微博连接成功", Toast.LENGTH_SHORT);
+                                    LoginActivity.this.finish();
+                                }
+
+                                @Override
+                                public void onIOException(IOException e) {
+                                    Log.i(TAG, "SinaWeiboBind - onIOException: " + e);
+                                }
+
+                                @Override
+                                public void onError(HpException e) {
+                                    Log.i(TAG, "SinaWeiboBind - onError: " + e);
+                                }
+                                
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onIOException(IOException e) {
+                        Log.i(TAG, "SinaWeibo - onIOException: " + e);
+                    }
+
+                    @Override
+                    public void onError(HpException e) {
+                        Log.i(TAG, "SinaWeibo - onError: " + e);
+                        Toast.makeText(LoginActivity.this, "新浪微博连接失败，请重试", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
         btnQQ = (Button) findViewById(R.id.btnQq);
         btnRenren = (Button) findViewById(R.id.btnRenren);
     }
 
-    class AuthDialogListener implements WeiboAuthListener {
-
-        @Override
-        public void onComplete(Bundle values) {
-            String token = values.getString("access_token");
-            String expires_in = values.getString("expires_in");
-            LoginActivity.accessToken = new Oauth2AccessToken(token, expires_in);
-            if (LoginActivity.accessToken.isSessionValid()) {
-                AccessTokenKeeper.keepAccessToken(LoginActivity.this,
-                        accessToken);
-                Toast.makeText(LoginActivity.this, "认证成功", Toast.LENGTH_SHORT)
-                        .show();
-            }
-            LoginActivity.this.finish();
-        }
-
-        @Override
-        public void onError(WeiboDialogError e) {
-            Toast.makeText(getApplicationContext(),
-                    "Auth error : " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-
-        @Override
-        public void onCancel() {
-            Toast.makeText(getApplicationContext(), "Auth cancel",
-                    Toast.LENGTH_LONG).show();
-        }
-
-        @Override
-        public void onWeiboException(WeiboException e) {
-            Toast.makeText(getApplicationContext(),
-                    "Auth exception : " + e.getMessage(), Toast.LENGTH_LONG)
-                    .show();
-        }
-
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        /**
-         * 下面两个注释掉的代码，仅当sdk支持sso时有效，
-         */
-        if (mSsoHandler != null) {
-            mSsoHandler.authorizeCallBack(requestCode, resultCode, data);
-        }
+        btnWeibo.setEnabled(false);
+        btnQQ.setEnabled(false);
+        btnRenren.setEnabled(false);
+        HpManager.onActivityResult(this, requestCode, resultCode, data);
     }
 }

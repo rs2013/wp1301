@@ -1,4 +1,4 @@
-package com.weiplus.api;
+package com.harryphoto.api;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -10,7 +10,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.HashMap;
 
+import org.haxe.nme.HaxeObject;
+
+import com.weiplus.client.MainActivity;
+
+import android.app.Activity;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -23,6 +29,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 public class Utility {
     private static char[] encodes = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
@@ -50,51 +57,21 @@ public class Utility {
 		return params;
 	}
 
-	public static String encodeUrl(WeiplusParameters parameters) {
-		if (parameters == null) {
-			return "";
-		}
-
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (int loc = 0; loc < parameters.size(); loc++) {
-			if (first){
-			    first = false;
-			}
-			else{
-			    sb.append("&");
-			}
-			String _key=parameters.getKey(loc);
-			String _value=parameters.getValue(_key);
-			if(_value==null){
-			    Log.i("encodeUrl", "key:"+_key+" 's value is null");
-			}
-			else{
-			    sb.append(URLEncoder.encode(parameters.getKey(loc)) + "="
-                        + URLEncoder.encode(parameters.getValue(loc)));
-			}
-			
-		}
-		return sb.toString();
-	}
-
-	public static String encodeParameters(WeiplusParameters httpParams) {
+	public static String encodeParameters(HpParameters httpParams) {
 		if (null == httpParams || isBundleEmpty(httpParams)) {
 			return "";
 		}
 		StringBuilder buf = new StringBuilder();
-		int j = 0;
-		for (int loc = 0; loc < httpParams.size(); loc++) {
+		for (int loc = 0, j = 0; loc < httpParams.size(); loc++) {
 			String key = httpParams.getKey(loc);
-			if (j != 0) {
+			if (j++ != 0) {
 				buf.append("&");
 			}
 			try {
-				buf.append(URLEncoder.encode(key, "UTF-8")).append("=")
-						.append(URLEncoder.encode(httpParams.getValue(key), "UTF-8"));
-			} catch (java.io.UnsupportedEncodingException neverHappen) {
-			}
-			j++;
+			    String v = httpParams.getValue(loc);
+			    v = TextUtils.isEmpty(v) ? "" : URLEncoder.encode(v, "UTF-8");
+				buf.append(URLEncoder.encode(key, "UTF-8")).append("=").append(v);
+			} catch (java.io.UnsupportedEncodingException neverHappen) { }
 		}
 		return buf.toString();
 
@@ -107,7 +84,7 @@ public class Utility {
 		alertBuilder.create().show();
 	}
 
-	private static boolean isBundleEmpty(WeiplusParameters bundle) {
+	private static boolean isBundleEmpty(HpParameters bundle) {
 		if (bundle == null || bundle.size() == 0) {
 			return true;
 		}
@@ -509,5 +486,71 @@ public class Utility {
             return bmp;
         }
     }
-	
+    
+    private static String[] MIME_MAP = {
+        "png", "image/png",
+        "jpg", "image/jpeg",
+        "jpeg", "image/jpeg",
+        "gif", "image/gif",
+        "txt", "text/plain",
+        "json", "text/plain",
+        "xml", "text/plain",
+        "zip", "application/zip",
+    };
+    private static HashMap<String, String> mimeMap;
+    
+    public static String getMimeType(String ext) {
+        if (mimeMap == null) {
+            mimeMap = new HashMap<String, String>();
+            for (int i = 0, n = MIME_MAP.length; i < n; i += 2) {
+                mimeMap.put(MIME_MAP[i], MIME_MAP[i + 1]);
+            }
+        }
+        String mime = mimeMap.get(ext.toLowerCase());
+        return mime != null ? mime : "application/octet-stream";
+    }
+    
+    public static String getFileName(String path) {
+        String s = path.replace('\\', '/');
+        int idx = s.lastIndexOf('/');
+        return idx < 0 ? path : s.substring(idx + 1);
+    }
+    
+    public static String getFileExt(String path) {
+        int idx = path.lastIndexOf('.');
+        return idx < 0 ? "" : path.substring(idx + 1);
+    }
+    
+    public static void haxeOk(final HaxeObject callback, final String apiName, final String response) {
+        Log.i("Utility", "haxeOk: callback=" + callback + ",api=" + apiName + ", response=" + response);
+        if (callback == null) return;
+        MainActivity.getInstance().runOnUiThread(new Runnable() {
+            @Override public void run() {
+                callback.call3("onApiCallback", apiName, "ok", response);
+            }
+        });
+    }
+    
+    public static void haxeError(final HaxeObject callback, final String apiName, final Exception e) {
+        Log.i("Utility", "haxeError: callback=" + callback + ",api=" + apiName + ", ex=" + e);
+        if (callback == null) return;
+        MainActivity.getInstance().runOnUiThread(new Runnable() {
+            @Override public void run() {
+                callback.call3("onApiCallback", apiName, "error", e.getMessage());
+            }
+        });
+    }
+    
+    public static void safeToast(final Activity activity, final String msg, final int duration) {
+        MainActivity.getInstance().runOnUiThread(new Runnable() {
+            @Override public void run() {
+                Toast.makeText(activity, msg, duration).show();
+            }
+        });
+    }
+    
+    public static void safeToast(final String msg, final int duration) {
+        safeToast(MainActivity.getInstance(), msg, duration);
+    }
+    
 }

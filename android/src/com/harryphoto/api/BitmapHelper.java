@@ -1,7 +1,8 @@
-package com.weiplus.api;
+package com.harryphoto.api;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -86,6 +87,29 @@ public final class BitmapHelper {
 			e.printStackTrace();
 		}
         return (options.outHeight > 0) && (options.outWidth > 0);
+    }
+    
+    /**
+     * 
+     * @param path
+     * @return [ width, height, fileSize ]
+     */
+    public static int[] bitmapInfo(String path) {
+        int[] ret = new int[3];
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BufferedInputStream input = new BufferedInputStream(new FileInputStream(path));
+            BitmapFactory.decodeStream(input, null, options);
+            input.close();
+            ret[0] = options.outWidth;
+            ret[1] = options.outHeight;
+            File f = new File(path);
+            ret[2] = (int) f.length();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ret;
     }
 
     /**

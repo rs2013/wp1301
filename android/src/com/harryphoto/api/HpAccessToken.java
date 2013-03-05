@@ -1,7 +1,6 @@
-package com.weiplus.api;
+package com.harryphoto.api;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.*;
 
 import android.text.TextUtils;
 
@@ -9,9 +8,10 @@ import android.text.TextUtils;
  * 此类封装了“access_token”，“expires_in”，"refresh_token"，
  *并提供了他们的管理功能
  */
-public class WeiplusAccessToken {
+public class HpAccessToken {
 	private String mAccessToken = "";
 	private String mRefreshToken = "";
+	private String mUid = "";
 	private long mExpiresTime = 0;
 
 //	private String mOauth_verifier = "";
@@ -20,35 +20,7 @@ public class WeiplusAccessToken {
 	/**
 	 * WeiplusAccessToken 的构造函数
 	 */
-	public WeiplusAccessToken() {
-	}
-	/**
-	 * 根据服务器返回的responsetext生成WeiplusAccessToken 的构造函数，
-	 * 此方法会将responsetext里的“access_token”，“expires_in”，"refresh_token"解析出来
-	 * @param responsetext 服务器返回的responsetext
-	 */
-	public WeiplusAccessToken(String responsetext) {
-		if (responsetext != null) {
-			if (responsetext.indexOf("{") >= 0) {
-				try {
-					JSONObject json = new JSONObject(responsetext);
-					setToken(json.optString("access_token"));
-					setExpiresIn(json.optString("expires_in"));
-					setRefreshToken(json.optString("refresh_token"));
-				} catch (JSONException e) {
-					
-				}
-			}
-		}
-	}
-	/**
-	 * WeiplusAccessToken的构造函数，根据accessToken 和expires_in 生成Oauth2AccessToken实例
-	 * @param accessToken  访问令牌
-	 * @param expires_in 有效期，单位：毫秒；仅当从服务器获取到expires_in时适用，表示距离超过认证时间还有多少秒
-	 */
-	public WeiplusAccessToken(String accessToken, String expires_in) {
-		mAccessToken = accessToken;
-		mExpiresTime = System.currentTimeMillis() + Long.parseLong(expires_in)*1000;
+	public HpAccessToken() {
 	}
 	/**
 	 *  AccessToken是否有效,如果accessToken为空或者expiresTime过期，返回false，否则返回true
@@ -69,6 +41,10 @@ public class WeiplusAccessToken {
      */
 	public String getRefreshToken() {
 		return mRefreshToken;
+	}
+	
+	public String getUid() {
+	    return mUid;
 	}
 	/**
 	 * 设置refreshToken
@@ -108,6 +84,10 @@ public class WeiplusAccessToken {
 	 */
 	public void setToken(String mToken) {
 		this.mAccessToken = mToken;
+	}
+	
+	public void setUid(String uid) {
+	    this.mUid = uid;
 	}
 //	/**
 //	 * 设置检验者

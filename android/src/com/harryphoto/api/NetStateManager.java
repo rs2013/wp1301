@@ -1,4 +1,4 @@
-package com.weiplus.api;
+package com.harryphoto.api;
 
 import org.apache.http.HttpHost;
 

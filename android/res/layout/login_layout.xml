@@ -6,19 +6,19 @@
 
     <Button
         android:id="@+id/btnWeibo"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/btnWeibo" />
 
     <Button
         android:id="@+id/btnQq"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/btnQq" />
 
     <Button
         android:id="@+id/btnRenren"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/btnRenren" />
 
