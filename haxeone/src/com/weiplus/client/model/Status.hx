@@ -17,6 +17,7 @@ class Status {
     public var geo: Geo;
 
     public var isNew: Bool; // read or not
+    public var makerData: Dynamic = null;
 
     public function new() {
     }

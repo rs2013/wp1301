@@ -43,16 +43,13 @@ class Preloader extends EventDispatcher {
         step = 1 / urls.length;
         list = new List<String>();
 #if cpp
-        worker = new Worker();
+        worker = GameUtil.worker;
 #end
         for (i in 0...urls.length) {
             var url = urls[i];
-            trace(">>>>>>>>url=" + url);
             var prefix = url.length > 7 ? url.substr(0, 7) : "";
             switch (prefix) {
-                case "http://":
-                    download(url);
-                case "https:/":
+                case "http://", "https:/":
                     download(url);
                 case "file://":
 #if cpp
@@ -80,15 +77,9 @@ class Preloader extends EventDispatcher {
 //        trace("update: assets=" + s);
         var data: Dynamic = switch (FileUtil.fileExt(s, true)) {
             case DYN: {};
-            case "png": ResKeeper.loadAssetImage(s);
-            case "jpg": ResKeeper.loadAssetImage(s);
-            case "jpeg": ResKeeper.loadAssetImage(s);
-            case "txt": ResKeeper.loadAssetText(s);
-            case "xml": ResKeeper.loadAssetText(s);
-            case "json": ResKeeper.loadAssetText(s);
-            case "mp3": ResKeeper.loadAssetSound(s);
-            case "wav": ResKeeper.loadAssetSound(s);
-            case "ogg": ResKeeper.loadAssetSound(s);
+            case "png", "jpg", "jpeg": ResKeeper.loadAssetImage(s);
+            case "txt", "xml", "json": ResKeeper.loadAssetText(s);
+            case "mp3", "wav", "ogg": ResKeeper.loadAssetSound(s);
             default: ResKeeper.loadAssetData(s);
         }
         if (data != null) {
@@ -101,12 +92,8 @@ class Preloader extends EventDispatcher {
     private function download(url: String) {
 //        trace("download: url=" + url + ",ext="+FileUtil.fileExt(url, true));
         var type = switch (FileUtil.fileExt(url, true)) {
-            case "png": RoxURLLoader.IMAGE;
-            case "jpg": RoxURLLoader.IMAGE;
-            case "jpeg": RoxURLLoader.IMAGE;
-            case "txt": RoxURLLoader.TEXT;
-            case "xml": RoxURLLoader.TEXT;
-            case "json": RoxURLLoader.TEXT;
+            case "png", "jpg", "jpeg": RoxURLLoader.IMAGE;
+            case "txt", "xml", "json": RoxURLLoader.TEXT;
             default: RoxURLLoader.BINARY;
         }
         var ldr = new RoxURLLoader(url, type);
@@ -130,12 +117,8 @@ class Preloader extends EventDispatcher {
         var path = ResKeeper.url2path(url);
         var data: Dynamic = switch (FileUtil.fileExt(path, true)) {
             case DYN: {};
-            case "png": ResKeeper.loadLocalImage(path);
-            case "jpg": ResKeeper.loadLocalImage(path);
-            case "jpeg": ResKeeper.loadLocalImage(path);
-            case "txt": ResKeeper.loadLocalText(path);
-            case "xml": ResKeeper.loadLocalText(path);
-            case "json": ResKeeper.loadLocalText(path);
+            case "png", "jpg", "jpeg": ResKeeper.loadLocalImage(path);
+            case "txt", "xml", "json": ResKeeper.loadLocalText(path);
             default: ResKeeper.loadLocalData(path);
         }
         d.data = data;

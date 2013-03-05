@@ -6,6 +6,10 @@ import nme.geom.Point;
 import nme.geom.Rectangle;
 import nme.media.Sound;
 
+#if cpp
+import com.roxstudio.haxe.utils.Worker;
+#end
+
 using StringTools;
 
 /**
@@ -218,5 +222,16 @@ class GameUtil {
         arr.push(elem);
         return hasharr;
     }
+
+#if cpp
+    public static var worker(get_worker, null): Worker;
+
+    private static inline function get_worker() : Worker {
+        if (worker == null) {
+            worker = new Worker();
+        }
+        return worker;
+    }
+#end
 
 }

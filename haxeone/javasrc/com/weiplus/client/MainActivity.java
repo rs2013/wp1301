@@ -24,10 +24,9 @@ public class MainActivity extends org.haxe.nme.GameActivity implements SurfaceHo
     private Camera camera;
     public static int[] buffer;
 
-    protected void onCreate(Bundle state)
-    {
+    protected void onCreate(Bundle state) {
         super.onCreate(state);
-
+        Log.i("MainActivity", "My onCreate executed!!");
 //        SurfaceView preview = new SurfaceView(this);
 //        holder = preview.getHolder();
 //        holder.addCallback(this);
@@ -36,23 +35,18 @@ public class MainActivity extends org.haxe.nme.GameActivity implements SurfaceHo
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder)
-    {
-        try
-        {
+    public void surfaceCreated(SurfaceHolder holder) {
+        try {
             //Open the Camera in preview mode
             this.camera = Camera.open();
             this.camera.setPreviewDisplay(this.holder);
-        }
-        catch(IOException ioe)
-        {
+        } catch(IOException ioe) {
             ioe.printStackTrace(System.out);
         }
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
-    {
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         if (width < height) camera.setDisplayOrientation(90);
         // Now that the size is known, set up the camera parameters and begin
         // the preview.
@@ -75,8 +69,7 @@ public class MainActivity extends org.haxe.nme.GameActivity implements SurfaceHo
 
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder)
-    {
+    public void surfaceDestroyed(SurfaceHolder holder) {
         // Surface will be destroyed when replaced with a new screen
         //Always make sure to release the Camera instance
         camera.stopPreview();
@@ -158,8 +151,9 @@ public class MainActivity extends org.haxe.nme.GameActivity implements SurfaceHo
     
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.i("MainActivity", "onActivityResult: code=" + requestCode + ",result=" + resultCode + ",data=" + data);
         super.onActivityResult(requestCode, resultCode, data);
-        HaxeHelper.onActivityResult(requestCode, resultCode, data);
+        HaxeStub.onActivityResult(requestCode, resultCode, data);
     }
     
 }

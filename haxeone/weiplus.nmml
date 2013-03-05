@@ -11,6 +11,7 @@
     <set name="BUILD_DIR" value="debug" if="debug"/>
     <set name="SWF_VERSION" value="10.1" if="flash" />
     <set name="SHOW_CONSOLE" value="1" />
+    <setenv name="show_console" value="1" if="cpp" />
 
     <classpath name="src" />
 
@@ -29,10 +30,10 @@
     <assets path="res" include="*" exclude="icon.svg" />
 
     <include path="../android/haxe_include.nmml" if="android"/>
-    <template path="javasrc/com/weiplus/client/HaxeStub.java" if="android" />
-    <template path="javasrc/com/weiplus/client/MainActivity.java" if="android" />
+    <template path="javasrc/com/weiplus/client/HaxeStub.java" rename="src/com/weiplus/client/HaxeStub.java" if="android" />
+    <template path="javasrc/com/weiplus/client/MainActivity.java" rename="src/com/weiplus/client/MainActivity.java" if="android" />
     <!--template path="src/org/haxe/nme/GameActivity.java" if="android" /-->
-    <template path="javasrc/org/haxe/nme/MainView.java" if="android" />
+    <template path="javasrc/org/haxe/nme/MainView.java" rename="src/org/haxe/nme/MainView.java" if="android" />
     <template path="AndroidManifest.xml" if="android" />
 
     <ndll name="std" />

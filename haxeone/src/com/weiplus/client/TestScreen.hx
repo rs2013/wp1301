@@ -1,5 +1,7 @@
 package com.weiplus.client;
 
+import haxe.io.Bytes;
+import sys.io.File;
 import nme.geom.Rectangle;
 import nme.utils.ByteArray;
 import com.roxstudio.haxe.game.Preloader;
@@ -56,7 +58,37 @@ class TestScreen extends BaseScreen {
         addTitleButton(UiUtil.button("res/icon_single_column.png", null, "res/btn_common.9.png"), UiUtil.RIGHT);
     }
 
-    override public function createContent(height: Float) : Sprite {
+    override function createContent(height: Float) : Sprite {
+        var content = super.createContent(height);
+        var btn = UiUtil.button(UiUtil.TOP_LEFT, null, "Login", 0, 32, "res/btn_common.9.png", function(_) {
+            trace("btn login clicked");
+            HpManager.checkLogin();
+            trace("checkLogin completed!");
+        });
+        content.addChild(btn.rox_move(20, 80));
+        btn = UiUtil.button(UiUtil.TOP_LEFT, null, "Logout", 0, 32, "res/btn_common.9.png", function(_) {
+            trace("btn logout clicked");
+            HpManager.logout();
+        });
+        content.addChild(btn.rox_move(20, 280));
+        btn = UiUtil.button(UiUtil.TOP_LEFT, null, "Public Timeline", 0, 32, "res/btn_common.9.png", function(_) {
+            trace("btn public timeline clicked");
+            HpManager.getPublicTimeline(this);
+        });
+        content.addChild(btn.rox_move(20, 380));
+
+        return content;
+    }
+
+    public function onPublicTimeline(resultCode: String, jsonStr: String) {
+        trace("onPublicTimeline: result="+resultCode+",len="+jsonStr.length+",jsonStr="+jsonStr);
+//        File.saveBytes("/sdcard/aaaa.json", Bytes.ofString(jsonStr));
+        var json = haxe.Json.parse(jsonStr);
+        trace("json="+json);
+    }
+
+
+    public function createContent2(height: Float) : Sprite {
         var content = new Sprite();
 //        var bmd = GameUtil.loadBitmapData("res/btn_red.png");
 //        graphics.beginBitmapFill(bmd, new Matrix(0.5, 0, 0, 0.5, 20, 20), true, true);

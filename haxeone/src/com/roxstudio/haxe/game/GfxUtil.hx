@@ -50,6 +50,14 @@ class GfxUtil {
         return g;
     }
 
+    public static inline function rox_drawRect(g: Graphics, thickness: Float, color: Int,
+                                               x: Float, y: Float, w: Float, h: Float) : Graphics {
+        g.lineStyle(thickness, color & 0xFFFFFF, (color >>> 24) / 255);
+        g.drawRect(x, y, w, h);
+        g.lineStyle();
+        return g;
+    }
+
     public static inline function rox_fillRoundRect(g: Graphics, color: Int,
                                                     x: Float, y: Float, w: Float, h: Float,
                                                     hRadius: Float = 6, ?vRadius: Null<Float>) : Graphics {

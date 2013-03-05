@@ -167,14 +167,14 @@ class RoxGestureAgent {
 
     private inline function convertTouch(e: Dynamic) {
         owner.dispatchEvent(new RoxGestureEvent(typeMap.get(e.type), e.bubbles, e.cancelable,
-                e.localX, e.localY, e.stageX, e.stageY, e.touchPointID));
+                e.localX, e.localY, e.stageX, e.stageY, e.touchPointID, this));
     }
 
     private inline function convertMouse(e: Dynamic) {
         var t: String = e.type;
         if (t == MouseEvent.MOUSE_DOWN || t == MouseEvent.MOUSE_UP || t == MouseEvent.CLICK || e.buttonDown) {
             owner.dispatchEvent(new RoxGestureEvent(typeMap.get(t), e.bubbles, e.cancelable,
-                    e.localX, e.localY, e.stageX, e.stageY, 0));
+                    e.localX, e.localY, e.stageX, e.stageY, 0, this));
         }
     }
 
@@ -226,11 +226,11 @@ class RoxGestureAgent {
             }
         case BEGIN:
             if (prim && type == RoxGestureEvent.TOUCH_END) {
-                owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_TAP, pt.lx, pt.ly, pt.sx, pt.sy));
+                owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_TAP, pt.lx, pt.ly, pt.sx, pt.sy, this));
                 setReady();
             } else if (prim && type == RoxGestureEvent.TOUCH_MOVE) {
                 var pan = new Point(pt.sx - touch0.sx, pt.sy - touch0.sy);
-                owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_PAN, pt.lx, pt.ly, pt.sx, pt.sy, pan));
+                owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_PAN, pt.lx, pt.ly, pt.sx, pt.sy, this, pan));
                 setMove(pt);
             } else if (!prim && type == RoxGestureEvent.TOUCH_BEGIN) {
                 setTwoFingerMove(pt);
@@ -240,7 +240,7 @@ class RoxGestureAgent {
         case MOVE:
             if (prim && type == RoxGestureEvent.TOUCH_MOVE) {
                 var pan = new Point(pt.sx - touch0.sx, pt.sy - touch0.sy);
-                owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_PAN, pt.lx, pt.ly, pt.sx, pt.sy, pan));
+                owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_PAN, pt.lx, pt.ly, pt.sx, pt.sy, this, pan));
                 setMove(pt);
             } else if (prim && (type == RoxGestureEvent.TOUCH_END ||
                     (mode != GESTURE_CAPTURE && type == RoxGestureEvent.TOUCH_OUT && e.target == owner))) {
@@ -254,19 +254,19 @@ class RoxGestureAgent {
                         var dx: Float, dy: Float;
                         var angle = Math.atan2(dy = beginpt.sy - endpt.sy, dx = beginpt.sx - endpt.sx);
                         var velocity = Point.polar(new Point(dx, dy).length / (beginpt.time - endpt.time) * VELOCITY_RATIO, angle);
-                        owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_SWIPE, pt.lx, pt.ly, pt.sx, pt.sy, velocity));
+                        owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_SWIPE, pt.lx, pt.ly, pt.sx, pt.sy, this, velocity));
                     }
                 }
                 setReady();
             } else if (!prim && type == RoxGestureEvent.TOUCH_BEGIN) {
-                owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_BEGIN, pt.lx, pt.ly, pt.sx, pt.sy));
+                owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_BEGIN, pt.lx, pt.ly, pt.sx, pt.sy, this));
                 setTwoFingerMove(pt);
             } else {
                 handled = false;
             }
         case TWO_FINGER_MOVE:
             if (type == RoxGestureEvent.TOUCH_END) {
-                owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_END, pt.lx, pt.ly, pt.sx, pt.sy));
+                owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_END, pt.lx, pt.ly, pt.sx, pt.sy, this));
                 setReady();
             } else if (type == RoxGestureEvent.TOUCH_MOVE) {
                 var pt1 = prim ? touch1 : touch0, pt2 = prim ? touch0 : touch1;
@@ -274,8 +274,10 @@ class RoxGestureAgent {
                 var angle = Math.atan2(pt.sy - pt1.sy, pt.sx - pt1.sx) - Math.atan2(pt2.sy - pt1.sy, pt2.sx - pt1.sx); // in radius
                 var mid = Point.interpolate(pt1.lpt, pt2.lpt, 0.5);
                 var gmid = owner.localToGlobal(mid);
-                if (scale != 1) owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_PINCH, mid.x, mid.y, gmid.x, gmid.y, scale));
-                if (angle != 0) owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_ROTATION, mid.x, mid.y, gmid.x, gmid.y, angle));
+                if (scale != 1)
+                    owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_PINCH, mid.x, mid.y, gmid.x, gmid.y, this, scale));
+                if (angle != 0)
+                    owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_ROTATION, mid.x, mid.y, gmid.x, gmid.y, this, angle));
                 if (prim) { touch0 = pt; } else { touch1 = pt; }
             } else {
                 handled = false;
@@ -285,7 +287,7 @@ class RoxGestureAgent {
     }
 
     private inline function sendLongPress(pt: TouchPoint) {
-        owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_LONG_PRESS, pt.lx, pt.ly, pt.sx, pt.sy));
+        owner.dispatchEvent(new RoxGestureEvent(RoxGestureEvent.GESTURE_LONG_PRESS, pt.lx, pt.ly, pt.sx, pt.sy, this));
         setReady();
     }
 

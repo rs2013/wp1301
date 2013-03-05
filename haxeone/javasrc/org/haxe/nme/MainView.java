@@ -268,7 +268,12 @@ class MainView extends GLSurfaceView {
         return true;
     }
 
- 
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        Log.e("onLayout", "Layout called! changed=" + changed+", l=" + l + ", t=" + t + ",r=" + r + ",b="+b);
+    }
+
     private static class Renderer implements GLSurfaceView.Renderer {
         MainView mMainView;
 

@@ -1,5 +1,6 @@
 package com.roxstudio.haxe.ui;
 
+import nme.text.TextFieldType;
 import com.roxstudio.haxe.net.RoxURLLoader;
 import com.roxstudio.haxe.game.ResKeeper;
 import com.roxstudio.haxe.game.GameUtil;
@@ -72,6 +73,28 @@ class UiUtil {
         textfieldCanvas.draw(tf); // force textfield to update width & height
         if (width == null) tf.width = tf.textWidth + 5;
         tf.height = tf.textHeight + 5;
+        tf.x = ox;
+        tf.y = oy;
+        return tf;
+    }
+
+    public static function input(?text: String = "", ?color: Int = 0, ?size: Float = 24, ?hAlign: Int = LEFT,
+                                      ?multiline: Bool = false, ?width: Null<Float>, ?height: Null<Float>) : TextField {
+        if (textfieldCanvas == null) textfieldCanvas = new BitmapData(100, 100);
+        var tf = new TextField();
+        var ox = tf.x, oy = tf.y;
+        tf.selectable = true;
+        tf.mouseEnabled = true;
+        tf.type = TextFieldType.INPUT;
+        tf.defaultTextFormat = textFormat(color, size, hAlign);
+        tf.multiline = tf.wordWrap = multiline;
+        if (width != null) tf.width = width;
+        if (height != null) tf.height = height;
+        tf.x = tf.y = 0;
+        tf.text = text;
+        textfieldCanvas.draw(tf); // force textfield to update width & height
+        if (width == null) tf.width = tf.textWidth + 5;
+        if (height == null) tf.height = tf.textHeight + 5;
         tf.x = ox;
         tf.y = oy;
         return tf;
@@ -200,11 +223,17 @@ class UiUtil {
 #end
     }
 
-    public static inline function rox_removeAll(dpc: DisplayObjectContainer) {
+    public static inline function rox_removeAll(dpc: DisplayObjectContainer) : DisplayObjectContainer {
         var count = dpc.numChildren;
         for (i in 0...count) {
             dpc.removeChildAt(count - i - 1);
         }
+        return dpc;
+    }
+
+    public static inline function rox_remove(dpc: DisplayObjectContainer, dp: DisplayObject) : DisplayObjectContainer {
+        if (dp != null && dpc.contains(dp)) dpc.removeChild(dp);
+        return dpc;
     }
 
     public static inline function rangeValue<T: Float>(v: T, min: T, max: T) : T {

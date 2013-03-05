@@ -1,6 +1,5 @@
 package com.weiplus.client;
 
-import com.roxstudio.haxe.ui.UiUtil;
 import com.roxstudio.haxe.ui.RoxFlowPane;
 import com.roxstudio.haxe.game.ResKeeper;
 import com.roxstudio.haxe.game.ResKeeper;
@@ -8,6 +7,7 @@ import com.roxstudio.haxe.ui.RoxScreen;
 import nme.geom.Rectangle;
 import nme.display.Sprite;
 
+using com.roxstudio.haxe.game.GfxUtil;
 using com.roxstudio.haxe.ui.UiUtil;
 
 class BaseScreen extends RoxScreen {
@@ -51,13 +51,12 @@ class BaseScreen extends RoxScreen {
         content = createContent(conth);
         content.rox_move(0, screenHeight - conth);
         addChild(content);
-        graphics.beginBitmapFill(ResKeeper.getAssetImage("res/bg_main.jpg"));
-        graphics.drawRect(0, 0, screenWidth, screenHeight);
-        graphics.endFill();
+        graphics.rox_drawImage(ResKeeper.getAssetImage("res/bg_main.jpg"), 0, 0, screenWidth, screenHeight);
         addChild(titleBar);
     }
 
     public function addTitleButton(btn: RoxFlowPane, align: Int) {
+        if (titleBar.contains(btn)) return;
         if (align == UiUtil.RIGHT) {
             btn.anchor = UiUtil.RIGHT | UiUtil.VCENTER;
             titleBar.addChild(btn.rox_move(titleBtnOffsetR, TOP_HEIGHT / 2));
@@ -69,7 +68,8 @@ class BaseScreen extends RoxScreen {
         }
     }
 
-    public inline function removeTitleButton(btn: RoxFlowPane) {
+    public function removeTitleButton(btn: RoxFlowPane) {
+        if (btn == null || !titleBar.contains(btn)) return;
         titleBar.removeChild(btn);
         if (btn.anchor == UiUtil.RIGHT | UiUtil.VCENTER) {
             titleBtnOffsetR += btn.width + BTN_SPACING;

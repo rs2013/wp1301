@@ -6,6 +6,7 @@ import format.zip.Reader;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import nme.display.Bitmap;
+import nme.display.BitmapData;
 import nme.display.Loader;
 import nme.events.Event;
 import nme.events.EventDispatcher;
@@ -15,7 +16,7 @@ using com.roxstudio.haxe.io.IOUtil;
 
 class Unzipper extends EventDispatcher {
 
-    public var completed(default, null): Bool;
+    public var completed(default, null): Bool = false;
     public var files(default, null): Hash<Dynamic>;
     public var prefix(default, null): String;
 
@@ -36,7 +37,7 @@ class Unzipper extends EventDispatcher {
             var bytes: Bytes;
             if ((bytes = e.data) == null) continue; // directory
             var name = prefix + e.fileName;
-            trace("entry: name=" + name +",len=" + e.fileSize+",data="+e.data.length+",datasize="+e.dataSize);
+//            trace("unzipper.start: entry=(name=" + name +",len=" + e.fileSize+",data="+e.data.length+",datasize="+e.dataSize + ")");
             var data: Dynamic = switch (FileUtil.fileExt(name, true)) {
                 case "***": {}; // force type to Dynamic
                 case "png": bytes2image(name, bytes); null;
@@ -51,6 +52,32 @@ class Unzipper extends EventDispatcher {
         }
         zipDone();
     }
+
+#if cpp
+    public static function decompress(?zipData: ByteArray, ?prefix: String = "") : Hash<Dynamic> {
+        var files = new Hash<Dynamic>();
+        var r = new Reader(new BytesInput(zipData.rox_toBytes()));
+        var entries = r.read();
+        for (e in entries) {
+            var bytes: Bytes;
+            if ((bytes = e.data) == null) continue; // directory
+            var name = prefix + e.fileName;
+//            trace("unzipper.decompress: entry=(name=" + name +",len=" + e.fileSize+",data="+e.data.length+",datasize="+e.dataSize + ")");
+            var data: Dynamic = switch (FileUtil.fileExt(name, true)) {
+                case "***": {}; // force type to Dynamic
+                case "png": BitmapData.loadFromHaxeBytes(bytes);
+                case "jpg": BitmapData.loadFromHaxeBytes(bytes);
+                case "jpeg": BitmapData.loadFromHaxeBytes(bytes);
+                case "txt": bytes.readString(0, bytes.length);
+                case "xml": bytes.readString(0, bytes.length);
+                case "json": bytes.readString(0, bytes.length);
+                default: bytes.rox_toByteArray();
+            }
+            if (data != null) files.set(name, data);
+        }
+        return files;
+    }
+#end
 
     private function bytes2image(id: String, bytes: Bytes) {
         var bb = bytes.rox_toByteArray();
@@ -71,6 +98,7 @@ class Unzipper extends EventDispatcher {
             var ldr = images.get(id);
             var data = cast(ldr.content, Bitmap).bitmapData;
             files.set(id, data);
+//            trace("zipdone: id=" + id + ",data=" + data);
             images.remove(id);
         }
         if (Lambda.count(images) == 0) {

@@ -100,6 +100,7 @@ class RoxURLLoader extends EventDispatcher {
         status = LOADING;
         bytesTotal = e.bytesTotal;
         progress = e.bytesLoaded / bytesTotal;
+//        trace("url="+url+",progress="+Std.int(progress * 100)+"%");
     }
 
     public function dispose() {

@@ -12,4 +12,10 @@ class Utils {
     public static inline function smoothBmp(bmd: BitmapData) : Bitmap {
         return new Bitmap(bmd).rox_smooth();
     }
+
+    public static inline function copy(src: Dynamic, dest: Dynamic) {
+        for (k in Reflect.fields(src)) {
+            Reflect.setField(dest, Reflect.field(src, k));
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import com.weiplus.client.TestMakerScreen;
 import com.weiplus.client.model.AppData;
 import com.weiplus.client.model.Status;
 import com.roxstudio.haxe.ui.RoxApp;
@@ -25,20 +26,26 @@ class Main {
     }
 
     static public function main() {
+//        trace("before init");
         RoxApp.init();
+//        trace("init ok");
         var m = new RoxScreenManager();
 //        m.startScreen(Type.getClassName(com.weiplus.client.HomeScreen));
 //        m.startScreen(Type.getClassName(CameraScreen));
 //        m.startScreen(Type.getClassName(TestGesture));
 //        m.startScreen(Type.getClassName(TestScreen));
+//        m.startScreen(Type.getClassName(TestMakerScreen));
+//        m.startScreen(Type.getClassName(SimpleMaker));
+        m.startScreen(Type.getClassName(TimelineScreen));
 
+//        trace("screen started");
         var st = new Status();
         var data = st.appData = new AppData();
         data.type = "test";
         data.id = "1111";
-//        data.url = "http://rox.local/res/data/data.zip";
-        data.url = "assets://res/data/data.zip";
-        m.startScreen(Type.getClassName(TestPlayScreen), st);
+        data.url = "http://rox.local/res/data/data.zip";
+//        data.url = "assets://res/data/data.zip";
+//        m.startScreen(Type.getClassName(TestPlayScreen), st);
         RoxApp.stage.addChild(m);
 
         var fps = new FPS();

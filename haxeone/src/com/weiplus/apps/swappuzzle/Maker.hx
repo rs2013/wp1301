@@ -1,23 +1,28 @@
 package com.weiplus.apps.swappuzzle;
 
+import com.weiplus.client.model.AppData;
+import com.weiplus.client.SimpleMaker;
+import nme.display.BitmapData;
 import nme.display.Sprite;
-import com.roxstudio.haxe.ui.RoxScreen;
+import nme.geom.Matrix;
 
 using com.roxstudio.haxe.ui.UiUtil;
 
-class Maker extends RoxScreen {
+class Maker extends SimpleMaker {
 
-    override public function onCreate() {
-        var btnJigsaw = new Sprite().rox_button("res/btnWrite.png", "btnJigsaw", onClick).rox_move(100, 400);
-        addChild(btnJigsaw);
-    }
-
-    private function onClick(e: Dynamic) {
-        switch (e.target.name) {
-            case "btnJigsaw":
-                finish(RoxScreen.OK);
-
-        }
+    override private function setLevel(level: Int) {
+        super.setLevel(level);
+        var img = untyped data.image;
+        untyped data.size = level + 4;
+        addGrids(level + 4);
+        image = new BitmapData(Std.int(SimpleMaker.SIDELEN / 2), Std.int(SimpleMaker.SIDELEN / 2), true, 0);
+        var r = image.width / preview.width;
+        image.draw(preview, new Matrix(0.5, 0, 0, 0.5, image.width / 2, image.width / 2), true);
+        var appdata: AppData = status.appData;
+        appdata.width = image.width;
+        appdata.height = image.height;
+        appdata.type = "swappuzzle";
+        status.makerData = data;
     }
 
 }

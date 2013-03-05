@@ -45,6 +45,7 @@ class MakerList extends BaseScreen {
             var txtw = screenWidth - 2 * margh - icon.width - arrow.width;
             var label = UiUtil.staticText(makers[(i << 1) + 1], 0xFFFFFF, txtsize, UiUtil.HCENTER, false, txtw);
             var btn = new RoxFlowPane([ icon, label, arrow ], new RoxNinePatch(bgdata), [ 0 ], onButton);
+            btn.name = makers[i << 1];
             sp.addChild(btn.rox_move(0, offy));
             offy += btn.height;
             sp.graphics.rox_line(2, 0xFF060606, 0, offy, screenWidth, offy);
@@ -55,13 +56,14 @@ class MakerList extends BaseScreen {
     }
 
     private function onButton(e: Dynamic) {
+        trace("makerlist: name=" + e.target.name);
         switch (e.target.name) {
             case "icon_jigsaw_maker":
-//                startScreen(Type.getClassName(com.weiplus.apps.jigsaw.App));
+                startScreen(Type.getClassName(com.weiplus.apps.jigsaw.Maker));
             case "icon_slide_maker":
-//                startScreen(Type.getClassName(com.weiplus.apps.slidepuzzle.App));
+                startScreen(Type.getClassName(com.weiplus.apps.slidepuzzle.Maker));
             case "icon_swap_maker":
-//                startScreen(Type.getClassName(com.weiplus.apps.swappuzzle.App));
+                startScreen(Type.getClassName(com.weiplus.apps.swappuzzle.Maker));
         }
     }
 

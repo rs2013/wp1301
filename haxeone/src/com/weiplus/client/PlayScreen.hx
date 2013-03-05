@@ -1,5 +1,8 @@
 package com.weiplus.client;
 
+import com.roxstudio.haxe.game.ResKeeper;
+import com.roxstudio.haxe.io.FileUtil;
+import com.roxstudio.haxe.io.Unzipper;
 import com.roxstudio.haxe.game.Preloader;
 import com.roxstudio.haxe.game.ResKeeper;
 import com.roxstudio.haxe.io.FileUtil;
@@ -12,15 +15,18 @@ import nme.geom.Matrix;
 import nme.geom.Rectangle;
 import nme.net.SharedObject;
 #if cpp
+import nme.utils.ByteArray;
 import sys.FileSystem;
 import sys.io.File;
 #end
 
 using com.roxstudio.haxe.game.GfxUtil;
+using com.roxstudio.haxe.io.IOUtil;
 using com.roxstudio.haxe.ui.UiUtil;
 
 class PlayScreen extends BaseScreen {
 
+    public static inline var ZIPDATA_NAME = "playscreen_zipdata";
     public var viewWidth: Float;
     public var viewHeight: Float;
 
@@ -28,6 +34,7 @@ class PlayScreen extends BaseScreen {
     private static inline var CACHE_DIR = "/sdcard/.harryphoto/savedgames";
 #elseif windows
     private static inline var CACHE_DIR = "savedgames";
+//    private static inline var CACHE_DIR = "D:/tmp/savedgames";
 #end
 
     private static inline var SAVED_DATA_NAME = "harryphoto.savedData";
@@ -38,7 +45,7 @@ class PlayScreen extends BaseScreen {
     private static inline var BTN_SPACING = 12;
     private static var globalSo: SharedObject;
 
-    private var status: Status;
+    public var status: Status;
 
     override public function onCreate() {
         designWidth = DESIGN_WIDTH;
@@ -55,7 +62,7 @@ class PlayScreen extends BaseScreen {
         viewHeight = (designHeight - TOP_HEIGHT) * d2rScale;
         content = createContent(viewHeight);
         content.rox_move(0, TOP_HEIGHT * d2rScale);
-        contentBg(screenWidth, viewHeight);
+        contentBg(viewWidth, viewHeight);
         addChild(content);
         addChild(titleBar);
         var btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回", 0xFFFFFF, 36, "res/btn_dark.9.png", function(_) { finish(RoxScreen.OK); } );
@@ -67,13 +74,17 @@ class PlayScreen extends BaseScreen {
 
     override public function onNewRequest(data: Dynamic) {
         this.status = cast(data);
+        trace("playscreen: status=" + status);
+        if (status.makerData != null) { // from maker
+            onStart(null);
+            return;
+        }
         var appData = status.appData;
         var appId = appData.type + "_" + appData.id;
         if (checkCache(appId)) {
             loadFromCache(appId);
         } else { // load remotely
             loadUrl(appData.url);
-            saveToCache(appId);
         }
         var mask = new Sprite();
         mask.graphics.rox_fillRect(0x77000000, 0, 0, viewWidth, viewHeight);
@@ -98,14 +109,15 @@ class PlayScreen extends BaseScreen {
         content.graphics.rox_drawImage(bmd, new Matrix(scalex, 0, 0, scaley, 0, 0), false, true, 0, 0, w, h);
     }
 
+    public inline function getFileData(filename: String) {
+        return ResKeeper.get(ZIPDATA_NAME + "/" + filename);
+    }
+
 /******************************** to be overrided *******************************/
 
-    public function onStart(saved: Dynamic) {
-    }
+    public function onStart(saved: Dynamic) {}
 
-    public function onSave() : Dynamic {
-        return null;
-    }
+    public function onSave(saved: Dynamic) {}
 
     public function onPause() {}
 
@@ -114,45 +126,60 @@ class PlayScreen extends BaseScreen {
 /******************************** private methods ******************************/
 
     private function onDeactive(_) {
-        var saved = onSave();
-        if (saved == null) saved = {};
+        if (status.makerData != null) return;
+        var saved = {};
+        onSave(saved);
         Reflect.setField(saved, "lastUsage", Std.int(Date.now().getTime() / 1000.0));
         saveAndScan(saved);
     }
 
     private function loadUrl(url: String) {
-        var preloader = new Preloader([ url ], [ "data" ], true);
+#if (flash || html5)
+        var preloader = new Preloader([ url ], [ ZIPDATA_NAME ], true);
+#else
+        var preloader = new Preloader([ url ], [ ZIPDATA_NAME ], "playscreen_temp_bundle", false);
+#end
         preloader.addEventListener(Event.COMPLETE, function(_) {
+#if !(flash || html5)
+            var zipdata = cast(ResKeeper.get(ZIPDATA_NAME), ByteArray);
+            var files = Unzipper.decompress(zipdata, ZIPDATA_NAME + "/");
+            for (id in files.keys()) ResKeeper.add(id, files.get(id));
+            var dir = CACHE_DIR + "/" + status.appData.type + "_" + status.appData.id;
+//            trace("dir="+dir+",exists="+FileSystem.exists(dir));
+            if (!FileSystem.exists(dir)) FileUtil.mkdirs(dir);
+            var filepath = dir + "/" + ZIPDATA_NAME + ".zip";
+            File.saveBytes(filepath, zipdata.rox_toBytes());
+            ResKeeper.disposeBundle("playscreen_temp_bundle");
+#end
             content.removeChildAt(content.numChildren - 1); // remove mask
             onStart(getSavedData());
         } );
     }
 
     private inline function checkCache(dirName: String) : Bool {
-//#if (flash || html5)
+#if (flash || html5)
         return false;
-//#else
-//        var filedir = CACHE_DIR + "/" + dirName;
-//        return FileSystem.exists(filedir);
-//#end
+#else
+        var filedir = CACHE_DIR + "/" + dirName;
+        return FileSystem.exists(filedir);
+#end
     }
 
     private function loadFromCache(dirName: String) {
 #if cpp
-
-#end
-    }
-
-    private function saveToCache(dirName: String) {
-#if cpp
-        var filedir = CACHE_DIR + "/" + dirName;
-        if (!FileSystem.exists(filedir)) FileUtil.mkdirs(filedir);
+        var fileurl = FileUtil.fileUrl(CACHE_DIR + "/" + dirName + "/" + ZIPDATA_NAME + ".zip");
+        var preloader = new Preloader([ fileurl ], [ ZIPDATA_NAME ], true);
+        preloader.addEventListener(Event.COMPLETE, function(_) {
+            content.removeChildAt(content.numChildren - 1); // remove mask
+            onStart(getSavedData());
+        } );
 #end
     }
 
     private function removeCache(dirName: String) {
 #if cpp
-
+        var filedir = CACHE_DIR + "/" + dirName;
+        if (FileSystem.exists(filedir)) FileUtil.rmdir(filedir, true);
 #end
     }
 
@@ -165,6 +192,7 @@ class PlayScreen extends BaseScreen {
     }
 
     private function saveAndScan(saved: Dynamic) {
+//        trace(">>saveAndScan: saved="+saved);
         var appId = status.appData.type + "_" + status.appData.id;
         var data = globalSo.data;
         Reflect.setField(data, appId, saved);
@@ -178,6 +206,7 @@ class PlayScreen extends BaseScreen {
             Reflect.deleteField(data, id);
         }
         globalSo.flush();
+//        trace(">>>flush ok, globalSo.data="+globalSo.data);
     }
 
 }

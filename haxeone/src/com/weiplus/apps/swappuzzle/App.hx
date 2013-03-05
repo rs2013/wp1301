@@ -1,5 +1,6 @@
 package com.weiplus.apps.swappuzzle;
 
+import haxe.Json;
 import com.weiplus.client.PlayScreen;
 import com.eclecticdesignstudio.motion.easing.Elastic;
 import com.eclecticdesignstudio.motion.Actuate;
@@ -12,8 +13,11 @@ import com.roxstudio.haxe.ui.RoxApp;
 import com.roxstudio.haxe.ui.RoxAnimate;
 import nme.display.BitmapData;
 import nme.display.Sprite;
+import nme.events.MouseEvent;
+import nme.geom.Matrix;
 import nme.geom.Point;
 
+using com.roxstudio.haxe.game.GfxUtil;
 using com.roxstudio.haxe.ui.UiUtil;
 
 /**
@@ -31,32 +35,44 @@ class App extends PlayScreen {
     private var board: Sprite;
     private var boardw: Float;
     private var boardh: Float;
-    private var visibleHeight: Float;
+    private var preview: Sprite;
 
-    override public function onNewRequest(data: Dynamic) {
-        if (data == null) data = getTestData();
+    override public function onStart(saved: Dynamic) {
+//        trace("swappuzzle.onstart: \nsaved=" + saved + "\nstatus=" + status);
+        if (status.makerData != null) {
+            image = status.makerData.image;
+            sideLen = image.width / status.makerData.size;
+        } else {
+            var datastr: String = cast(getFileData("data.json"));
+            var data: Dynamic = Json.parse(datastr);
+            image = cast(getFileData(data.image));
+            sideLen = Reflect.hasField(data, "size") ? image.width / data.size : data.sideLen;
+        }
+
         shape = ResKeeper.getAssetImage("res/shape184.png");
-        image = data.image;
-        sideLen = data.sideLen;
-
         columns = Std.int(image.width / sideLen);
         rows = Std.int(image.height / sideLen);
         victory = false;
 
         boardw = columns * sideLen;
         boardh = rows * sideLen;
-        var hscale = screenWidth / boardw;
-        var vscale = visibleHeight / boardh;
+        var hscale = viewWidth / boardw;
+        var vscale = viewHeight / boardh;
         board.scaleX = board.scaleY = hscale < vscale ? hscale : vscale;
-        board.x = (screenWidth - boardw * board.scaleX) / 2;
-        board.y = (visibleHeight - boardh * board.scaleY) / 2;
+        board.x = (viewWidth - boardw * board.scaleX) / 2;
+        board.y = (viewHeight - boardh * board.scaleY) / 2;
 
-        var set: Array<Int> = [];
-        for (i in 0...(columns * rows)) {
-            set.push(i);
-        }
-        GameUtil.shuffle(set);
         map = [];
+        var set: Array<Int>;
+        if (saved != null && saved.map != null) {
+            set = saved.map;
+        } else {
+            set = [];
+            for (i in 0...(columns * rows)) {
+                set.push(i);
+            }
+            GameUtil.shuffle(set);
+        }
         for (i in 0...rows) {
             map[i] = [];
             for (j in 0...columns) {
@@ -72,11 +88,46 @@ class App extends PlayScreen {
                 map[i][j] = t;
             }
         }
+        var btnView = UiUtil.button(UiUtil.TOP_LEFT, null, "预览", 0xFFFFFF, 36, "res/btn_dark.9.png", onView);
+        addTitleButton(btnView, UiUtil.RIGHT);
     }
 
-    override public function createContent(designHeight: Float) : Sprite {
-        visibleHeight = designHeight * d2rScale;
-        var content = new Sprite();
+    private function onView(_) {
+        if (preview == null) {
+            var scale: Float = GameUtil.min(viewWidth / image.width, viewHeight / image.height);
+            var imgw = image.width * scale, imgh = image.height * scale;
+            preview = new Sprite();
+            var bmd = ResKeeper.getAssetImage("res/bg_play.jpg");
+            var scalex = viewWidth / bmd.width, scaley = viewHeight / bmd.height;
+            preview.graphics.rox_drawImage(bmd, new Matrix(scalex, 0, 0, scaley, 0, 0), false, true, 0, 0, viewWidth, viewHeight);
+            preview.graphics.rox_drawRegion(image, (viewWidth - imgw) / 2, (viewHeight - imgh) / 2, imgw, imgh);
+            preview.graphics.rox_fillRect(0x77FFFFFF, 0, 0, viewWidth, viewHeight);
+            preview.addEventListener(MouseEvent.CLICK, onView);
+        }
+        if (content.contains(preview)) {
+            content.removeChild(preview);
+        } else {
+            content.addChild(preview);
+        }
+    }
+
+
+    override public function onSave(saved: Dynamic) {
+        if (!victory) saved.map = map2set();
+    }
+
+    private function map2set() {
+        var set: Array<Int> = [];
+        for (i in 0...rows) {
+            for (j in 0...columns) {
+                set.push(map[i][j].rowIndex * columns + map[i][j].colIndex);
+            }
+        }
+        return set;
+    }
+
+    override public function createContent(height: Float) : Sprite {
+        var content = super.createContent(height);
         board = new Sprite();
         content.addChild(board);
         return content;
@@ -87,9 +138,10 @@ class App extends PlayScreen {
         var tile = cast(e.target, Tile);
         if (e.type == RoxGestureEvent.GESTURE_PAN) {
             //trace(">>released<<=" + tile);
+            var lpt = RoxGestureAgent.localOffset(tile, e.extra);
             board.swapChildren(tile, board.getChildAt(board.numChildren - 1));
-            var nx = UiUtil.rangeValue(e.extra.x + tile.x, sideLen / 2, boardw - sideLen / 2);
-            var ny = UiUtil.rangeValue(e.extra.y + tile.y, sideLen / 2, boardh - sideLen / 2);
+            var nx = UiUtil.rangeValue(lpt.x + tile.x, sideLen / 2, boardw - sideLen / 2);
+            var ny = UiUtil.rangeValue(lpt.y + tile.y, sideLen / 2, boardh - sideLen / 2);
             tile.rox_move(nx, ny);
         } else if (e.type == RoxGestureEvent.GESTURE_SWIPE) {
             var ncol = Std.int(tile.x / sideLen), nrow = Std.int(tile.y / sideLen);
