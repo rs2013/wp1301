@@ -8,19 +8,28 @@ public class StatusAPI extends HpAPI {
         super(accessToken);
     }
 
-    public void publicTimeline(HpListener listener) {
+    public void publicTimeline(int page, int rows, long sinceId, HpListener listener) {
         HpParameters parm = new HpParameters();
+        parm.add("page", page);
+        parm.add("rows", rows);
+        parm.add("sinceId", sinceId);
         get("statuses/public_timeline", parm, listener);
     }
     
-    public void homeTimeline(String uid, HpListener listener) {
+    public void homeTimeline(String uid, int page, int rows, long sinceId, HpListener listener) {
         HpParameters parm = new HpParameters();
+        parm.add("page", page);
+        parm.add("rows", rows);
+        parm.add("sinceId", sinceId);
         uid = TextUtils.isEmpty(uid) ? accessToken.getUid() : uid;
         get("statuses/home_timeline/" + uid, parm, listener);
     }
     
-    public void userTimeline(String uid, HpListener listener) {
+    public void userTimeline(String uid, int page, int rows, long sinceId, HpListener listener) {
         HpParameters parm = new HpParameters();
+        parm.add("page", page);
+        parm.add("rows", rows);
+        parm.add("sinceId", sinceId);
         uid = TextUtils.isEmpty(uid) ? accessToken.getUid() : uid;
         get("statuses/user_timeline/" + uid, parm, listener);
     }

@@ -82,13 +82,13 @@ public class MainActivity extends Activity {
         Button btnPublic = (Button) findViewById(R.id.btnPublicTimeline);
         btnPublic.setOnClickListener(new OnClickListener() {
             @Override public void onClick(View v) {
-                HpManager.getPublicTimeline(null);
+                HpManager.getPublicTimeline(1, 20, 0, null);
             }
         });
         Button btnHome = (Button) findViewById(R.id.btnUserTimeline);
         btnHome.setOnClickListener(new OnClickListener() {
             @Override public void onClick(View v) {
-                HpManager.getHomeTimeline(null);
+                HpManager.getHomeTimeline(1, 20, 0, null);
             }
         });
         Button btnPost = (Button) findViewById(R.id.btnPost);

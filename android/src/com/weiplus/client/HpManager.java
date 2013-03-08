@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.haxe.nme.HaxeObject;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -13,7 +12,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.harryphoto.api.HpAccessToken;
 import com.harryphoto.api.HpException;
@@ -46,19 +44,19 @@ public class HpManager {
         }
     }
     
-    public static void getPublicTimeline(HaxeObject callback) {
+    public static void getPublicTimeline(int page, int rows, long sinceId, HaxeObject callback) {
         StatusAPI api = new StatusAPI(accessToken);
-        api.publicTimeline(new HaxeCallback("statuses_public_timeline", callback)); 
+        api.publicTimeline(page, rows, sinceId, new HaxeCallback("statuses_public_timeline", callback)); 
     }
     
-    public static void getHomeTimeline(HaxeObject callback) {
+    public static void getHomeTimeline(int page, int rows, long sinceId, HaxeObject callback) {
         StatusAPI api = new StatusAPI(accessToken);
-        api.homeTimeline("", new HaxeCallback("statuses_home_timeline", callback));
+        api.homeTimeline("", page, rows, sinceId, new HaxeCallback("statuses_home_timeline", callback));
     }
     
-    public static void getUserTimeline(String uid, HaxeObject callback) {
+    public static void getUserTimeline(String uid, int page, int rows, long sinceId, HaxeObject callback) {
         StatusAPI api = new StatusAPI(accessToken);
-        api.userTimeline(uid != null ? uid : "", new HaxeCallback("statuses_user_timeline", callback));
+        api.userTimeline(uid != null ? uid : "", page, rows, sinceId, new HaxeCallback("statuses_user_timeline", callback));
     }
     
     public static void getUserInfo(String uid, HaxeObject callback) {
@@ -119,6 +117,18 @@ public class HpManager {
             token.setUid(pref.getString("uid", ""));
         }
         return accessToken;
+    }
+    
+    /**
+     * 
+     * @return <accessToken>\n<refreshToken>
+     */
+    public static String getTokenAsJson() {
+        HpAccessToken t = getAccessToken();
+        return "{\"accessToken\":\"" + t.getToken() + "\"," +
+                "\"refreshToken\":\"" + t.getRefreshToken() + "\"," +
+                "\"expiresTime\":" + t.getExpiresTime() + "," + 
+                "\"uid\":\"" + t.getUid() + "\"}";
     }
     
     public static void setAccessToken(HpAccessToken token) {
