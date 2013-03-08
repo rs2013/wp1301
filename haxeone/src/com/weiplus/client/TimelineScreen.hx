@@ -1,5 +1,10 @@
 package com.weiplus.client;
 
+#if cpp
+import sys.FileSystem;
+import sys.io.File;
+#end
+import StringTools;
 import com.weiplus.client.model.PageModel;
 import com.roxstudio.haxe.ui.RoxScreen;
 import haxe.Json;
@@ -36,9 +41,14 @@ using com.roxstudio.haxe.game.GfxUtil;
 
 class TimelineScreen extends BaseScreen {
 
-    private static inline var SPACING_RATIO = 1 / 40;
+    public static inline var SPACING_RATIO = 1 / 40;
     private static inline var REFRESH_HEIGHT = 150;
     private static inline var TRIGGER_HEIGHT = 100;
+#if android
+    private static inline var CACHE_DIR = "/sdcard/.harryphoto/cache";
+#elseif windows
+    private static inline var CACHE_DIR = "cache";
+#end
 
     var btnSingleCol: RoxFlowPane;
     var btnDoubleCol: RoxFlowPane;
@@ -51,6 +61,7 @@ class TimelineScreen extends BaseScreen {
     var postits: Array<Postit>;
     var animating: Bool = false;
     var screenTabIndex = 1;
+    var storedStatuses: Array<Dynamic>;
 
     override public function onCreate() {
         title = UiUtil.bitmap("res/icon_logo.png");
@@ -95,7 +106,14 @@ class TimelineScreen extends BaseScreen {
 //        trace("btnpanel="+btnpanel.x+","+btnpanel.y+","+btnpanel.width+","+btnpanel.height);
         viewh = height - 95 * d2rScale;
 
-        refresh(false);
+#if cpp
+        restore();
+#end
+        if (storedStatuses == null || storedStatuses.length == 0) {
+            refresh(false);
+        } else {
+            updateList(null, false);
+        }
 
         return sp;
     }
@@ -109,9 +127,22 @@ class TimelineScreen extends BaseScreen {
         updateList(statuses, append);
     }
 
+    private function getHeadPanel() : Sprite {
+        return null;
+    }
+
 //    private function
     private function updateList(statuses: Array<Dynamic>, append: Bool) {
         if (postits == null || !append) postits = [];
+        if (statuses != null) {
+            if (storedStatuses == null || !append) storedStatuses = [];
+            storedStatuses = storedStatuses.concat(statuses);
+#if cpp
+            store();
+#end
+        } else {
+            statuses = storedStatuses;
+        }
         var spacing = screenWidth * SPACING_RATIO;
         var postitw = (screenWidth - (numCol + 1) * spacing) / numCol;
         for (i in 0...statuses.length) {
@@ -129,9 +160,9 @@ class TimelineScreen extends BaseScreen {
             status.user.id = ss.uid;
             status.user.name = ss.userNickname;
             status.user.profileImage = ss.userAvatar;
-
-            if (ss.attachments != null && ss.attachments.length > 0) {
-                var stt = ss.attachments[0];
+            var attachments: Array<Dynamic> = ss.attachments;
+            if (attachments != null &&attachments.length > 0) {
+                var att = attachments[0];
                 status.appData = new AppData();
                 status.appData.image = att.thumbUrl;
                 status.appData.type = ss.gameType == null ? "image" : ss.gameType;
@@ -141,14 +172,31 @@ class TimelineScreen extends BaseScreen {
                 status.appData.url = att.attachUrl;
                 status.appData.label = att.attachName;
             }
-            trace("==========>>>>>>" + status);
             var postit = new Postit(status, postitw, numCol == 1);
             postit.addEventListener(Event.SELECT, onPlay);
-            trace("==========>>>>>>postit complete");
             postits.push(postit);
         }
         update(numCol);
     }
+
+#if cpp
+
+    private function restore() {
+        var filename = StringTools.replace(Type.getClassName(Type.getClass(this)), ".", "_") + ".json";
+        var path = CACHE_DIR + "/" + filename;
+        if (FileSystem.exists(path)) {
+            storedStatuses = Json.parse(File.getContent(path));
+        }
+    }
+
+    private function store() {
+        var filename = StringTools.replace(Type.getClassName(Type.getClass(this)), ".", "_") + ".json";
+        FileUtil.mkdirs(CACHE_DIR);
+        var path = CACHE_DIR + "/" + filename;
+        File.saveContent(CACHE_DIR + "/" + filename, Json.stringify(storedStatuses));
+    }
+
+#end
 
     private function update(numCol: Int) {
         if (agent != null) agent.stopTween();
@@ -171,9 +219,15 @@ class TimelineScreen extends BaseScreen {
         }
         main.rox_removeAll();
         main.graphics.clear();
+        var spacing = screenWidth * SPACING_RATIO;
+        var yoffset = 0.0;
+        var headPanel = getHeadPanel();
+        if (headPanel != null) {
+            yoffset += headPanel.height + spacing;
+            main.addChild(headPanel);
+        }
         var colh: Array<Float> = [];
         for (i in 0...numCol) colh.push(0);
-        var spacing = screenWidth * SPACING_RATIO;
         var postitw = (screenWidth - (numCol + 1) * spacing) / numCol;
         var postity = 0.0;
         for (i in 0...postits.length) {
@@ -186,7 +240,7 @@ class TimelineScreen extends BaseScreen {
             for (i in 0...colh.length) {
                 if (colh[i] < minh) { minh = colh[i]; colidx = i; }
             }
-            postit.rox_move(spacing + colidx * (postitw + spacing), minh + spacing);
+            postit.rox_move(spacing + colidx * (postitw + spacing), minh + spacing + yoffset);
             shadow.rox_move(postit.x - 2, postit.y);
             main.addChild(shadow);
             main.addChild(postit);
@@ -259,7 +313,7 @@ class TimelineScreen extends BaseScreen {
                 var pt = RoxGestureAgent.localOffset(main, cast(new Point(e.extra.x * 2.0, e.extra.y * 2.0)));
                 var desty = UiUtil.rangeValue(main.y + pt.y, UiUtil.rangeValue(viewh - mainh, GameUtil.IMIN, 0), 0);
                 var tm = main.y > 0 || main.y < viewh - mainh ? 1 : 2;
-                if (main.y > TRIGGER_HEIGHT || main.y < viewh - mainh - TRIGGER_HEIGHT) refresh(main.y > 0);
+                if (main.y > TRIGGER_HEIGHT || main.y < viewh - mainh - TRIGGER_HEIGHT) refresh(main.y <= 0);
                 agent.startTween(main, tm, { y: desty });
             case RoxGestureEvent.GESTURE_PINCH:
 //                trace("pinch:numCol=" + numCol + ",extra=" + e.extra);
@@ -295,6 +349,9 @@ class TimelineScreen extends BaseScreen {
             case "icon_maker":
                 if (screenTabIndex != 2) startScreen(Type.getClassName(MakerList), screenTabIndex != 1);
             case "icon_message":
+#if android
+                HpManager.logout();
+#end
 //                if (tabIndex != 3) startScreen(Type.getClassName(MessageScreen), tabIndex != 1);
             case "icon_account":
                 if (screenTabIndex != 4) startScreen(Type.getClassName(UserScreen), screenTabIndex != 1);

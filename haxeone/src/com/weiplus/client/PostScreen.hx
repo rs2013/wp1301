@@ -23,6 +23,10 @@ class PostScreen extends BaseScreen {
     private static inline var SPACING = 30;
     private static inline var TEXT = "我用#哈利波图#制作了一个很酷的游戏，快来玩吧！";
 
+#if android
+    private static inline var MAKER_DIR = "/sdcard/.harryphoto/maker";
+#end
+
     var status: Status;
     var image: BitmapData;
     var data: Dynamic;
@@ -64,7 +68,7 @@ class PostScreen extends BaseScreen {
         input = UiUtil.input(TEXT, 0, 30, UiUtil.LEFT, true, 576, inputh - 40);
         var inputbox = new RoxFlowPane(616, inputh, UiUtil.TOP_LEFT, [ input ], new RoxNinePatch(npd));
 
-        main.addChild(inputbox.rox_move(12, sharepanel.height + 2 * SPACING));
+        main.addChild(inputbox.rox_move(12, preview.height + 2 * SPACING));
         trace("inputh="+inputh+",mainh="+mainh+",inputboxh="+inputbox.height+",input=("+input.width+","+input.height
                 +"),text=("+input.textWidth+","+input.textHeight+")");
 
@@ -92,7 +96,23 @@ class PostScreen extends BaseScreen {
 
     private function doPost(_) {
         trace("doPost");
-        finish(Type.getClassName(HomeScreen), RoxScreen.OK);
+#if android
+        var mask = new Sprite();
+        mask.graphics.rox_fillRect(0x77000000, 0, 0, screenWidth, screenHeight);
+        var loading = UiUtil.staticText("发布中...", 0xFFFFFF, 36);
+        loading.rox_move((screenWidth - loading.width) / 2, (screenHeight - loading.height) / 2);
+        mask.addChild(loading);
+        addChild(mask);
+        HpManager.postStatus(input.text, MAKER_DIR + "/image.jpg", status.appData.type,
+                MAKER_DIR + "/data.zip", "", "", this);
+#else
+        finish(Type.getClassName(SelectedScreen), RoxScreen.OK);
+#end
+    }
+
+    private function onApiCallback(apiName: String, resultCode: String, jsonStr: String) {
+        removeChildAt(numChildren - 1); // remove mask
+        finish(Type.getClassName(SelectedScreen), RoxScreen.OK);
     }
 
     private function sharePanel() : Sprite {

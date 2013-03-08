@@ -27,6 +27,9 @@ class MakerList extends BaseScreen {
         title = new Sprite();
         title.addChild(UiUtil.staticText("施展魔法", 0xFF0000, 36));
         super.onCreate();
+#if android
+        HpManager.login();
+#end
     }
 
     override public function createContent(height: Float) : Sprite {

@@ -16,7 +16,7 @@ using com.roxstudio.haxe.ui.UiUtil;
 
 class SimpleMaker extends MakerScreen {
 
-//    private static inline var ALBUM_DIR = "/sdcard/DCIM/Camera";
+    private static inline var ALBUM_DIR = "/sdcard/DCIM/Camera";
     public static inline var SIDELEN: Float = 900;
     private static inline var LEVEL_BTN_W = 213.34;
 
@@ -32,6 +32,7 @@ class SimpleMaker extends MakerScreen {
     private var levelBg: Sprite;
     private var level: Int = 0;
     private var preview: Sprite;
+    private var snapPath: String;
 
     override public function createContent(height: Float) : Sprite {
         content = super.createContent(height);
@@ -113,7 +114,7 @@ class SimpleMaker extends MakerScreen {
         var json: Dynamic = haxe.Json.parse(s);
         trace("))))))))))))) active, requestCode=" + requestCode + ",result=" + s + ",parsed=" + json);
         if (untyped json.resultCode != "ok") return;
-        var path = untyped json.intentDataPath;
+        var path = requestCode == 1 ? snapPath : untyped json.intentDataPath;
 //        path = StringTools.replace(path, "\\/", "/");
         var bmd = ResKeeper.loadLocalImage(path);
 #else
@@ -135,11 +136,12 @@ class SimpleMaker extends MakerScreen {
 
     private function onCamera(_) {
         trace("oncamera");
-//        if (!FileSystem.exists(ALBUM_DIR)) FileUtil.mkdirs(ALBUM_DIR);
-//        var name = "" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
         requestCode = 1;
 #if android
-        HaxeStub.startImageCapture(requestCode, null); //ALBUM_DIR + "/" + name);
+        if (!sys.FileSystem.exists(ALBUM_DIR)) com.roxstudio.haxe.io.FileUtil.mkdirs(ALBUM_DIR);
+        var name = "harryphoto_" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
+        snapPath = ALBUM_DIR + "/" + name;
+        HaxeStub.startImageCapture(requestCode, snapPath);
 #else
         onActive(null);
 #end

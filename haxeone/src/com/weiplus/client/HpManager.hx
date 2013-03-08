@@ -47,37 +47,46 @@ class HpManager
 	
 	private static var _getPublicTimeline_func:Dynamic;
 
-	public static function getPublicTimeline(arg0:Dynamic /*org.haxe.nme.HaxeObject*/):Void
+	public static function getPublicTimeline(arg0:Int, arg1:Int, arg2:Float, arg3:Dynamic /*org.haxe.nme.HaxeObject*/):Void
 	{
 		if (_getPublicTimeline_func == null)
-			_getPublicTimeline_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getPublicTimeline", "(Lorg/haxe/nme/HaxeObject;)V", true);
+			_getPublicTimeline_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getPublicTimeline", "(IIJLorg/haxe/nme/HaxeObject;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
+		a.push(arg1);
+		a.push(arg2);
+		a.push(arg3);
 		_getPublicTimeline_func(a);
 	}
 	
 	
 	private static var _getHomeTimeline_func:Dynamic;
 
-	public static function getHomeTimeline(arg0:Dynamic /*org.haxe.nme.HaxeObject*/):Void
+	public static function getHomeTimeline(arg0:Int, arg1:Int, arg2:Float, arg3:Dynamic /*org.haxe.nme.HaxeObject*/):Void
 	{
 		if (_getHomeTimeline_func == null)
-			_getHomeTimeline_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getHomeTimeline", "(Lorg/haxe/nme/HaxeObject;)V", true);
+			_getHomeTimeline_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getHomeTimeline", "(IIJLorg/haxe/nme/HaxeObject;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
+		a.push(arg1);
+		a.push(arg2);
+		a.push(arg3);
 		_getHomeTimeline_func(a);
 	}
 	
 	
 	private static var _getUserTimeline_func:Dynamic;
 
-	public static function getUserTimeline(arg0:String, arg1:Dynamic /*org.haxe.nme.HaxeObject*/):Void
+	public static function getUserTimeline(arg0:String, arg1:Int, arg2:Int, arg3:Float, arg4:Dynamic /*org.haxe.nme.HaxeObject*/):Void
 	{
 		if (_getUserTimeline_func == null)
-			_getUserTimeline_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getUserTimeline", "(Ljava/lang/String;Lorg/haxe/nme/HaxeObject;)V", true);
+			_getUserTimeline_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getUserTimeline", "(Ljava/lang/String;IIJLorg/haxe/nme/HaxeObject;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);
+		a.push(arg2);
+		a.push(arg3);
+		a.push(arg4);
 		_getUserTimeline_func(a);
 	}
 	
@@ -121,6 +130,17 @@ class HpManager
 			_getAccessToken_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getAccessToken", "()Lcom/harryphoto/api/HpAccessToken;", true);
 		var a = new Array<Dynamic>();
 		return _getAccessToken_func(a);
+	}
+	
+	
+	private static var _getTokenAsJson_func:Dynamic;
+
+	public static function getTokenAsJson():String
+	{
+		if (_getTokenAsJson_func == null)
+			_getTokenAsJson_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getTokenAsJson", "()Ljava/lang/String;", true);
+		var a = new Array<Dynamic>();
+		return _getTokenAsJson_func(a);
 	}
 	
 	
@@ -182,6 +202,18 @@ class HpManager
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		return _getBinding_func(a);
+	}
+	
+	
+	private static var _getImageUrl_func:Dynamic;
+
+	public static function getImageUrl(arg0:String):String
+	{
+		if (_getImageUrl_func == null)
+			_getImageUrl_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getImageUrl", "(Ljava/lang/String;)Ljava/lang/String;", true);
+		var a = new Array<Dynamic>();
+		a.push(arg0);
+		return _getImageUrl_func(a);
 	}
 	
 	

@@ -59,11 +59,12 @@ class Postit extends Sprite {
         var fontsize = width * FONT_SIZE_RATIO;
         if (fontsize < MIN_FONT_SIZE) fontsize = MIN_FONT_SIZE;
         var appdata = status.appData;
+        var h = 0.0;
         if (appdata != null) {
             var imw = appdata.width;
             imageScale = imw > width ? width / imw : 1.0;
             imageOffset = imw > width ? 0 : (width - imw) / 2;
-            var h = appdata.height * imageScale + margin;
+            h = appdata.height * imageScale + margin;
         } else {
             imageScale = 1;
             imageOffset = 0;
