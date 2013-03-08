@@ -193,7 +193,7 @@ class UserScreen extends BaseScreen {
         var postit: Postit = cast(e.target);
         var status = postit.status;
         var classname = "com.weiplus.apps." + status.appData.type + ".App";
-        startScreen(classname, { image: postit.image.data, sideLen: Std.parseInt(status.appData.label) });
+        startScreen(classname, { image: postit.imgLdr.data, sideLen: Std.parseInt(status.appData.label) });
     }
 
     private inline function animDone(sp: DisplayObject) {

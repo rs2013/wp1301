@@ -62,7 +62,7 @@ class TestScreen extends BaseScreen {
         var content = super.createContent(height);
         var btn = UiUtil.button(UiUtil.TOP_LEFT, null, "Login", 0, 32, "res/btn_common.9.png", function(_) {
             trace("btn login clicked");
-            HpManager.checkLogin();
+            HpManager.login();
             trace("checkLogin completed!");
         });
         content.addChild(btn.rox_move(20, 80));

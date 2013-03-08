@@ -34,7 +34,7 @@ class Postit extends Sprite {
     private static inline var FONT_SIZE_RATIO = 24 / 600;
     private static inline var MIN_FONT_SIZE = 16.0;
 
-    public var image: RoxURLLoader;
+    public var imgLdr: RoxURLLoader;
     private var playButton: RoxFlowPane;
     private var imageLabel: RoxFlowPane;
 
@@ -59,10 +59,15 @@ class Postit extends Sprite {
         var fontsize = width * FONT_SIZE_RATIO;
         if (fontsize < MIN_FONT_SIZE) fontsize = MIN_FONT_SIZE;
         var appdata = status.appData;
-        var imw = appdata.width;
-        imageScale = imw > width ? width / imw : 1.0;
-        imageOffset = imw > width ? 0 : (width - imw) / 2;
-        var h = appdata.height * imageScale + margin;
+        if (appdata != null) {
+            var imw = appdata.width;
+            imageScale = imw > width ? width / imw : 1.0;
+            imageOffset = imw > width ? 0 : (width - imw) / 2;
+            var h = appdata.height * imageScale + margin;
+        } else {
+            imageScale = 1;
+            imageOffset = 0;
+        }
 
         var bub = UiUtil.bitmap("res/icon_bubble.png");
         var layout = new RoxNinePatchData(new Rectangle(margin, 0, 20, 20), null, null, new Rectangle(0, 0, 20 + 2 * margin, 20 + margin));
@@ -85,22 +90,24 @@ class Postit extends Sprite {
         addChild(hlayout.rox_move(0, h));
         h += hlayout.height;
         if (fullMode) {
-            var praisebtn = UiUtil.button(UiUtil.TOP_LEFT, null, "赞(256)", 0, fontsize + 2, "res/btn_common.9.png");
-            var commentbtn = UiUtil.button(UiUtil.TOP_LEFT, null, "评论(122)", 0, fontsize + 2, "res/btn_common.9.png");
-            var morebtn = UiUtil.button(UiUtil.TOP_LEFT, null, "...", 0, fontsize + 2, "res/btn_common.9.png");
+            var praisebtn = UiUtil.button(UiUtil.TOP_LEFT, null, "赞(" + status.praiseCount + ")", 0, fontsize + 2, "res/btn_common.9.png");
+            var commentbtn = UiUtil.button(UiUtil.TOP_LEFT, null, "评论(" + status.commentCount + ")", 0, fontsize + 2, "res/btn_common.9.png");
+            var morebtn = UiUtil.button(UiUtil.TOP_LEFT, null, " ... ", 0, fontsize + 2, "res/btn_common.9.png");
             infoLabel = new RoxFlowPane([ praisebtn, commentbtn, morebtn ], new RoxNinePatch(layout));
             addChild(infoLabel.rox_move(0, h));
             h += infoLabel.height;
         }
         GfxUtil.rox_fillRoundRect(graphics, 0xFFFFFFFF, 0, 0, width, h, 6);
         GfxUtil.rox_line(graphics, 2, 0xFFE6E6E6, 10, liney, width - 10, liney);
-        image = ResKeeper.get(status.appData.image);
-        if (image == null) {
-            image = new RoxURLLoader(status.appData.image, RoxURLLoader.IMAGE);
-            ResKeeper.add(status.appData.image, image);
-        }
-        if (image.status == RoxURLLoader.LOADING) {
-            image.addEventListener(Event.COMPLETE, update);
+        if (appdata != null && appdata.width > 0 && appdata.height > 0 && appdata.image != null) {
+            imgLdr = ResKeeper.get(appdata.image);
+            if (imgLdr == null) {
+                imgLdr = new RoxURLLoader(appdata.image, RoxURLLoader.IMAGE);
+                ResKeeper.add(appdata.image, imgLdr);
+            }
+            if (imgLdr.status == RoxURLLoader.LOADING) {
+                imgLdr.addEventListener(Event.COMPLETE, update);
+            }
         }
         update(null);
     }
@@ -126,12 +133,15 @@ class Postit extends Sprite {
     }
 
     private function update(_) {
-        var imw = width, imh = status.appData.height * imageScale;
+        if (imgLdr == null) return;
+        var appdata = status.appData;
+        var imw = width, imh = appdata.height * imageScale;
         if (placeholder != null && contains(placeholder)) removeChild(placeholder);
-        switch (image.status) {
+        switch (imgLdr.status) {
             case RoxURLLoader.OK:
                 var bmd = new BitmapData(Std.int(imw), Std.int(imh), true, 0);
-                bmd.draw(image.data, new Matrix(imageScale, 0, 0, imageScale, imageOffset, 0), true);
+                trace(">>>>>>>>>>>>>>>>>data="+imgLdr.data);
+                bmd.draw(imgLdr.data, new Matrix(imageScale, 0, 0, imageScale, imageOffset, 0), true);
                 graphics.beginBitmapFill(bmd, false, false);
                 var r = 6;
                 graphics.moveTo(0, r);
@@ -142,7 +152,7 @@ class Postit extends Sprite {
                 graphics.lineTo(0, imh);
                 graphics.lineTo(0, r);
                 graphics.endFill();
-                if (status.appData.type != AppData.IMAGE) {
+                if (appdata.type != null && appdata.type != "" && appdata.type != AppData.IMAGE) {
                     playButton = UiUtil.button("res/btn_play.png", onPlay);
                     playButton.rox_scale(imw / 640);
                     playButton.rox_anchor(UiUtil.CENTER).rox_move(imw / 2, imh / 2);

@@ -1,5 +1,6 @@
 package com.roxstudio.haxe.ui;
 
+import com.roxstudio.haxe.game.GameUtil;
 import nme.events.Event;
 import com.roxstudio.haxe.net.RoxURLLoader;
 import com.roxstudio.haxe.game.ResKeeper;
@@ -8,6 +9,7 @@ import nme.display.BitmapData;
 import nme.display.DisplayObject;
 import nme.display.Sprite;
 
+using com.roxstudio.haxe.game.GfxUtil;
 using com.roxstudio.haxe.ui.UiUtil;
 
 class RoxAsyncBitmap extends Sprite {
@@ -16,14 +18,14 @@ class RoxAsyncBitmap extends Sprite {
     public var loadingDisplay: DisplayObject;
     public var errorDisplay: DisplayObject;
 
-    private var minWidth: Float = 0;
-    private var minHeight: Float = 0;
+    private var w: Null<Float>;
+    private var h: Null<Float>;
 
-    public function new(loader: RoxURLLoader, ?minWidth: Float = 0, ?minHeight: Float = 0,
+    public function new(loader: RoxURLLoader, ?width: Null<Float>, ?height: Null<Float>,
                         ?loadingDisplay: DisplayObject, ?errorDisplay: DisplayObject) {
         super();
-        this.minWidth = minWidth;
-        this.minHeight = minHeight;
+        this.w = width;
+        this.h = height;
         this.loadingDisplay = loadingDisplay;
         this.errorDisplay = errorDisplay;
         this.loader = loader;
@@ -43,15 +45,13 @@ class RoxAsyncBitmap extends Sprite {
                 loadingDisplay;
         }
         if (numChildren > 0) removeChildAt(0);
-        if (dp != null) addChild(dp);
-        if (width > minWidth) minWidth = width;
-        if (height > minHeight) minHeight = height;
-        if (minWidth > width || minHeight > height) {
-            graphics.beginFill(0xFFFFFF, 0.005);
-            graphics.drawRect(0, 0, minWidth, minHeight);
-            graphics.endFill();
+        if (dp != null) {
+            if (w != null) dp.width = w;
+            if (h != null) dp.height = h;
+            addChild(dp);
+        } else {
+            if (w != null && h != null) graphics.rox_fillRect(0x01FFFFFF, 0, 0, w, h);
         }
-        if (dp != null) dp.rox_move((minWidth - dp.width) / 2, (minHeight - dp.height) / 2);
 //        trace(">2>min="+minWidth+","+minHeight+",this="+this.width+","+this.height+(dp!=null?",dp="+dp.width+","+dp.height:""));
     }
 

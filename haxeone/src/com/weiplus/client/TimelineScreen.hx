@@ -37,6 +37,8 @@ using com.roxstudio.haxe.game.GfxUtil;
 class TimelineScreen extends BaseScreen {
 
     private static inline var SPACING_RATIO = 1 / 40;
+    private static inline var REFRESH_HEIGHT = 150;
+    private static inline var TRIGGER_HEIGHT = 100;
 
     var btnSingleCol: RoxFlowPane;
     var btnDoubleCol: RoxFlowPane;
@@ -48,8 +50,7 @@ class TimelineScreen extends BaseScreen {
     var numCol: Int = 2;
     var postits: Array<Postit>;
     var animating: Bool = false;
-    var buttonIndex = 0;
-    var page: Dynamic;
+    var screenTabIndex = 1;
 
     override public function onCreate() {
         title = UiUtil.bitmap("res/icon_logo.png");
@@ -81,7 +82,7 @@ class TimelineScreen extends BaseScreen {
         for (i in 0...btnNames.length) {
             var b = btnNames[i];
             var w = i == 2 ? 128 : 126, h = 89;
-            if (i != 2 && i == buttonIndex) {
+            if (i != 2 && i == screenTabIndex) {
                 var bg = UiUtil.bitmap("res/bg_main_bottom_selected.png", UiUtil.LEFT | UiUtil.BOTTOM);
                 btnpanel.addChild(bg.rox_move(xoff, 0));
             }
@@ -94,49 +95,59 @@ class TimelineScreen extends BaseScreen {
 //        trace("btnpanel="+btnpanel.x+","+btnpanel.y+","+btnpanel.width+","+btnpanel.height);
         viewh = height - 95 * d2rScale;
 
-        refresh(true);
+        refresh(false);
 
         return sp;
     }
 
-    private function refresh(top: Bool) {
-        trace("refresh: top=" + top);
-        var txt = ResKeeper.getAssetText("res/home.json");
-        updateList(txt, !top);
-        update(numCol);
+    private function refresh(append: Bool) {
+        trace("refresh: append=" + append);
+        var jsonStr = ResKeeper.getAssetText("res/home.json");
+        trace("=================\n"+Json.parse(jsonStr));
+        var statuses: Array<Dynamic> = Json.parse(jsonStr).statuses.records;
+        trace("statuses.length=" + statuses.length);
+        updateList(statuses, append);
     }
 
 //    private function
-    private function updateList(jsonStr: String, append: Bool) {
-        page = Json.parse(jsonStr).statuses;
-        var statuses: Array<Dynamic> = page.records;
-        trace("page=" + page);
+    private function updateList(statuses: Array<Dynamic>, append: Bool) {
         if (postits == null || !append) postits = [];
         var spacing = screenWidth * SPACING_RATIO;
         var postitw = (screenWidth - (numCol + 1) * spacing) / numCol;
-        for (ss in statuses) {
+        for (i in 0...statuses.length) {
+            var ss = statuses[i];
             var status = new Status();
             status.id = ss.id;
+            status.text = ss.status;
+            status.createdAt = Date.fromTime(ss.ctime);
+            status.commentCount = ss.commentCount;
+            status.praiseCount = ss.praiseCount;
+            status.repostCount = ss.repostCount;
+            status.favoriteCount = ss.favoriteCount;
+
             status.user = new User();
-            status.appData = new AppData();
             status.user.id = ss.uid;
             status.user.name = ss.userNickname;
             status.user.profileImage = ss.userAvatar;
-            var att = ss.attachments[0];
-            status.appData.image = att.thumbUrl;
-            status.appData.type = ss.gameType;
-//                status.appData.label = ss[5];
-            status.appData.width = att.thumbWidth;
-            status.appData.height = att.thumbHeight;
-            status.appData.id = att.id;
-            status.appData.url = att.attachUrl;
-            status.text = ss.status;
-            status.createdAt = Date.fromTime(ss.ctime);
+
+            if (ss.attachments != null && ss.attachments.length > 0) {
+                var stt = ss.attachments[0];
+                status.appData = new AppData();
+                status.appData.image = att.thumbUrl;
+                status.appData.type = ss.gameType == null ? "image" : ss.gameType;
+                status.appData.width = att.thumbWidth;
+                status.appData.height = att.thumbHeight;
+                status.appData.id = att.id;
+                status.appData.url = att.attachUrl;
+                status.appData.label = att.attachName;
+            }
+            trace("==========>>>>>>" + status);
             var postit = new Postit(status, postitw, numCol == 1);
             postit.addEventListener(Event.SELECT, onPlay);
+            trace("==========>>>>>>postit complete");
             postits.push(postit);
         }
-
+        update(numCol);
     }
 
     private function update(numCol: Int) {
@@ -243,12 +254,12 @@ class TimelineScreen extends BaseScreen {
                 }
             case RoxGestureEvent.GESTURE_PAN:
                 var pt = RoxGestureAgent.localOffset(main, cast(e.extra));
-                main.y = UiUtil.rangeValue(main.y + pt.y, UiUtil.rangeValue(viewh - mainh - 100, GameUtil.IMIN, 0), 100);
+                main.y = UiUtil.rangeValue(main.y + pt.y, UiUtil.rangeValue(viewh - mainh - REFRESH_HEIGHT, GameUtil.IMIN, 0), REFRESH_HEIGHT);
             case RoxGestureEvent.GESTURE_SWIPE:
                 var pt = RoxGestureAgent.localOffset(main, cast(new Point(e.extra.x * 2.0, e.extra.y * 2.0)));
                 var desty = UiUtil.rangeValue(main.y + pt.y, UiUtil.rangeValue(viewh - mainh, GameUtil.IMIN, 0), 0);
                 var tm = main.y > 0 || main.y < viewh - mainh ? 1 : 2;
-                if (main.y > 60 || main.y < viewh - mainh - 60) refresh(main.y > 0);
+                if (main.y > TRIGGER_HEIGHT || main.y < viewh - mainh - TRIGGER_HEIGHT) refresh(main.y > 0);
                 agent.startTween(main, tm, { y: desty });
             case RoxGestureEvent.GESTURE_PINCH:
 //                trace("pinch:numCol=" + numCol + ",extra=" + e.extra);
@@ -277,16 +288,16 @@ class TimelineScreen extends BaseScreen {
                 addTitleButton(btnCol = btnSingleCol, UiUtil.RIGHT);
                 update(2);
             case "icon_home":
-                if (buttonIndex != 0) finish(Type.getClassName(HomeScreen), RoxScreen.CANCELED);
+                if (screenTabIndex != 0) startScreen(Type.getClassName(HomeScreen), screenTabIndex != 1);
 //                startScreen(Type.getClassName(com.weiplus.client.TestGesture), new RoxAnimate(RoxAnimate.ZOOM_IN, new Rectangle(80, 80, 200, 300)));
             case "icon_selected":
-                if (buttonIndex != 1) startScreen(Type.getClassName(SelectedScreen), buttonIndex != 0);
+                if (screenTabIndex != 1) finish(Type.getClassName(SelectedScreen), RoxScreen.CANCELED);
             case "icon_maker":
-                if (buttonIndex != 2) startScreen(Type.getClassName(MakerList), buttonIndex != 0);
+                if (screenTabIndex != 2) startScreen(Type.getClassName(MakerList), screenTabIndex != 1);
             case "icon_message":
-//                if (tabIndex != 3) startScreen(Type.getClassName(MessageScreen), tabIndex != 0);
+//                if (tabIndex != 3) startScreen(Type.getClassName(MessageScreen), tabIndex != 1);
             case "icon_account":
-                if (buttonIndex != 4) startScreen(Type.getClassName(UserScreen), buttonIndex != 0);
+                if (screenTabIndex != 4) startScreen(Type.getClassName(UserScreen), screenTabIndex != 1);
         }
     }
 

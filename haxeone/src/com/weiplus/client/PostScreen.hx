@@ -98,30 +98,32 @@ class PostScreen extends BaseScreen {
     private function sharePanel() : Sprite {
         var btn0 = shareButton("sina", "新浪微博", "tl");
         var btn1 = shareButton("tencent", "腾讯微博", "tr");
-        var btn2 = shareButton("sohu_g", "搜狐微博", "ml");
-        var btn3 = shareButton("renren", "人人网", "mr");
-        var btn4 = shareButton("qqspace_g", "QQ空间", "ml");
-        var btn5 = shareButton("twit_g", "Twitter", "mr");
+        var btn2 = shareButton("renren", "人人网", "ml");
+        var btn3 = shareButton(null, "", "mr");
+//        var btn3 = shareButton("sohu_g", "搜狐微博", "ml");
+//        var btn4 = shareButton("qqspace_g", "QQ空间", "ml");
+//        var btn5 = shareButton("twit_g", "Twitter", "mr");
         var layout = new RoxNinePatchData(new Rectangle(0, 0, 20, 20));
-        var lpanel = new RoxFlowPane([ btn0, btn2, btn4 ], new RoxNinePatch(layout), UiUtil.HCENTER, [ 0 ]);
-        var rpanel = new RoxFlowPane([ btn1, btn3, btn5 ], new RoxNinePatch(layout), UiUtil.HCENTER, [ 0 ]);
+        var lpanel = new RoxFlowPane([ btn0, btn2 ], new RoxNinePatch(layout), UiUtil.HCENTER, [ 0 ]);
+        var rpanel = new RoxFlowPane([ btn1, btn3 ], new RoxNinePatch(layout), UiUtil.HCENTER, [ 0 ]);
         var sp = new Sprite();
         var label = UiUtil.staticText("同步到：", 0x808080, 26, UiUtil.LEFT, 610);
         sp.addChild(label.rox_move(20, 0));
         sp.addChild(lpanel.rox_move(12, label.height + 12));
         sp.addChild(rpanel.rox_move(320, label.height + 12));
 
-        var input = UiUtil.input(TEXT, 0, 30, UiUtil.LEFT, false, 576, 56);
-        sp.addChild(input.rox_move(20, label.height + 12 + lpanel.height + 5));
+//        var input = UiUtil.input(TEXT, 0, 30, UiUtil.LEFT, false, 576, 56);
+//        sp.addChild(input.rox_move(20, label.height + 12 + lpanel.height + 5));
         return sp;
     }
 
     private function shareButton(icon: String, name: String, bg: String) : RoxFlowPane {
         var bg = UiUtil.ninePatch("res/btn_share_" + bg + ".9.png");
-        var ico = new Bitmap(ResKeeper.getAssetImage("res/ico_" + icon + ".png")).rox_smooth();
-        var txt = UiUtil.staticText(name, 0xFFFFFF, 32, UiUtil.LEFT, 150);
+        var ico = icon != null ? new Bitmap(ResKeeper.getAssetImage("res/ico_" + icon + ".png")).rox_smooth() : null;
+        var txt = icon != null ? UiUtil.staticText(name, 0xFFFFFF, 32, UiUtil.LEFT, 150) : null;
 
-        var sp = new RoxFlowPane(308, 88, UiUtil.TOP_LEFT, [ ico, txt ], bg, UiUtil.VCENTER, [ 10 ], onShareButton);
+        var sp = new RoxFlowPane(308, 88, UiUtil.TOP_LEFT, icon != null ? [ ico, txt ] : [],
+                bg, UiUtil.VCENTER, [ 10 ], icon != null ? onShareButton : null);
         sp.name = name;
         return sp;
     }

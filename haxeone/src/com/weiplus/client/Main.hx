@@ -26,9 +26,9 @@ class Main {
     }
 
     static public function main() {
-//        trace("before init");
+        trace("before init");
         RoxApp.init();
-//        trace("init ok");
+        trace("init ok");
         var m = new RoxScreenManager();
 //        m.startScreen(Type.getClassName(com.weiplus.client.HomeScreen));
 //        m.startScreen(Type.getClassName(CameraScreen));
@@ -36,9 +36,9 @@ class Main {
 //        m.startScreen(Type.getClassName(TestScreen));
 //        m.startScreen(Type.getClassName(TestMakerScreen));
 //        m.startScreen(Type.getClassName(SimpleMaker));
-        m.startScreen(Type.getClassName(TimelineScreen));
+        m.startScreen(Type.getClassName(SelectedScreen));
 
-//        trace("screen started");
+        trace("screen started");
         var st = new Status();
         var data = st.appData = new AppData();
         data.type = "test";

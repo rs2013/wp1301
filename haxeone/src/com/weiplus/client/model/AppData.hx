@@ -16,6 +16,6 @@ class AppData {
     }
 
     public function toString() : String {
-        return "AppData{id:" + id +",type:" + type + ",label:" + label + ",url:" + url + ",image:" + image + "}";
+        return "AppData{id:" + id +",type:" + type + ",url:" + url + ",image:" + image + ",w:" + width + ",h:" + height + "}";
     }
 }

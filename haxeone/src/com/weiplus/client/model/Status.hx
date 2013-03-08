@@ -10,8 +10,10 @@ class Status {
     public var appData: AppData; // url
     public var user: User;
     public var retweetStatus: Status;
-    public var repostsCount: Int;
-    public var commentsCount: Int;
+    public var repostCount: Int;
+    public var commentCount: Int;
+    public var favoriteCount: Int;
+    public var praiseCount: Int;
     public var reposts: Array<Retweet>;
     public var comments: Array<Comment>;
     public var geo: Geo;
