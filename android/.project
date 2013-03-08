@@ -30,4 +30,11 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>Android_SDK_v1.2</name>
+			<type>2</type>
+			<location>D:/work/ws_haxe/weiplus/docs/tencent_Android_SDK_v1.2/src-Android_SDK_v1.2/Android_SDK_v1.2</location>
+		</link>
+	</linkedResources>
 </projectDescription>

@@ -38,6 +38,7 @@ public class StatusAPI extends HpAPI {
         parm.add("location", "");
         parm.add("geo", "");
         parm.add("tag", "");
+        parm.add("gameType", type);
         parm.add("format", "json");
         boolean hasImage = !TextUtils.isEmpty(imgPath);
         parm.add("thumbData", true, hasImage ? imgPath : "", -1);
@@ -50,8 +51,8 @@ public class StatusAPI extends HpAPI {
         int idx = hasFile ? filePath.lastIndexOf('/') : 0;
         parm.add("attachName", hasFile ? filePath.substring(idx + 1) : "");
         parm.add("attachData", true, hasFile ? filePath : "", -1);
-        parm.add("attachType", hasFile ? type : "");
-        parm.add("attachMime", hasFile ? Utility.getMimeType(Utility.getFileExt(filePath)) : "");
+        parm.add("attachType", ""); //hasFile ? type : "");
+        parm.add("attachMime", "");//hasFile ? Utility.getMimeType(Utility.getFileExt(filePath)) : "");
 //        parm.add("attachSize", hasFile ? (int) new File(filePath).length() : 0);
         parm.add("attachSource", 1);
         request("statuses/create", parm, HpAPI.POST, listener);

@@ -31,6 +31,7 @@ public class HpManager {
     private static HpAccessToken accessToken;
     
     private static HashMap<String, Binding> bindings;
+    private static HashMap<String, String> imgMapping = new HashMap<String, String>();
     
     public static boolean check() {
         return getAccessToken().isSessionValid();
@@ -77,7 +78,10 @@ public class HpManager {
                 try {
                     JSONObject json = new JSONObject(response);
                     if (json.getInt("code") == 200) {
-                        long statusId = json.getJSONArray("statuses").getJSONObject(0).getLong("id");
+                        JSONObject st = json.getJSONArray("statuses").getJSONObject(0);
+                        long statusId = st.getLong("id");
+                        String imgUrl = st.getJSONArray("attachments").getJSONObject(0).getString("thumbUrl");
+                        imgMapping.put(imgPath, imgUrl);
                         String link = LINK.replace("${ID}", "" + statusId);
                         for (Binding b: bindings.values()) {
                             b.postStatus(text, link, imgPath, lat, lon, new ToastCallback(MainActivity.getInstance(), b.getType() + "同步"));
@@ -154,9 +158,15 @@ public class HpManager {
         return bindings.get(type.name());
     }
     
+    public static String getImageUrl(String imagePath) {
+        return imgMapping.get(imagePath);
+    }
+    
     static {
         bindings = new HashMap<String, Binding>();
         bindings.put(Binding.Type.SINA_WEIBO.name(), new SinaWeibo());
+        bindings.put(Binding.Type.TENCENT_WEIBO.name(), new TencentWeibo());
+        bindings.put(Binding.Type.RENREN_WEIBO.name(), new RenrenWeibo());
     }
     
 }

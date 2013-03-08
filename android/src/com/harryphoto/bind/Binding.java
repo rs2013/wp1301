@@ -40,18 +40,4 @@ abstract public class Binding {
     
     abstract public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data);
      
-    public static Binding getBinding(Type bindType) {
-        switch (bindType) {
-        case HARRYPHOTO_WEIBO:
-            return null;
-        case SINA_WEIBO:
-            return new SinaWeibo();
-        case TENCENT_WEIBO:
-            return null;
-        case RENREN_WEIBO:
-            return null;
-        }
-        return null;
-    }
-    
 }

@@ -96,8 +96,8 @@ public class HaxeStub {
     
     public static void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i(TAG, "onActivityResult, result=" + resultCode + 
-                ",data=" + (data != null ? data.getDataString() : null) + 
-                ",path=" + (data != null ? data.getData().getPath(): null) +
+//                ",data=" + (data != null ? data.getDataString() : null) + 
+//                ",path=" + (data != null ? data.getData().getPath(): null) +
                 ",extras=" + (data != null ? data.getExtras() : null));
         JSONObject ret = new JSONObject();
         try {

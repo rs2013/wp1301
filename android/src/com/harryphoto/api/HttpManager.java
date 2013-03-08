@@ -124,9 +124,9 @@ public class HttpManager {
 //                }
                 bos.close();
                 data = bos.toByteArray();
-                FileOutputStream fos = new FileOutputStream("/sdcard/post.dat");
-                fos.write(data);
-                fos.close();
+//                FileOutputStream fos = new FileOutputStream("/sdcard/post.dat");
+//                fos.write(data);
+//                fos.close();
                 ByteArrayEntity formEntity = new ByteArrayEntity(data);
                 post.setEntity(formEntity);
             } else if (method.equals("DELETE")) {
