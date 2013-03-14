@@ -1,0 +1,157 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="0dp"
+    android:background="@color/backgroud_show_case"
+    tools:context=".FittingRoom" >
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/emulated_status_bar_height"
+    android:background="@color/backgroud_footer">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_launcher"/>
+    <LinearLayout
+        android:layout_alignParentRight="true"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+        <!--  <Button
+            android:id="@+id/btn_capture"
+            android:background="@drawable/show_room_footer_btn"
+            android:layout_width="65dp"
+            android:padding="0dp"
+            android:textColor="@android:color/white"
+            android:text="@string/capture"
+            android:layout_margin="5dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center" />-->
+
+        <Button
+            android:id="@+id/btn_recapture"
+            android:text="@string/recapture"
+            android:textColor="@android:color/white"
+            android:background="@drawable/show_room_footer_btn"
+            android:layout_width="65dp"
+            android:padding="0dp"
+            android:layout_margin="5dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+        <Button 
+            android:id="@+id/btn_save"
+            android:text="@string/save"
+            android:textColor="@android:color/white"
+            android:background="@drawable/show_room_footer_btn"
+            android:layout_width="65dp"
+            android:padding="0dp"
+            android:layout_margin="5dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+        <Button 
+            android:id="@+id/btn_view"
+            android:text="@string/view"
+            android:textColor="@android:color/white"
+            android:background="@drawable/show_room_footer_btn"
+            android:layout_width="65dp"
+            android:padding="0dp"
+            android:layout_margin="5dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+        <Button 
+            android:id="@+id/btn_share"
+            android:text="@string/share"
+            android:textColor="@android:color/white"
+            android:background="@drawable/show_room_footer_btn"
+            android:layout_width="65dp"
+            android:layout_margin="5dp"
+            android:padding="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </LinearLayout>
+</RelativeLayout>
+    <FrameLayout 
+        android:id="@+id/main_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+
+        <com.vbo.fitting.view.FittingView
+            android:id="@+id/fitting_view"
+            android:visibility="invisible"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.vbo.fitting.view.CameraView
+            android:id="@+id/camera_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!--  <TextView 
+            android:id="@+id/guide_view"
+            android:textSize="20sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@color/text_color_item_pirce"
+            android:background="@color/backgroud_fitting_guide" />-->
+
+        <ImageView
+            android:id="@+id/ring_view"
+            android:contentDescription="@string/contentDescription_ring_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:scaleType="matrix" />
+    </FrameLayout>
+
+    <HorizontalScrollView 
+        android:id="@+id/scroll"
+        android:background="@color/backgroud_show_case"
+        android:scrollbars="none"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:id="@+id/ring_select_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+        </LinearLayout>
+    </HorizontalScrollView>
+    <RelativeLayout
+        android:id="@+id/footer"
+        android:padding="0dp"
+        android:background="@color/backgroud_footer"
+        android:layout_width="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="50dp" >
+        <ImageView
+            android:layout_height="3dp"
+            android:layout_width="match_parent"
+            android:padding="0dp"
+            android:layout_margin="0dp"
+            android:background="@color/backgroud_footer_line"
+            />
+        <Button
+            android:id="@+id/btn_capture"
+            android:background="@drawable/show_room_footer_btn"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/capture"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="3dp"
+            android:textSize="18sp"
+            android:textColor="@android:color/white"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
+</LinearLayout>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <!-- Bottom bar -->
+    <color name="bottom_bar_background">#7E1DBE</color>
+    <!-- Emulated action bar -->
+    <color name="emulated_action_bar_text_color">#0777B9</color>
+    <color name="backgroud_emulated_action_bar">#E8E5DA</color>
+
+    <color name="backgroud_show_case">#FEFDF9</color>
+    <color name="backgroud_show_item_pirce">#88EAE2DD</color>
+    <color name="text_color_item_pirce">#FF63AD</color>
+    <color name="backgroud_show_item_ring">#F2EBD1</color>
+    <color name="backgroud_footer">#424242</color>
+    <color name="backgroud_footer_line">#FF63AD</color>
+    <color name="backgroud_footer_btn_normal">#FF63AD</color>
+    <color name="backgroud_footer_btn_pressed">#5AA9D4</color>
+
+    <color name="text_color_fitting_guide">#FFFFFFFF</color>
+    <color name="backgroud_fitting_guide">#88000000</color>
+    <!-- Welcome -->
+    <color name="welcome_title_text_color">#8A8C8B</color>
+    <color name="text_color_welcome_main_title">#0777B9</color>
+    <color name="text_color_options_item">#8A8C8B</color>
+    <color name="text_color_options_item_mark">#629DC5</color>
+</resources>

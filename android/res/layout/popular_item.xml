@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+    <ImageView
+        android:id="@+id/popular_image"
+        android:contentDescription="@string/contentDescription_popular"
+        android:padding="@dimen/populars_item_padding"
+        android:scaleType="fitXY"
+        android:layout_width="@dimen/populars_item_width"
+        android:layout_height="@dimen/populars_item_height" />
+</RelativeLayout>

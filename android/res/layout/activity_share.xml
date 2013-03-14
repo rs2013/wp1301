@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    <include layout="@layout/emulated_action_bar"
+        android:id="@+id/emulated_action_bar"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:id="@+id/main_view"
+        android:layout_height="120dp"
+        android:layout_below="@id/emulated_action_bar"
+        android:orientation="horizontal" >
+        <ImageView
+            android:padding="5dp"
+            android:id="@+id/share_pic"
+            android:layout_height="match_parent"
+            android:layout_width="90dp"
+            android:contentDescription="@string/app_name" />
+        <EditText
+            android:hint="@string/share_text"
+            android:lines="5"
+            android:id="@+id/share_text"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+    <ListView
+        android:id="@+id/share_options"
+        android:layout_below="@id/main_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <include layout="@layout/bottom_bar"
+            android:id="@+id/bottom_bar"/>
+</RelativeLayout>

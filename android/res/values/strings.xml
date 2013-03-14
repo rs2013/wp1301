@@ -21,4 +21,66 @@
     <string name="btnGift">礼物</string>
     <string name="btnRandom">随便</string>
     
+<!-- copied from Harry Camera -->
+    
+    <!-- Emulated action bar -->
+    <string name="contentDescription_action_bar_icon">action bar icon</string>
+
+    <!-- Bottom bar -->
+    <string name="contentDescription_bottom_bar_buttom">bottom bar buttom</string>
+
+    <!-- Welcome -->
+    <string name="cd_splash">Splash</string>
+    <string name="welcome_main_title">Harry Camera</string>
+    <string name="title_my_photos">My Photo</string>
+    <string name="title_popular">Popular</string>
+    <string name="title_options">Options</string>
+    <string name="contentDescription_my_photos">my photo</string>
+    <string name="contentDescription_popular">popular</string>
+    <string name="option_content_share">Share setting</string>
+    <string name="option_content_update">Source update</string>
+    <string name="option_content_about">About</string>
+    <string name="option_mark_update">(new)</string>
+
+    <!-- Camera -->
+    <string name="camera">Camera</string>
+    <!-- ShowRoom -->
+    <string name="show_room">Show Room</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_about">About</string>
+    <string name="btn_header1">Sort</string>
+    <string name="btn_header2">Price</string>
+    <string name="btn_header3">Color</string>
+    <string name="btn_footer">Try on</string>
+    <string name="footer">Choose what you like</string>
+
+    <!-- FittingRoom-->
+    <string name="fitting_room">Fitting</string>
+    <string name="capture">Capture</string>
+    <string name="recapture">Recapture</string>
+    <string name="save">Save</string>
+    <string name="view">View</string>
+    <string name="share">Share</string>
+    <string name="contentDescription_fitting_image_view">fitting</string>
+    <string name="contentDescription_ring_image_view">ring</string>
+    <string name="toast_camera_error">Camera hasn\'t been ready or it is busy now!</string>
+
+    <!-- Ring Grid Item -->
+    <string name="contentDescription_thumb_image_view">thumb</string>
+    <string name="contentDescription_check_image_view">check</string>
+    <string name="content_item_price">￥ %1$s</string>
+
+    <!-- Guide -->
+    <string name="guide_take_pic">Please shoot your hand</string>
+    <string name="guide_pic_taked">You can try on the rings now, or recapture</string>
+    <string name="guide_pic_saved">Your show has been saved, view ,share and enjoy it.</string>
+
+    <string name="share_via">Share via</string>
+    <string name="share_subject">"Share"</string>
+    <string name="share_text">"I would like to share the pretty ring with you."</string>
+
+    <string name="no_camera">Sorry, your device has no camera, can\'t run this app!</string>
+    <!-- Camera Activity -->
+    <string name="category_title">Select a category</string>
+    
 </resources>
