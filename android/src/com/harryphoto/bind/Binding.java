@@ -30,7 +30,9 @@ abstract public class Binding {
     
     abstract public Type getType();
     
-    abstract public String getToken();
+    abstract public String[] getBindInfo();
+    
+    abstract public boolean isSessionValid();
     
     abstract public void startAuth(Activity activity, HpListener listener);
     

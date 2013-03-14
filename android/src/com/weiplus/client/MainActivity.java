@@ -1,8 +1,11 @@
 package com.weiplus.client;
 
 
+import com.harryphoto.bind.*;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -57,6 +60,8 @@ public class MainActivity extends Activity {
 //      }
 //  }
 //  
+    boolean checked = false;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +74,13 @@ public class MainActivity extends Activity {
 //                String filename = "/data/media/lockscreen/lockscreen_00"
 //                        + new java.util.Random().nextInt(8) + ".jpg";
 //                HaxeStub.startImageCapture(1, null);
-                HpManager.login();
+                if (MainActivity.this.checked) {
+                    HpManager.login();
+//                    HpManager.bind("RENREN_WEIBO");
+                } else {
+                    HpManager.check();
+                    MainActivity.this.checked = true;
+                }
             }
         });
         Button btnSecond = (Button) findViewById(R.id.btnLogout);
@@ -77,6 +88,9 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 HpManager.logout();
+                new SinaWeibo("").logout();
+                new TencentWeibo("", "").logout();
+                new RenrenWeibo("").logout();
             }
         });
         Button btnPublic = (Button) findViewById(R.id.btnPublicTimeline);
@@ -109,12 +123,27 @@ public class MainActivity extends Activity {
                 HpManager.postStatus("This a test from rocks" + System.currentTimeMillis(), "/sdcard/a.jpg", "json", "/sdcard/aaaa.json", "", "", null);
             }
         });
+        Button btnCamera = (Button) findViewById(R.id.btnCamera);
+        btnCamera.setOnClickListener(new OnClickListener() {
+            @Override public void onClick(View v) {
+                Intent it = new Intent(MainActivity.this, com.vbo.harry_camera.activity.CameraActivity.class);
+                it.setData(Uri.fromParts("catelog", "", ""));
+                MainActivity.this.startActivityForResult(it, 33875);
+            }
+        });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        HaxeStub.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 33875) {
+            if (data != null) {
+                Uri uri = data.getData();
+                Log.i("MainActivity", "CameraCallback: uri=" + uri);
+            }
+        } else {
+            HaxeStub.onActivityResult(requestCode, resultCode, data);
+        }
     }
     
     public static Activity getInstance() {

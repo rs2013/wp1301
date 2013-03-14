@@ -342,20 +342,36 @@ class TimelineScreen extends BaseScreen {
                 addTitleButton(btnCol = btnSingleCol, UiUtil.RIGHT);
                 update(2);
             case "icon_home":
-                if (screenTabIndex != 0) startScreen(Type.getClassName(HomeScreen), screenTabIndex != 1);
+                if (checkLogin()) {
+                    if (screenTabIndex != 0) startScreen(Type.getClassName(HomeScreen), screenTabIndex != 1);
+                }
 //                startScreen(Type.getClassName(com.weiplus.client.TestGesture), new RoxAnimate(RoxAnimate.ZOOM_IN, new Rectangle(80, 80, 200, 300)));
             case "icon_selected":
                 if (screenTabIndex != 1) finish(Type.getClassName(SelectedScreen), RoxScreen.CANCELED);
             case "icon_maker":
-                if (screenTabIndex != 2) startScreen(Type.getClassName(MakerList), screenTabIndex != 1);
+                if (checkLogin()) {
+                    if (screenTabIndex != 2) startScreen(Type.getClassName(MakerList), screenTabIndex != 1);
+                }
             case "icon_message":
 #if android
                 HpManager.logout();
 #end
 //                if (tabIndex != 3) startScreen(Type.getClassName(MessageScreen), tabIndex != 1);
             case "icon_account":
-                if (screenTabIndex != 4) startScreen(Type.getClassName(UserScreen), screenTabIndex != 1);
+                if (checkLogin()) {
+                    if (screenTabIndex != 4) startScreen(Type.getClassName(UserScreen), screenTabIndex != 1);
+                }
         }
+    }
+
+    private inline function checkLogin() : Bool {
+#if android
+        var sessionValid = HpManager.check();
+        if (!sessionValid) HpManager.login();
+        return sessionValid;
+#else
+        return true;
+#end
     }
 
 }

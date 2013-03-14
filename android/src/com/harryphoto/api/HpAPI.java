@@ -27,14 +27,6 @@ public abstract class HpAPI {
 	    this.accessToken = accessToken;
 	}
 	
-	public void userShow() {
-	    
-	}
-	
-	public void commShow() {
-	    
-	}
-	
     protected void request(final String uri, final HpParameters params,
             final String httpMethod, final HpListener listener) {
         int idx = 0;

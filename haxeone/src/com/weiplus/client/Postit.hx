@@ -141,7 +141,7 @@ class Postit extends Sprite {
         switch (imgLdr.status) {
             case RoxURLLoader.OK:
                 var bmd = new BitmapData(Std.int(imw), Std.int(imh), true, 0);
-                trace(">>>>>>>>>>>>>>>>>data="+imgLdr.data);
+//                trace(">>>>>>>>>>>>>>>>>data="+imgLdr.data);
                 bmd.draw(imgLdr.data, new Matrix(imageScale, 0, 0, imageScale, imageOffset, 0), true);
                 graphics.beginBitmapFill(bmd, false, false);
                 var r = 6;

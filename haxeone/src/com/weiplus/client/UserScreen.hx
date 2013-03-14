@@ -25,9 +25,6 @@ class UserScreen extends TimelineScreen {
     public function new() {
         super();
         this.screenTabIndex = 4;
-#if android
-        HpManager.login();
-#end
     }
 
     override private function getHeadPanel() : Sprite {
@@ -58,7 +55,7 @@ class UserScreen extends TimelineScreen {
 #if android
         HpManager.getUserTimeline("", nextPage, 20, 0, this);
 #else
-        var ldr = new RoxURLLoader("http://s-56378.gotocdn.com:8080/harryphoto/statuses/user_timeline/2.json?page=" +
+        var ldr = new RoxURLLoader("http://s-56378.gotocdn.com/harryphoto/statuses/user_timeline/2.json?page=" +
         nextPage + "&rows=20&accessToken=bb019119a014cfe275e1d34f39dd5a9e&refreshToken=&format=json", RoxURLLoader.TEXT);
         trace("refreshUrl="+ldr.url);
         ldr.addEventListener(Event.COMPLETE, function(_) { onApiCallback(null, "ok", ldr.data); } );

@@ -4,6 +4,7 @@ package com.harryphoto.bind;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.harryphoto.api.HpException;
@@ -24,14 +25,23 @@ public class RenrenWeibo extends Binding {
 
     private Renren renren;
     private HpListener listener;
-    private Activity activity;
     
-    public RenrenWeibo() {
+    public RenrenWeibo(String accessToken) {
         super();
+        renren = new Renren(apiKey, apiSecret, appId, MainActivity.getInstance());
+        if (!TextUtils.isEmpty(accessToken)) {
+            renren.updateAccessToken(accessToken);
+        }
     }
     
-    public String getToken() {
-        return renren != null ? renren.getAccessToken() : "";
+    @Override
+    public String[] getBindInfo() {
+        return new String[] { "accessToken", renren.getAccessToken() };
+    }
+    
+    @Override
+    public boolean isSessionValid() {
+        return renren.isSessionKeyValid();
     }
     
     @Override
@@ -39,18 +49,10 @@ public class RenrenWeibo extends Binding {
         return Type.RENREN_WEIBO;
     }
     
-    private Renren getAccessToken() {
-        if (renren == null) {
-            renren = new Renren(apiKey, apiSecret, appId, MainActivity.getInstance());
-        }
-        return renren;
-    }
-    
     @Override
     public void startAuth(final Activity activity, HpListener listener) {
-        this.activity = activity;
         this.listener = listener;
-        if (getAccessToken().isSessionKeyValid()) { 
+        if (renren.isSessionKeyValid()) { 
             return;
         }
         startAuthDialog(activity);
@@ -58,7 +60,7 @@ public class RenrenWeibo extends Binding {
     
     @Override
     public void logout() {
-        getAccessToken().logout(MainActivity.getInstance());
+        renren.logout(MainActivity.getInstance());
     }
     
     @Override
@@ -71,7 +73,7 @@ public class RenrenWeibo extends Binding {
                 FeedPublishRequestParam feed = new FeedPublishRequestParam("来自哈利波图", text, link, 
                         imgUrl, null, null, null, null);
                 try {
-                    FeedPublishResponseBean bean = getAccessToken().publishFeed(feed);
+                    FeedPublishResponseBean bean = renren.publishFeed(feed);
                     long postId = bean.getPostId();
                     if (postId == 0) throw new Exception("postId is 0");
                     listener.onComplete("{\"postId\":" + postId + "}");

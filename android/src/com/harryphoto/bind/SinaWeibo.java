@@ -37,15 +37,25 @@ public class SinaWeibo extends Binding implements WeiboAuthListener {
     private static final String redirecturl = "http://hi.baidu.com/new/rockswang";
     private Oauth2AccessToken accessToken;
     private HpListener listener;
-    private Activity activity;
     public SsoHandler ssoHandler;
     
-    public SinaWeibo() {
+    public SinaWeibo(String accessToken) {
         super();
+        loadAccessToken();
+        if (!TextUtils.isEmpty(accessToken)) {
+            this.accessToken.setToken(accessToken);
+            this.accessToken.setExpiresTime(Long.MAX_VALUE);
+        }
     }
     
-    public String getToken() {
-        return accessToken != null ? accessToken.getToken() : "";
+    @Override
+    public String[] getBindInfo() {
+        return new String[] { "accessToken", accessToken.getToken() };
+    }
+    
+    @Override
+    public boolean isSessionValid() {
+        return accessToken.isSessionValid();
     }
     
     @Override
@@ -53,22 +63,18 @@ public class SinaWeibo extends Binding implements WeiboAuthListener {
         return Type.SINA_WEIBO;
     }
     
-    private Oauth2AccessToken getAccessToken() {
-        if (accessToken == null) {
-            accessToken = new Oauth2AccessToken();
-            SharedPreferences pref = MainActivity.getInstance().getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
-            accessToken.setToken(pref.getString("token", ""));
-            accessToken.setRefreshToken(pref.getString("refreshToken", ""));
-            accessToken.setExpiresTime(pref.getLong("expiresTime", 0));
-        }
-        return accessToken;
+    private void loadAccessToken() {
+        accessToken = new Oauth2AccessToken();
+        SharedPreferences pref = MainActivity.getInstance().getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
+        accessToken.setToken(pref.getString("token", ""));
+        accessToken.setRefreshToken(pref.getString("refreshToken", ""));
+        accessToken.setExpiresTime(pref.getLong("expiresTime", 0));
     }
     
     @Override
     public void startAuth(final Activity activity, HpListener listener) {
-        this.activity = activity;
         this.listener = listener;
-        if (getAccessToken().isSessionValid()) { // make test
+        if (accessToken.isSessionValid()) { // make test
             AccountAPI accountApi = new AccountAPI(accessToken);
             accountApi.getUid(new com.weibo.sdk.android.net.RequestListener() {
                 
@@ -103,17 +109,15 @@ public class SinaWeibo extends Binding implements WeiboAuthListener {
         Editor editor = pref.edit();
         editor.clear();
         editor.commit();
-        if (accessToken != null) {
-            accessToken.setExpiresTime(0);
-            accessToken.setToken("");
-            accessToken.setRefreshToken("");
-        }
+        accessToken.setExpiresTime(0);
+        accessToken.setToken("");
+        accessToken.setRefreshToken("");
     }
     
     @Override
     public void postStatus(String text, String link, String imgPath, String lat, String lon, HpListener listener) {
         this.listener = listener;  
-        StatusesAPI statusApi = new StatusesAPI(getAccessToken());
+        StatusesAPI statusApi = new StatusesAPI(accessToken);
         com.weibo.sdk.android.net.RequestListener l = new com.weibo.sdk.android.net.RequestListener() {
             
             @Override
@@ -144,9 +148,6 @@ public class SinaWeibo extends Binding implements WeiboAuthListener {
     public void onComplete(Bundle values) {
         // ensure any cookies set by the dialog are saved
 //        CookieSyncManager.getInstance().sync();
-        if (null == accessToken) {
-            accessToken = new Oauth2AccessToken();
-        }
         accessToken.setToken(values.getString(KEY_TOKEN));
         accessToken.setExpiresIn(values.getString(KEY_EXPIRES));
         accessToken.setRefreshToken(values.getString(KEY_REFRESHTOKEN));
@@ -192,24 +193,6 @@ public class SinaWeibo extends Binding implements WeiboAuthListener {
         Weibo mWeibo = Weibo.getInstance(app_key, redirecturl);
         ssoHandler = new SsoHandler(activity, mWeibo);
         ssoHandler.authorize(this);
-        
-        
-//        WeiboParameters parameters = new WeiboParameters();
-//        parameters.add("client_id", app_key);
-//        parameters.add("response_type", "token");
-//        parameters.add("redirect_uri", redirecturl);
-//        parameters.add("display", "mobile");
-//
-//        if (accessToken != null && accessToken.isSessionValid()) {
-//            parameters.add(KEY_TOKEN, accessToken.getToken());
-//        }
-//        String url = URL_OAUTH2_ACCESS_AUTHORIZE + "?" + Utility.encodeUrl(parameters);
-//        if (context.checkCallingOrSelfPermission(Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
-//            Utility.showAlert(context, "Error",
-//                    "Application requires permission to access the Internet");
-//        } else {
-//            new WeiboDialog(context, url, this).show();
-//        }
     }
 
     @Override

@@ -27,7 +27,7 @@ class RoxApp {
 #if flash
 //        haxe.Firebug.redirectTraces();
 #elseif cpp
-        GbTracer.init("eng/u2g.dat");
+//        GbTracer.init("eng/u2g.dat");
 #end
     }
 

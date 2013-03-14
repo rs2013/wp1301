@@ -31,10 +31,10 @@ class SelectedScreen extends TimelineScreen {
         var nextPage = append && page != null ? UiUtil.rangeValue(page.page + 1, 1, page.totalPages) : 1;
 
 #if android
-        HpManager.getPublicTimeline(nextPage, 20, 0, this);
+        HpManager.getPublicTimeline(nextPage, 10, 0, this);
 #else
-        var ldr = new RoxURLLoader("http://s-56378.gotocdn.com:8080/harryphoto/statuses/public_timeline.json?page=" +
-                nextPage + "&rows=20&accessToken=&refreshToken=&format=json", RoxURLLoader.TEXT);
+        var ldr = new RoxURLLoader("http://s-56378.gotocdn.com/harryphoto/statuses/public_timeline.json?page=" +
+                nextPage + "&rows=10&accessToken=&refreshToken=&format=json", RoxURLLoader.TEXT);
         trace("refreshUrl="+ldr.url);
         ldr.addEventListener(Event.COMPLETE, function(_) { onApiCallback(null, "ok", ldr.data); } );
         refreshing = true;

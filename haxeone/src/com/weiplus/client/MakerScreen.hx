@@ -77,8 +77,11 @@ class MakerScreen extends BaseScreen {
 #if cpp
         if (FileSystem.exists(MAKER_DIR)) FileUtil.rmdir(MAKER_DIR, true);
         FileUtil.mkdirs(MAKER_DIR);
+        trace("start saving image");
         File.saveBytes(MAKER_DIR + "/image.jpg", encodeJpeg(image));
-        trace("dir="+MAKER_DIR+",exists="+FileSystem.exists(MAKER_DIR));
+        trace("image saved, type=\"" + status.appData.type + "\"");
+        if (status.appData.type == "image") return;
+        trace("start saving zip data");
         var cnt = 1;
         var out = {};
         var zipdata = new format.zip.Data();
@@ -104,6 +107,7 @@ class MakerScreen extends BaseScreen {
         var w = new format.zip.Writer(output);
         w.writeData(zipdata);
         output.close();
+        trace("zip saved");
 #end
     }
 

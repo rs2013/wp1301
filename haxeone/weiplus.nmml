@@ -30,7 +30,7 @@
     <assets path="res" include="*" exclude="icon.svg" />
 
     <include path="../android/haxe_include.nmml" if="android"/>
-    <template path="javasrc/com/weiplus/client/HaxeStub.java" rename="src/com/weiplus/client/HaxeStub.java" if="android" />
+    <!--template path="javasrc/com/weiplus/client/HaxeStub.java" rename="src/com/weiplus/client/HaxeStub.java" if="android" /-->
     <template path="javasrc/com/weiplus/client/MainActivity.java" rename="src/com/weiplus/client/MainActivity.java" if="android" />
     <!--template path="src/org/haxe/nme/GameActivity.java" if="android" /-->
     <template path="javasrc/org/haxe/nme/MainView.java" rename="src/org/haxe/nme/MainView.java" if="android" />

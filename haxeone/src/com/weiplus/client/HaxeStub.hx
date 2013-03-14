@@ -39,6 +39,18 @@ class HaxeStub
 	}
 	
 	
+	private static var _startHarryCamera_func:Dynamic;
+
+	public static function startHarryCamera(arg0:Int):Void
+	{
+		if (_startHarryCamera_func == null)
+			_startHarryCamera_func = nme.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startHarryCamera", "(I)V", true);
+		var a = new Array<Dynamic>();
+		a.push(arg0);
+		_startHarryCamera_func(a);
+	}
+	
+	
 	private static var _startGetContent_func:Dynamic;
 
 	public static function startGetContent(arg0:Int, arg1:String):Void

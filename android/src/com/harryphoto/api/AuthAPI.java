@@ -17,10 +17,15 @@ public class AuthAPI extends HpAPI {
         
     }
     
-    public void bind(Binding.Type bindType, String bindAccessToken, HpListener listener) {
+    public void bind(Binding.Type bindType, String[] bindInfo, HpListener listener) {
         HpParameters parm = new HpParameters();
         parm.add("bindType", bindType.name());
-        parm.add("accessToken", bindAccessToken);
+        if (bindInfo != null && bindInfo.length > 0) {
+            for (int i = 0, n = (bindInfo.length >> 1); i < n; i++) {
+                parm.add(bindInfo[i * 2], bindInfo[i * 2 + 1]);
+            }
+            parm.add("refreshToken", "");
+        }
         get("auth/bind", parm, listener);
     }
     
@@ -32,8 +37,11 @@ public class AuthAPI extends HpAPI {
         
     }
     
-    public void merge() {
-        
+    public void merge(String accessToken, HpListener listener) {
+        HpParameters parm = new HpParameters();
+        parm.add("accessToken", accessToken);
+        parm.add("refreshToken", "");
+        get("auth/merge", parm, listener);
     }
     
 }

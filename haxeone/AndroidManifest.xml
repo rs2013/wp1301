@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="::ANDROID_INSTALL_LOCATION::" android:versionCode="::APP_BUILD_NUMBER::" android:versionName="::APP_VERSION::" package="::APP_PACKAGE::">
 
-	<application android:label="::APP_TITLE::" ::if (HAS_ICON):: android:icon="@drawable/icon"::end::>
+	<application
+            android:label="::APP_TITLE::"
+            android:name="com.vbo.harry_camera.HarryCameraApp"
+            android:allowBackup="true"
+            android:theme="@style/AppTheme"
+            ::if (HAS_ICON):: android:icon="@drawable/icon"::end::>
     <!--android:debuggable="true"-->
     <activity android:name=".MainActivity"
                   android:label="::APP_TITLE::"
@@ -16,10 +21,38 @@
 			
 		</activity>
 
-        <activity android:name=".LoginActivity" android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".LoginActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity
+            android:name="com.tencent.weibo.webview.OAuthV2AuthorizeWebView"
+            android:screenOrientation="portrait"
+            android:label="@string/app_name" >
+        </activity>
+
+        <activity
+            android:name="com.renren.api.connect.android.AuthorizationHelper$BlockActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Dialog">
+        </activity>
+
+        <activity
+            android:name="com.vbo.harry_camera.activity.CameraActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/CameraTheme"
+            android:label="HarryCamera" >
+            <intent-filter>
+                <action android:name="com.vbo.harry_camera.action.TAKE_PIC" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="catelog" />
+            </intent-filter>
+        </activity>
 	</application>
 
-	<uses-sdk android:minSdkVersion="8"/>
+	<uses-sdk android:minSdkVersion="9"/>
 	
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
 	<uses-permission android:name="android.permission.INTERNET" />
@@ -29,5 +62,8 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.CAMERA" />
-	
-</manifest> 
+
+    <uses-feature android:name="android.hardware.camera"/>
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+</manifest>

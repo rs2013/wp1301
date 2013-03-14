@@ -13,5 +13,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/httpmime-4.1.3.jar"/>
 	<classpathentry kind="lib" path="libs/renren_android_connect_3.0.jar" sourcepath="/renren_android_connect"/>
+	<classpathentry kind="lib" path="libs/android-support-v4.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

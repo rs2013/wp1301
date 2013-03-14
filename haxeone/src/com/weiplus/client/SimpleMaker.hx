@@ -22,6 +22,7 @@ class SimpleMaker extends MakerScreen {
 
     private var requestCode = -1;
     private var viewHeight: Float;
+    private var btnHarry: RoxFlowPane;
     private var btnCamera: RoxFlowPane;
     private var btnLocal: RoxFlowPane;
     private var btnReset: RoxFlowPane;
@@ -37,8 +38,9 @@ class SimpleMaker extends MakerScreen {
     override public function createContent(height: Float) : Sprite {
         content = super.createContent(height);
         viewHeight = height;
-        btnCamera = UiUtil.button(UiUtil.CENTER, null, "拍  照", 0, 50, "res/btn_common.9.png", onCamera);
-        btnLocal = UiUtil.button(UiUtil.CENTER, null, "相  册", 0, 50, "res/btn_common.9.png", onLocal);
+        btnHarry = UiUtil.button(UiUtil.CENTER, null, "魔法相机", 0, 50, "res/btn_common.9.png", onHarry);
+        btnCamera = UiUtil.button(UiUtil.CENTER, null, "系统相机", 0, 50, "res/btn_common.9.png", onCamera);
+        btnLocal = UiUtil.button(UiUtil.CENTER, null, "本地图库", 0, 50, "res/btn_common.9.png", onLocal);
         btnReset = UiUtil.button(UiUtil.TOP_LEFT, null, "重新选择", 0, 36, "res/btn_common.9.png", setSelectUI);
         btnSimple = UiUtil.button(UiUtil.CENTER, null, "简单", 0xFFFFFF, 36, function(_) { setLevel(0); });
         btnNormal = UiUtil.button(UiUtil.CENTER, null, "中等", 0xFFFFFF, 36, function(_) { setLevel(1); });
@@ -68,11 +70,14 @@ class SimpleMaker extends MakerScreen {
         removeTitleButton(btnNextStep);
         content.rox_remove(preview);
         content.rox_remove(levelPane);
-        content.addChild(btnCamera.rox_move(screenWidth / 2, viewHeight / 2 - 100));
-        content.addChild(btnLocal.rox_move(screenWidth / 2, viewHeight / 2 + 100));
+
+        content.addChild(btnHarry.rox_move(screenWidth / 2, viewHeight / 2 - 180));
+        content.addChild(btnCamera.rox_move(screenWidth / 2, viewHeight / 2));
+        content.addChild(btnLocal.rox_move(screenWidth / 2, viewHeight / 2 + 180));
     }
 
     private function setImageUI() {
+        content.rox_remove(btnHarry);
         content.rox_remove(btnCamera);
         content.rox_remove(btnLocal);
         addTitleButton(btnNextStep, UiUtil.RIGHT);
@@ -133,6 +138,16 @@ class SimpleMaker extends MakerScreen {
 //    private function onDeactive(_) {
 //        trace("))))))))))))) deactive");
 //    }
+
+    private function onHarry(_) {
+        trace("onHarryCamera");
+        requestCode = 3;
+#if android
+        HaxeStub.startHarryCamera(requestCode);
+#else
+        onActive(null);
+#end
+    }
 
     private function onCamera(_) {
         trace("oncamera");

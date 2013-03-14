@@ -27,9 +27,6 @@ class MakerList extends BaseScreen {
         title = new Sprite();
         title.addChild(UiUtil.staticText("施展魔法", 0xFF0000, 36));
         super.onCreate();
-#if android
-        HpManager.login();
-#end
     }
 
     override public function createContent(height: Float) : Sprite {
@@ -39,7 +36,12 @@ class MakerList extends BaseScreen {
         var sp = new Sprite();
         sp.graphics.rox_fillRect(BG_COLOR, 0, 0, screenWidth, height);
 
-        var makers = [ "icon_jigsaw_maker", "制作锯齿拼图", "icon_slide_maker", "制作滑动拼图", "icon_swap_maker", "制作换位拼图" ];
+        var makers = [
+                "icon_jigsaw_maker", "奇幻拼图",
+                "icon_slide_maker", "乾坤挪移",
+                "icon_swap_maker", "移形换位",
+                "icon_harry_camera", "魔法相机"
+        ];
         var bgdata = new RoxNinePatchData(new Rectangle(margh, margv, 20, 20));
         var offy = 0.0;
         for (i in 0...makers.length >> 1) {
@@ -67,6 +69,8 @@ class MakerList extends BaseScreen {
                 startScreen(Type.getClassName(com.weiplus.apps.slidepuzzle.Maker));
             case "icon_swap_maker":
                 startScreen(Type.getClassName(com.weiplus.apps.swappuzzle.Maker));
+            case "icon_harry_camera":
+                startScreen(Type.getClassName(com.weiplus.client.HarryCamera));
         }
     }
 

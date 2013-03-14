@@ -86,6 +86,13 @@ public class HaxeStub {
         MainActivity.getInstance().startActivityForResult(it, requestCode);
     }
     
+    public static void startHarryCamera(int requestCode) {
+        Log.i(TAG, "startHarryCamera");
+        Intent it = new Intent(MainActivity.getInstance(), com.vbo.harry_camera.activity.CameraActivity.class);
+        it.setData(Uri.fromParts("catelog", "", ""));
+        MainActivity.getInstance().startActivityForResult(it, requestCode);
+    }
+    
     public static void startGetContent(int requestCode, String type) {
         Log.i(TAG, "startGetContent " + type);
         Intent innerIntent = new Intent(Intent.ACTION_GET_CONTENT); // "android.intent.action.GET_CONTENT"

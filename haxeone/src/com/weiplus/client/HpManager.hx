@@ -45,6 +45,18 @@ class HpManager
 	}
 	
 	
+	private static var _bind_func:Dynamic;
+
+	public static function bind(arg0:String):Void
+	{
+		if (_bind_func == null)
+			_bind_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "bind", "(Ljava/lang/String;)V", true);
+		var a = new Array<Dynamic>();
+		a.push(arg0);
+		_bind_func(a);
+	}
+	
+	
 	private static var _getPublicTimeline_func:Dynamic;
 
 	public static function getPublicTimeline(arg0:Int, arg1:Int, arg2:Float, arg3:Dynamic /*org.haxe.nme.HaxeObject*/):Void
@@ -205,6 +217,30 @@ class HpManager
 	}
 	
 	
+	private static var _hasBinding_func:Dynamic;
+
+	public static function hasBinding(arg0:String):Bool
+	{
+		if (_hasBinding_func == null)
+			_hasBinding_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "hasBinding", "(Ljava/lang/String;)Z", true);
+		var a = new Array<Dynamic>();
+		a.push(arg0);
+		return _hasBinding_func(a);
+	}
+	
+	
+	private static var _isBindingSessionValid_func:Dynamic;
+
+	public static function isBindingSessionValid(arg0:String):Bool
+	{
+		if (_isBindingSessionValid_func == null)
+			_isBindingSessionValid_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "isBindingSessionValid", "(Ljava/lang/String;)Z", true);
+		var a = new Array<Dynamic>();
+		a.push(arg0);
+		return _isBindingSessionValid_func(a);
+	}
+	
+	
 	private static var _getImageUrl_func:Dynamic;
 
 	public static function getImageUrl(arg0:String):String
@@ -214,6 +250,44 @@ class HpManager
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		return _getImageUrl_func(a);
+	}
+	
+	
+	private static var _addBinding_func:Dynamic;
+
+	public static function addBinding(arg0:Dynamic /*com.harryphoto.bind.Binding*/):Void
+	{
+		if (_addBinding_func == null)
+			_addBinding_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "addBinding", "(Lcom/harryphoto/bind/Binding;)V", true);
+		var a = new Array<Dynamic>();
+		a.push(arg0);
+		_addBinding_func(a);
+	}
+	
+	
+	private static var _createBinding_func:Dynamic;
+
+	public static function createBinding(arg0:Dynamic /*com.harryphoto.bind.Binding$Type*/):Dynamic
+	{
+		if (_createBinding_func == null)
+			_createBinding_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "createBinding", "(Lcom/harryphoto/bind/Binding$Type;)Lcom/harryphoto/bind/Binding;", true);
+		var a = new Array<Dynamic>();
+		a.push(arg0);
+		return _createBinding_func(a);
+	}
+	
+	
+	private static var _createBinding1_func:Dynamic;
+
+	public static function createBinding1(arg0:Dynamic /*com.harryphoto.bind.Binding$Type*/, arg1:Array<String>, arg2:String):Dynamic
+	{
+		if (_createBinding1_func == null)
+			_createBinding1_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "createBinding", "(Lcom/harryphoto/bind/Binding$Type;[Ljava/lang/String;)Lcom/harryphoto/bind/Binding;", true);
+		var a = new Array<Dynamic>();
+		a.push(arg0);
+		a.push(arg1);
+		a.push(arg2);
+		return _createBinding1_func(a);
 	}
 	
 	

@@ -1,9 +1,12 @@
 package com.weiplus.client;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.haxe.nme.HaxeObject;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -12,7 +15,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.harryphoto.api.AuthAPI;
 import com.harryphoto.api.HpAccessToken;
 import com.harryphoto.api.HpException;
 import com.harryphoto.api.HpListener;
@@ -20,6 +25,7 @@ import com.harryphoto.api.StatusAPI;
 import com.harryphoto.api.UserAPI;
 import com.harryphoto.api.Utility;
 import com.harryphoto.bind.*;
+import com.harryphoto.bind.Binding.Type;
 
 public class HpManager {
     
@@ -28,20 +34,75 @@ public class HpManager {
     
     private static HpAccessToken accessToken;
     
-    private static HashMap<String, Binding> bindings;
+    private static HashMap<String, Binding> bindings = new HashMap<String, Binding>();
     private static HashMap<String, String> imgMapping = new HashMap<String, String>();
     
     public static boolean check() {
-        return getAccessToken().isSessionValid();
+        getAccessToken();
+        if (accessToken.isSessionValid() && bindings.size() == 0) {
+            AuthAPI api = new AuthAPI(accessToken);
+            api.login(new HpListener() {
+
+                @Override
+                public void onComplete(String response) {
+                    try {
+                        JSONObject obj = new JSONObject(response);
+                        if (obj.getInt("code") != 200) throw new Exception("login error, code=" + obj.getInt("code"));
+                        JSONArray bindUsers = obj.getJSONArray("users").getJSONObject(0).getJSONArray("bindUsers");
+                        for (int i = 0, n = bindUsers.length(); i < n; i++) {
+                            JSONObject bu = bindUsers.getJSONObject(i);
+                            Type type = Type.valueOf(bu.getString("bindType"));
+                            String[] param = new String[] { bu.optString("accessToken", ""), bu.optString("bindId", "") };
+                            Binding b = HpManager.createBinding(type, param);
+                            HpManager.addBinding(b);
+                        }
+                    } catch (Exception e) {
+                        onError(new HpException(e));
+                    }
+                }
+
+                @Override
+                public void onIOException(IOException e) {
+                    onError(new HpException(e));
+                }
+
+                @Override
+                public void onError(HpException e) {
+                    Utility.safeToast("账户同步异常。ex=" + e.getMessage(), Toast.LENGTH_SHORT);
+                }
+                
+            });
+        }
+        return accessToken.isSessionValid();
     }
     
     public static void login() {
         Activity activity = MainActivity.getInstance();
         HpAccessToken token = getAccessToken();
-        if (!token.isSessionValid()) {
-            Intent intent = new Intent(activity, LoginActivity.class); 
-            activity.startActivity(intent);
+        Intent intent = new Intent(activity, LoginActivity.class); 
+        if (token.isSessionValid()) {
+            ArrayList<String> l = new ArrayList<String>();
+            l.add(Binding.Type.SINA_WEIBO.name());
+            l.add(Binding.Type.TENCENT_WEIBO.name());
+            l.add(Binding.Type.RENREN_WEIBO.name());
+            for (Binding b: bindings.values()) {
+                if (b.isSessionValid()) {
+                    l.remove(b.getType().name());
+                }
+            }
+            intent.putExtra("bindTypes", l.toArray(new String[0]));
         }
+        activity.startActivity(intent);
+    }
+    
+    public static void bind(String type) {
+        Activity activity = MainActivity.getInstance();
+        HpAccessToken token = getAccessToken();
+        Intent intent = new Intent(activity, LoginActivity.class); 
+        if (token.isSessionValid()) {
+            intent.putExtra("bindTypes", new String[] { type });
+        }
+        activity.startActivity(intent);
     }
     
     public static void getPublicTimeline(int page, int rows, long sinceId, HaxeObject callback) {
@@ -168,15 +229,43 @@ public class HpManager {
         return bindings.get(type.name());
     }
     
+    public static boolean hasBinding(String type) {
+        return bindings.containsKey(type);
+    }
+    
+    public static boolean isBindingSessionValid(String type) {
+        Binding b;
+        return (b = bindings.get(type)) != null ? b.isSessionValid() : false;
+    }
+    
     public static String getImageUrl(String imagePath) {
         return imgMapping.get(imagePath);
     }
     
-    static {
-        bindings = new HashMap<String, Binding>();
-        bindings.put(Binding.Type.SINA_WEIBO.name(), new SinaWeibo());
-        bindings.put(Binding.Type.TENCENT_WEIBO.name(), new TencentWeibo());
-        bindings.put(Binding.Type.RENREN_WEIBO.name(), new RenrenWeibo());
+    public static void addBinding(Binding b) {
+        bindings.put(b.getType().name(), b);
+    }
+    
+    public static Binding createBinding(Binding.Type type) {
+        return createBinding(type, new String[] { "", "" });
+    }
+    
+    public static Binding createBinding(Binding.Type type, String[] param) {
+        Binding b = null;
+        switch (type) {
+        case TENCENT_WEIBO:
+            b = new TencentWeibo(param[0], param[1]);
+            break;
+        case SINA_WEIBO:
+            b = new SinaWeibo(param[0]);
+            break;
+        case RENREN_WEIBO:
+            b = new RenrenWeibo(param[0]);
+            break;
+        default:
+            
+        }
+        return b;
     }
     
 }

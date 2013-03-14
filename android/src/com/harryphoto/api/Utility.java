@@ -426,13 +426,13 @@ public class Utility {
         }
         public static boolean revitionPostImageSize( String picfile) {
             try {
-            	if(Weiplus.isWifi){
+//            	if(Weiplus.isWifi){
             		revitionImageSizeHD(picfile, 1600 , 75);
-            	}
-            	else{
-            		revitionImageSize( picfile, 1024 , 75);
-            	}
-              
+//            	}
+//            	else{
+//            		revitionImageSize( picfile, 1024 , 75);
+//            	}
+//              
                 return true;
             } catch (IOException e) {
                e.printStackTrace();

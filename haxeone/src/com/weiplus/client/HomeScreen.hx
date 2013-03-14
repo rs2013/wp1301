@@ -17,9 +17,6 @@ class HomeScreen extends TimelineScreen {
     public function new() {
         super();
         this.screenTabIndex = 0;
-#if android
-        HpManager.login();
-#end
     }
 
     override private function refresh(append: Bool) {
@@ -30,7 +27,7 @@ class HomeScreen extends TimelineScreen {
 #if android
         HpManager.getHomeTimeline(nextPage, 20, 0, this);
 #else
-        var ldr = new RoxURLLoader("http://s-56378.gotocdn.com:8080/harryphoto/statuses/home_timeline/2.json?page=" +
+        var ldr = new RoxURLLoader("http://s-56378.gotocdn.com/harryphoto/statuses/home_timeline/4.json?page=" +
                 nextPage + "&rows=20&accessToken=bb019119a014cfe275e1d34f39dd5a9e&refreshToken=&format=json", RoxURLLoader.TEXT);
         trace("refreshUrl="+ldr.url);
         ldr.addEventListener(Event.COMPLETE, function(_) { onApiCallback(null, "ok", ldr.data); } );
@@ -40,7 +37,7 @@ class HomeScreen extends TimelineScreen {
 
     private function onApiCallback(apiName: String, resultCode: String, jsonStr: String) {
 //        jsonStr = StringTools.replace(jsonStr, "http://s-56378.gotocdn.com/", "http://s-56378.gotocdn.com:8080/");
-        trace("onApiCallback: name="+apiName+",result="+resultCode);//+",text="+jsonStr);
+        trace("onApiCallback: name="+apiName+",result="+resultCode+(resultCode != "ok" ? ",msg="+jsonStr : ""));//+",text="+jsonStr);
         refreshing = false;
         if (resultCode != "ok") return;
         var pageInfo = Json.parse(jsonStr).statuses;

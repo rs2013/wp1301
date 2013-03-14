@@ -1,5 +1,7 @@
 package com.harryphoto.bind;
 
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -27,12 +29,26 @@ public class TencentWeibo extends Binding {
     private OAuthV2 oAuth;
     private HpListener listener;
     
-    public TencentWeibo() {
+    public TencentWeibo(String accessToken, String openid) {
         super();
+        loadOAuth();
+        if (!TextUtils.isEmpty(accessToken) && !TextUtils.isEmpty(openid)) {
+            oAuth.setAccessToken(accessToken);
+            oAuth.setOpenid(openid);
+            oAuth.setExpiresIn("604800"); // 7 days
+        }
     }
     
-    public String getToken() {
-        return oAuth != null ? oAuth.getAccessToken() : "";
+    @Override
+    public String[] getBindInfo() {
+        return new String[] { 
+                "accessToken", oAuth.getAccessToken(), 
+                "openId", oAuth.getOpenid() };
+    }
+    
+    @Override
+    public boolean isSessionValid() {
+        return oAuth.getAccessToken().length() > 0;
     }
     
     @Override
@@ -40,22 +56,21 @@ public class TencentWeibo extends Binding {
         return Type.TENCENT_WEIBO;
     }
     
-    private OAuthV2 getAccessToken() {
-        if (oAuth == null) {
-            oAuth = new OAuthV2(redirecturl);
-            SharedPreferences pref = MainActivity.getInstance().getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
-            oAuth.setAccessToken(pref.getString("accessToken", ""));
-            oAuth.setExpiresIn(pref.getString("expiresIn", ""));
-            oAuth.setOpenid(pref.getString("openid", ""));
-            oAuth.setOpenkey(pref.getString("openKey", ""));
-        }
-        return oAuth;
+    private void loadOAuth() {
+        oAuth = new OAuthV2(redirecturl);
+        oAuth.setClientId(appKey);
+        oAuth.setClientSecret(appSecret);
+        SharedPreferences pref = MainActivity.getInstance().getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
+        oAuth.setAccessToken(pref.getString("accessToken", ""));
+        oAuth.setExpiresIn(pref.getString("expiresIn", ""));
+        oAuth.setOpenid(pref.getString("openid", ""));
+        oAuth.setOpenkey(pref.getString("openKey", ""));
     }
     
     @Override
     public void startAuth(final Activity activity, HpListener listener) {
         this.listener = listener;
-        if (getAccessToken().getAccessToken().length() > 0) { // make test
+        if (oAuth.getAccessToken().length() > 0) { // make test
             new Thread() {
                 @Override
                 public void run() {
@@ -68,6 +83,7 @@ public class TencentWeibo extends Binding {
                     }
                 }
             }.start();
+            return;
         }
         startAuthDialog(activity);
     }
@@ -78,12 +94,10 @@ public class TencentWeibo extends Binding {
         Editor editor = pref.edit();
         editor.clear();
         editor.commit();
-        if (oAuth != null) {
-            oAuth.setAccessToken("");
-            oAuth.setExpiresIn("");
-            oAuth.setOpenid("");
-            oAuth.setOpenkey("");
-        }
+        oAuth.setAccessToken("");
+        oAuth.setExpiresIn("");
+        oAuth.setOpenid("");
+        oAuth.setOpenkey("");
     }
     
     @Override
@@ -97,9 +111,14 @@ public class TencentWeibo extends Binding {
                 String response = "";
                 try {
                     if (TextUtils.isEmpty(imgPath)) {
-                        response = statusApi.add(getAccessToken(), "json", content, "127.0.0.1", lon, lat, "");
+                        response = statusApi.add(oAuth, "json", content, "127.0.0.1", lon, lat, "");
                     } else {
-                        response = statusApi.addPic(getAccessToken(), "json", content, "127.0.0.1", lon, lat, imgPath, "");
+                        response = statusApi.addPic(oAuth, "json", content, "127.0.0.1", lon, lat, imgPath, "");
+                    }
+                    JSONObject obj = new JSONObject(response);
+                    if (obj.getInt("errcode") != 0) {
+                        throw new HpException("error, errcode=" + obj.getInt("errcode") + 
+                                ",msg=" + obj.getString("msg"));
                     }
                     listener.onComplete(response);
                 } catch (Exception e) {
