@@ -1,5 +1,8 @@
 package com.roxstudio.haxe.game;
 
+import haxe.io.BytesOutput;
+import haxe.io.Bytes;
+import nme.display.BitmapData;
 import com.roxstudio.haxe.utils.Random;
 import nme.Assets;
 import nme.geom.Point;
@@ -11,6 +14,7 @@ import com.roxstudio.haxe.utils.Worker;
 #end
 
 using StringTools;
+using com.roxstudio.haxe.io.IOUtil;
 
 /**
  * ...
@@ -233,5 +237,21 @@ class GameUtil {
         return worker;
     }
 #end
+
+    public static function encodePng(img: BitmapData) : Bytes {
+        var bb = img.getPixels(new Rectangle(0, 0, img.width, img.height));
+        var output = new BytesOutput();
+        var w = new format.png.Writer(output);
+        w.write(format.png.Tools.build32BE(img.width, img.height, bb.rox_toBytes()));
+        return output.getBytes();
+    }
+
+    public static function encodeJpeg(img: BitmapData) : Bytes {
+        var bb = img.getPixels(new Rectangle(0, 0, img.width, img.height));
+        var output = new BytesOutput();
+        var w = new format.jpg.Writer(output);
+        w.write({ width: img.width, height: img.height, quality: 80, pixels: bb.rox_toBytes() });
+        return output.getBytes();
+    }
 
 }

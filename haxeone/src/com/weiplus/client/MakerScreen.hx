@@ -46,7 +46,7 @@ class MakerScreen extends BaseScreen {
         data = {};
         super.onCreate();
         trace("MakerScreen.onCreate");
-        btnNextStep = UiUtil.button(UiUtil.TOP_LEFT, null, "下一步", 0, 36, "res/btn_common.9.png",
+        btnNextStep = UiUtil.button(UiUtil.TOP_LEFT, null, "下一步", 0xFFFFFF, 36, "res/btn_common.9.png",
                 function(_) { onNextStep(); } );
 //        addTitleButton(btnNextStep, UiUtil.RIGHT);
     }

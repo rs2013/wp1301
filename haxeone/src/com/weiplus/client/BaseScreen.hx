@@ -18,6 +18,7 @@ class BaseScreen extends RoxScreen {
 
     public var designWidth: Float; // always 640
     public var designHeight: Float;
+    public var hasTitleBar: Bool = true;
     public var titleBar: Sprite;
     public var d2rScale: Float;
     public var content: Sprite;
@@ -36,27 +37,33 @@ class BaseScreen extends RoxScreen {
         designWidth = DESIGN_WIDTH;
         d2rScale = screenWidth / designWidth;
         designHeight = screenHeight / d2rScale;
-        titleBar = UiUtil.bitmap("res/bg_main_top.png");
-        titleBtnOffsetL = BTN_SPACING;
-        titleBtnOffsetR = titleBar.width - BTN_SPACING;
-        if (title != null) {
-            titleBar.addChild(title.rox_anchor(UiUtil.CENTER).rox_move(titleBar.width / 2, titleBar.height / 2));
+        if (hasTitleBar) {
+            titleBar = UiUtil.bitmap("res/bg_main_top.png");
+            titleBtnOffsetL = BTN_SPACING;
+            titleBtnOffsetR = titleBar.width - BTN_SPACING;
+            if (title != null) {
+                titleBar.addChild(title.rox_anchor(UiUtil.CENTER).rox_move(titleBar.width / 2, titleBar.height / 2));
+            }
+            titleBar.rox_scale(d2rScale);
+            btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回", 0xFFFFFF, 36, "res/btn_back.9.png", function(e) { finish(RoxScreen.CANCELED); } );
+            if (hasBack) {
+                addTitleButton(btnBack, UiUtil.LEFT);
+            }
         }
-        titleBar.rox_scale(d2rScale);
-        btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回", 0, 36, "res/btn_back.9.png", function(e) { finish(RoxScreen.CANCELED); } );
-        if (hasBack) {
-            addTitleButton(btnBack, UiUtil.LEFT);
-        }
-        var conth = (designHeight - TOP_HEIGHT) * d2rScale;
+        var conth = (designHeight - (hasTitleBar ? TOP_HEIGHT : 0)) * d2rScale;
         content = createContent(conth);
         content.rox_move(0, screenHeight - conth);
         addChild(content);
-        graphics.rox_drawImage(ResKeeper.getAssetImage("res/bg_main.jpg"), 0, 0, screenWidth, screenHeight);
-        addChild(titleBar);
+        drawBackground(screenWidth, conth);
+        if (hasTitleBar) addChild(titleBar);
+    }
+
+    public function drawBackground(w: Float, h: Float) {
+        graphics.rox_drawImage(ResKeeper.getAssetImage("res/bg_main.jpg"), 0, 0, w, h);
     }
 
     public function addTitleButton(btn: RoxFlowPane, align: Int) {
-        if (titleBar.contains(btn)) return;
+        if (!hasTitleBar || titleBar.contains(btn)) return;
         if (align == UiUtil.RIGHT) {
             btn.anchor = UiUtil.RIGHT | UiUtil.VCENTER;
             titleBar.addChild(btn.rox_move(titleBtnOffsetR, TOP_HEIGHT / 2));
@@ -69,7 +76,7 @@ class BaseScreen extends RoxScreen {
     }
 
     public function removeTitleButton(btn: RoxFlowPane) {
-        if (btn == null || !titleBar.contains(btn)) return;
+        if (!hasTitleBar || btn == null || !titleBar.contains(btn)) return;
         titleBar.removeChild(btn);
         if (btn.anchor == UiUtil.RIGHT | UiUtil.VCENTER) {
             titleBtnOffsetR += btn.width + BTN_SPACING;

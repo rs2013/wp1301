@@ -91,9 +91,9 @@ class Postit extends Sprite {
         addChild(hlayout.rox_move(0, h));
         h += hlayout.height;
         if (fullMode) {
-            var praisebtn = UiUtil.button(UiUtil.TOP_LEFT, null, "赞(" + status.praiseCount + ")", 0, fontsize + 2, "res/btn_common.9.png");
-            var commentbtn = UiUtil.button(UiUtil.TOP_LEFT, null, "评论(" + status.commentCount + ")", 0, fontsize + 2, "res/btn_common.9.png");
-            var morebtn = UiUtil.button(UiUtil.TOP_LEFT, null, " ... ", 0, fontsize + 2, "res/btn_common.9.png");
+            var praisebtn = UiUtil.button(UiUtil.TOP_LEFT, "res/icon_praise.png", "赞(" + status.praiseCount + ")", 0, fontsize + 2, "res/btn_grey.9.png");
+            var commentbtn = UiUtil.button(UiUtil.TOP_LEFT, "res/icon_comment.png", "评论(" + status.commentCount + ")", 0, fontsize + 2, "res/btn_grey.9.png");
+            var morebtn = UiUtil.button(UiUtil.TOP_LEFT, "res/icon_more.png", "", 0, fontsize + 2, "res/btn_grey.9.png");
             infoLabel = new RoxFlowPane([ praisebtn, commentbtn, morebtn ], new RoxNinePatch(layout));
             addChild(infoLabel.rox_move(0, h));
             h += infoLabel.height;

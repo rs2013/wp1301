@@ -133,6 +133,7 @@ class TimelineScreen extends BaseScreen {
 
 //    private function
     private function updateList(statuses: Array<Dynamic>, append: Bool) {
+        trace("00000000000000000");
         if (postits == null || !append) postits = [];
         if (statuses != null) {
             if (storedStatuses == null || !append) storedStatuses = [];
@@ -143,8 +144,10 @@ class TimelineScreen extends BaseScreen {
         } else {
             statuses = storedStatuses;
         }
+        trace("11111111111111");
         var spacing = screenWidth * SPACING_RATIO;
         var postitw = (screenWidth - (numCol + 1) * spacing) / numCol;
+        trace("2222222222222");
         for (i in 0...statuses.length) {
             var ss = statuses[i];
             var status = new Status();
@@ -176,7 +179,9 @@ class TimelineScreen extends BaseScreen {
             postit.addEventListener(Event.SELECT, onPlay);
             postits.push(postit);
         }
+        trace("33333333333333");
         update(numCol);
+        trace("444444444444444");
     }
 
 #if cpp
@@ -342,6 +347,7 @@ class TimelineScreen extends BaseScreen {
                 addTitleButton(btnCol = btnSingleCol, UiUtil.RIGHT);
                 update(2);
             case "icon_home":
+//                sys.io.File.saveBytes("test.png", GameUtil.encodePng(ResKeeper.getAssetImage("res/icon_maker.png")));
                 if (checkLogin()) {
                     if (screenTabIndex != 0) startScreen(Type.getClassName(HomeScreen), screenTabIndex != 1);
                 }

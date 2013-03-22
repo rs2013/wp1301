@@ -36,7 +36,8 @@ class Main {
 //        m.startScreen(Type.getClassName(TestScreen));
 //        m.startScreen(Type.getClassName(TestMakerScreen));
 //        m.startScreen(Type.getClassName(SimpleMaker));
-        m.startScreen(Type.getClassName(SelectedScreen));
+//        m.startScreen(Type.getClassName(SelectedScreen));
+        m.startScreen(Type.getClassName(Splash));
 
         trace("screen started");
         var st = new Status();

@@ -65,22 +65,33 @@ class RoxScreenManager extends Sprite {
     }
 
     public function finishScreen(screen: RoxScreen, ?toScreen: String, resultCode: Int, resultData: Dynamic, animate: RoxAnimate) {
+        var top: StackItem = stack.pop();
+        if (top == null || top.className != Type.getClassName(Type.getClass(screen)))
+            throw "Illegal stack state or bad source screen '" + top + "'";
+        if (toScreen != null) {
+            var found = false;
+            for (si in stack) { if (si.className == toScreen) { found = true; break; } }
+            if (!found) throw "Target screen '" + toScreen + "' is not on stack";
+        }
         var srcbmp = snap(screen);
-        var top: StackItem = null;
         var topscreen: RoxScreen = null;
         while (true) {
-            top = stack.pop();
-            if (top.className != Type.getClassName(Type.getClass(screen)) || stack.length == 0)
-                throw "Illegal stack state or bad target screen '" + toScreen + "'";
             top = stack.first();
-            topscreen = screens.get(top.className);
-            switchScreen(screen, topscreen, true);
-            screen = topscreen;
-            if (toScreen == null || top.className == toScreen) break;
+            topscreen = top != null ? screens.get(top.className) : null;
+            if (top == null || toScreen == null || top.className == toScreen) {
+                switchScreen(screen, topscreen, true);
+                break;
+            }
+            if (top.className != toScreen) {
+                switchScreen(topscreen, null, true);
+            }
         }
-        animate = animate != null ? animate : top.animate.getReverse();
-        if (animate.type != RoxAnimate.NONE) startAnimate(srcbmp, snap(topscreen), animate);
-        topscreen.onScreenResult(top.requestCode, resultCode, resultData);
+
+        if (top != null) {
+            animate = animate != null ? animate : top.animate.getReverse();
+            if (animate.type != RoxAnimate.NONE) startAnimate(srcbmp, snap(topscreen), animate);
+            topscreen.onScreenResult(top.requestCode, resultCode, resultData);
+        }
     }
 
     private inline function snap(s: RoxScreen) : Bitmap {
@@ -131,16 +142,20 @@ class RoxScreenManager extends Sprite {
     }
 
     private inline function switchScreen(src: RoxScreen, dest: RoxScreen, finish: Bool) {
-        removeChild(src);
-        src.onHidden();
+        if (contains(src)) {
+            removeChild(src);
+            src.onHidden();
+        }
         if (finish && src.disposeAtFinish) {
             var classname = Type.getClassName(Type.getClass(src));
             screens.remove(classname);
             ResKeeper.disposeBundle(classname);
             src.onDestroy();
         }
-        addChild(dest);
-        dest.onShown();
+        if (dest != null) {
+            addChild(dest);
+            dest.onShown();
+        }
     }
 
 }
