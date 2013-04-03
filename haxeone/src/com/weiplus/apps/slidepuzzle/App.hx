@@ -72,7 +72,7 @@ class App extends PlayScreen {
                 set.push(i);
             }
             set.push(-1);
-            shuffle(set);
+            shuffle(set, columns, rows);
         }
         for (i in 0...rows) {
             map[i] = [];
@@ -173,7 +173,7 @@ class App extends PlayScreen {
         }
     }
 
-    private function shuffle(a: Array<Int>) : Array<Int> {
+    public static function shuffle(a: Array<Int>, columns: Int, rows: Int) : Array<Int> {
         var idx = a.length - 1;
         for (i in 0...a.length * 3) { // just count, i is not used
             var y = Std.int(idx / columns), x = idx % columns;

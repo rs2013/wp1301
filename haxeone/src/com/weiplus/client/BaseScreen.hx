@@ -54,12 +54,12 @@ class BaseScreen extends RoxScreen {
         content = createContent(conth);
         content.rox_move(0, screenHeight - conth);
         addChild(content);
-        drawBackground(screenWidth, conth);
+        drawBackground();
         if (hasTitleBar) addChild(titleBar);
     }
 
-    public function drawBackground(w: Float, h: Float) {
-        graphics.rox_drawImage(ResKeeper.getAssetImage("res/bg_main.jpg"), 0, 0, w, h);
+    public function drawBackground() {
+        graphics.rox_drawImage(ResKeeper.getAssetImage("res/bg_main.jpg"), 0, 0, screenWidth, screenHeight);
     }
 
     public function addTitleButton(btn: RoxFlowPane, align: Int) {

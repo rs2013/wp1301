@@ -1,6 +1,6 @@
 package com.weiplus.client;
 
-import com.weiplus.client.TestMakerScreen;
+//import com.weiplus.client.TestMakerScreen;
 import com.weiplus.client.model.AppData;
 import com.weiplus.client.model.Status;
 import com.roxstudio.haxe.ui.RoxApp;
@@ -37,7 +37,7 @@ class Main {
 //        m.startScreen(Type.getClassName(TestMakerScreen));
 //        m.startScreen(Type.getClassName(SimpleMaker));
 //        m.startScreen(Type.getClassName(SelectedScreen));
-        m.startScreen(Type.getClassName(Splash));
+        m.startRootScreen(Type.getClassName(Splash));
 
         trace("screen started");
         var st = new Status();

@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import nme.geom.Point;
 import com.roxstudio.haxe.ui.RoxFlowPane;
 import com.weiplus.client.model.AppData;
 import com.roxstudio.haxe.game.GameUtil;
@@ -28,7 +29,7 @@ class MakerScreen extends BaseScreen {
 
     public var btnNextStep: RoxFlowPane;
     public var status: Status;
-    public var image: BitmapData; // appData.image
+    public var image: { var bmd: BitmapData; var path: String; }; // appData.image
     public var data: Dynamic; // to be stored in the zip with filename "data.json", the image members will be encoded to jpeg format
 
 #if android
@@ -56,8 +57,7 @@ class MakerScreen extends BaseScreen {
 #if cpp
         var mask = new Sprite();
         mask.graphics.rox_fillRect(0x77000000, 0, 0, screenWidth, screenHeight);
-        var loading = UiUtil.staticText("处理中...", 0xFFFFFF, 36);
-        loading.rox_move((screenWidth - loading.width) / 2, (screenHeight - loading.height) / 2);
+        var loading = MyUtils.getLoadingAnim("处理中").rox_move(screenWidth / 2, screenHeight / 2);
         mask.addChild(loading);
         addChild(mask);
         GameUtil.worker.addJob(new SimpleJob<Dynamic>(null, packData, function(_) {
@@ -77,9 +77,13 @@ class MakerScreen extends BaseScreen {
 #if cpp
         if (FileSystem.exists(MAKER_DIR)) FileUtil.rmdir(MAKER_DIR, true);
         FileUtil.mkdirs(MAKER_DIR);
-        trace("start saving image");
-        File.saveBytes(MAKER_DIR + "/image.jpg", encodeJpeg(image));
-        trace("image saved, type=\"" + status.appData.type + "\"");
+        if (image.path == null) {
+            trace("start saving image");
+            File.saveBytes(MAKER_DIR + "/image.jpg", GameUtil.encodeJpeg(image.bmd));
+            trace("image saved, type=\"" + status.appData.type + "\"");
+        } else {
+            File.copy(image.path, MAKER_DIR + "/image.jpg");
+        }
         if (status.appData.type == "image") return;
         trace("start saving zip data");
         var cnt = 1;
@@ -91,7 +95,7 @@ class MakerScreen extends BaseScreen {
             var v = Reflect.field(data, f);
             if (Std.is(v, BitmapData)) {
                 var name = "" + (cnt++) + ".jpg";
-                var bytes = encodeJpeg(cast(v));
+                var bytes = GameUtil.encodeJpeg(cast(v));
                 zipdata.add({ fileName: name, fileSize: bytes.length, fileTime: now, compressed: false,
                             dataSize: bytes.length, data: bytes, crc32: null, extraFields: ef });
                 Reflect.setField(out, f, name);
@@ -109,14 +113,6 @@ class MakerScreen extends BaseScreen {
         output.close();
         trace("zip saved");
 #end
-    }
-
-    public static function encodeJpeg(img: BitmapData) : Bytes {
-        var bb = img.getPixels(new Rectangle(0, 0, img.width, img.height));
-        var output = new BytesOutput();
-        var w = new format.jpg.Writer(output);
-        w.write({ width: img.width, height: img.height, quality: 80, pixels: bb.rox_toBytes() });
-        return output.getBytes();
     }
 
 }

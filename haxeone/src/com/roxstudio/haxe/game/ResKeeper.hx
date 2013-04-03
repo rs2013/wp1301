@@ -19,6 +19,8 @@ using StringTools;
 
 class ResKeeper {
 
+    public static inline var DEFAULT_BUNDLE = "default";
+
     public static var currentBundle(default, set_currentBundle): String;
 
     private static var map: Hash<Dynamic>;
@@ -31,7 +33,7 @@ class ResKeeper {
     private static function __init__() {
         map = new Hash<Dynamic>();
         bundles = new Hash<Array<String>>();
-        set_currentBundle("default");
+        set_currentBundle(DEFAULT_BUNDLE);
     }
 
     public static function getBundle(?bundleId) : Hash<Dynamic> {
@@ -203,16 +205,18 @@ class ResKeeper {
     }
 
     public static inline function loadLocalImage(path: String) : BitmapData {
-        var bb = File.getBytes(path);
-        return bb != null ? BitmapData.loadFromHaxeBytes(bb) : null;
+        return if (FileSystem.exists(path)) {
+            var bb = File.getBytes(path);
+            bb != null ? BitmapData.loadFromHaxeBytes(bb) : null;
+        } else null;
     }
 
     public static inline function loadLocalText(path: String) : String {
-        return File.getContent(path);
+        return FileSystem.exists(path) ? File.getContent(path) : null;
     }
 
     public static inline function loadLocalData(path: String) : ByteArray {
-        return ByteArray.fromBytes(File.getBytes(path));
+        return FileSystem.exists(path) ? ByteArray.fromBytes(File.getBytes(path)) : null;
     }
 
     public static inline function url2path(url: String) : String {

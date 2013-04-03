@@ -1,5 +1,9 @@
 package com.roxstudio.haxe.ui;
 
+import nme.Lib;
+import com.roxstudio.haxe.ui.UiUtil;
+import com.roxstudio.haxe.game.GfxUtil;
+import haxe.Timer;
 import nme.text.TextFieldType;
 import com.roxstudio.haxe.net.RoxURLLoader;
 import com.roxstudio.haxe.game.ResKeeper;
@@ -120,14 +124,19 @@ class UiUtil {
         return new RoxNinePatch(npd);
     }
 
-    public static function asyncBitmap(url: String, ?minWidth: Float = 0, ?minHeight: Float = 0,
-                                      ?loadingDisplay: DisplayObject, ?errorDisplay: DisplayObject) : RoxAsyncBitmap {
+    public static function asyncBitmap(url: String, ?width: Float = 0, ?height: Float = 0,
+                                      ?loadingDisplay: DisplayObject, ?errorDisplay: DisplayObject) : DisplayObject {
         var ldr: RoxURLLoader = cast(ResKeeper.get(url));
-        if (ldr == null) {
+        if (ldr == null || ldr.status != RoxURLLoader.OK) {
             ldr = new RoxURLLoader(url, RoxURLLoader.IMAGE);
             ResKeeper.add(url, ldr);
+            return new RoxAsyncBitmap(ldr, width, height, loadingDisplay, errorDisplay);
+        } else {
+            var bmp = new Bitmap(cast ldr.data);
+            if (width != null) bmp.width = width;
+            if (height != null) bmp.height = height;
+            return bmp;
         }
-        return new RoxAsyncBitmap(ldr, minWidth, minHeight, loadingDisplay, errorDisplay);
     }
 
     private static var defaultBg: RoxNinePatchData;
@@ -236,18 +245,28 @@ class UiUtil {
         return dpc;
     }
 
+    public static inline function rox_removeByName(dpc: DisplayObjectContainer, name: String) : DisplayObjectContainer {
+        var dp = dpc.getChildByName(name);
+        if (dp != null) dpc.removeChild(dp);
+        return dpc;
+    }
+
     public static inline function rangeValue<T: Float>(v: T, min: T, max: T) : T {
         return v < min ? min : v > max ? max : v;
     }
 
-    public static inline function byteArray(?length: Null<Int>) : ByteArray {
-#if (flash || html5)
-        var bb = new ByteArray();
-        if (length != null) bb.length = length;
-        return bb;
-#else
-        return length != null ? new ByteArray(length) : new ByteArray();
-#end
+    public static function delay(task: Void -> Void, ?timeInMs: Int = 0) {
+        Timer.delay(task, timeInMs);
+    }
+
+    public static function message(text: String, ?timeInSec: Int = 2) {
+        var label = UiUtil.staticText(text, 0xFFFFFF, 24);
+        var box = new Sprite();
+        GfxUtil.rox_fillRoundRect(box.graphics, 0xBB333333, 0, 0, label.width + 20, label.height + 16);
+        box.addChild(UiUtil.rox_move(label, (box.width - label.width) / 2, (box.height - label.height) / 2));
+        var stage = Lib.current.stage;
+        stage.addChild(UiUtil.rox_move(box, (stage.stageWidth - box.width) / 2, stage.stageHeight - box.height - 20));
+        delay(function() { stage.removeChild(box); }, timeInSec * 1000);
     }
 
 }

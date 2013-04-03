@@ -1,5 +1,7 @@
 package com.weiplus.client;
 
+import nme.display.DisplayObjectContainer;
+import com.roxstudio.haxe.ui.RoxScreen;
 import nme.events.Event;
 import nme.events.Event;
 import com.roxstudio.haxe.ui.UiUtil;
@@ -45,6 +47,7 @@ class Postit extends Sprite {
     private var imageScale: Float;
     private var imageOffset: Float;
     private var placeholder: DisplayObject;
+    private var w: Float;
 
     public function new(inStatus: Status, width: Float, fullMode: Bool = false) {
         super();
@@ -53,6 +56,7 @@ class Postit extends Sprite {
     }
 
     public function setWidth(width: Float, fullMode: Bool = false) {
+        this.w = width;
         this.rox_removeAll();
         this.graphics.clear();
         var margin = width * MARGIN_RATIO;
@@ -78,26 +82,38 @@ class Postit extends Sprite {
         h += imageLabel.height;
         var liney = h;
         h += 2 + margin;
-        var head = UiUtil.asyncBitmap(status.user.profileImage, 60, 60);
+
+        var head: DisplayObject = UiUtil.asyncBitmap(status.user.profileImage, 60, 60);
+        if (head.width == 0 || head.height == 0) head = UiUtil.bitmap("res/no_avatar.png");
         var avbg = UiUtil.ninePatch("res/avatar_bg.9.png");
-        userAvatar = new RoxFlowPane([ head ], avbg);
-        userLabel = UiUtil.staticText(status.user.name, 0xFF0000, fontsize + 4);
+        userAvatar = new RoxFlowPane([ head ], avbg, function(_) {
+            parentScreen().startScreen(Type.getClassName(UserScreen), status.user.id);
+        });
+        userLabel = UiUtil.staticText(status.user.name, 0xFF0000, fontsize + 4, w - userAvatar.width - 2 * margin);
         var clock = UiUtil.bitmap("res/icon_time.png");
-        var time = UiUtil.staticText(timeStr(status.createdAt), 0, fontsize);
+        var time = UiUtil.staticText(MyUtils.timeStr(status.createdAt), 0, fontsize);
         var compact = new RoxNinePatchData(new Rectangle(0, 0, 20, 20));
         dateLabel = new RoxFlowPane([ clock, time ], new RoxNinePatch(compact));
         var tmp = new RoxFlowPane([ userLabel, dateLabel ], new RoxNinePatch(compact), UiUtil.LEFT);
         var hlayout = new RoxFlowPane([ userAvatar, tmp ], new RoxNinePatch(layout), [ margin ]);
         addChild(hlayout.rox_move(0, h));
         h += hlayout.height;
+
         if (fullMode) {
-            var praisebtn = UiUtil.button(UiUtil.TOP_LEFT, "res/icon_praise.png", "赞(" + status.praiseCount + ")", 0, fontsize + 2, "res/btn_grey.9.png");
-            var commentbtn = UiUtil.button(UiUtil.TOP_LEFT, "res/icon_comment.png", "评论(" + status.commentCount + ")", 0, fontsize + 2, "res/btn_grey.9.png");
-            var morebtn = UiUtil.button(UiUtil.TOP_LEFT, "res/icon_more.png", "", 0, fontsize + 2, "res/btn_grey.9.png");
+            var praisebtn = UiUtil.button(UiUtil.TOP_LEFT, status.praised ? "res/icon_praised.png" : "res/icon_praise.png",
+                    "赞(" + status.praiseCount + ")", 0, fontsize + 2, "res/btn_grey.9.png", onButton);
+            praisebtn.name = "praise_" + status.id;
+            var commentbtn = UiUtil.button(UiUtil.TOP_LEFT, "res/icon_comment.png",
+                    "评论(" + status.commentCount + ")", 0, fontsize + 2, "res/btn_grey.9.png", onButton);
+            commentbtn.name = "comment_" + status.id;
+            var morebtn = UiUtil.button(UiUtil.TOP_LEFT, "res/icon_more.png",
+                    "", 0, fontsize + 2, "res/btn_grey.9.png", onButton);
+            morebtn.name = "more_" + status.id;
             infoLabel = new RoxFlowPane([ praisebtn, commentbtn, morebtn ], new RoxNinePatch(layout));
             addChild(infoLabel.rox_move(0, h));
             h += infoLabel.height;
         }
+
         GfxUtil.rox_fillRoundRect(graphics, 0xFFFFFFFF, 0, 0, width, h, 6);
         GfxUtil.rox_line(graphics, 2, 0xFFE6E6E6, 10, liney, width - 10, liney);
         if (appdata != null && appdata.width > 0 && appdata.height > 0 && appdata.image != null) {
@@ -110,23 +126,8 @@ class Postit extends Sprite {
                 imgLdr.addEventListener(Event.COMPLETE, update);
             }
         }
+
         update(null);
-    }
-
-    private function timeStr(date: Date) : String {
-        var now = Date.now().getTime() / 1000;
-        var time = date.getTime() / 1000;
-        var dt = now - time;
-        if (dt <= 60) {
-            return "刚刚";
-        } else if (dt <= 3600) {
-            return "" + Std.int(dt / 60) + "分钟前";
-        } else if (dt <= 86400) {
-            return "" + Std.int(dt / 3600) + "小时前";
-        } else {
-            return "" + (date.getMonth() + 1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes();
-        }
-
     }
 
     private function onPlay(e) {
@@ -136,7 +137,7 @@ class Postit extends Sprite {
     private function update(_) {
         if (imgLdr == null) return;
         var appdata = status.appData;
-        var imw = width, imh = appdata.height * imageScale;
+        var imw = w, imh = appdata.height * imageScale;
         if (placeholder != null && contains(placeholder)) removeChild(placeholder);
         switch (imgLdr.status) {
             case RoxURLLoader.OK:
@@ -155,8 +156,9 @@ class Postit extends Sprite {
                 graphics.endFill();
                 if (appdata.type != null && appdata.type != "" && appdata.type != AppData.IMAGE) {
                     playButton = UiUtil.button("res/btn_play.png", onPlay);
+//                    trace("imw=" + imw + ",appdata.w="+appdata.width+",scale="+(imw/640));
                     playButton.rox_scale(imw / 640);
-                    playButton.rox_anchor(UiUtil.CENTER).rox_move(imw / 2, imh / 2);
+                    playButton.rox_move((imw - playButton.width) / 2, (imh - playButton.height) / 2);
                     addChild(playButton);
                 }
 //                trace("im="+imw+","+imh+",scale="+imageScale+",offset="+imageOffset);
@@ -164,9 +166,48 @@ class Postit extends Sprite {
                 placeholder = UiUtil.staticText("载入失败");
                 addChild(placeholder.rox_move((imw - placeholder.width) / 2, (imh - placeholder.height) / 2));
             case RoxURLLoader.LOADING:
-                placeholder = UiUtil.staticText("载入中...");
-                addChild(placeholder.rox_move((imw - placeholder.width) / 2, (imh - placeholder.height) / 2));
+                placeholder = MyUtils.getLoadingAnim("");
+                addChild(placeholder.rox_move(imw / 2, imh / 2));
         }
+    }
+
+    private function onButton(e: Dynamic) {
+        var name: String = e.target.name;
+        var idx = name.indexOf("_");
+        var id = name.substr(idx + 1);
+        name = name.substr(0, idx);
+//#if android
+        switch (name) {
+            case "praise":
+                HpApi.instance.get("/statuses/praise/" + id, {}, function(code: Int, data: Dynamic) {
+                    switch (code) {
+                        case 200:
+                            var stat = data.statuses[0];
+                            status.praiseCount = stat.praiseCount;
+                            status.praised = true;
+                            setWidth(w, true);
+                            UiUtil.message("赞 +1");
+                        case 19:
+                            UiUtil.message("已经赞过了");
+//                            UiUtil.message
+                        default:
+                            UiUtil.message("网络错误，ex=" + data);
+                    }
+                });
+            case "comment":
+                parentScreen().startScreen(Type.getClassName(CommentsScreen), id);
+            case "more":
+        }
+
+//#end
+    }
+
+    private inline function parentScreen() : RoxScreen {
+        var screen: DisplayObjectContainer = this;
+        do {
+            screen = screen.parent;
+        } while (screen != null && !Std.is(screen, RoxScreen));
+        return cast screen;
     }
 
 }

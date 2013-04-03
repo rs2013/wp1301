@@ -39,19 +39,19 @@ class HarryCamera extends MakerScreen {
 //        if (image != null) finish(RoxScreen.CANCELED);
 //    }
 
-    private function onActive(_) {
+    private function onActive1(_) {
 #if android
         var s = HaxeStub.getResult(112);
         var json: Dynamic = haxe.Json.parse(s);
         trace(">>HarryCamera active, result=" + s + ",parsed=" + json);
         if (untyped json.resultCode != "ok") return;
         var path = untyped json.intentDataPath;
-        image = ResKeeper.loadLocalImage(path);
+        image = { path: path, bmd: ResKeeper.loadLocalImage(path) };
         var appdata: AppData = status.appData;
-        appdata.width = image.width;
-        appdata.height = image.height;
+        appdata.width = image.bmd.width;
+        appdata.height = image.bmd.height;
         appdata.type = "image";
-        var bmd = processImg(image);
+        var bmd = processImg(image.bmd);
         content.graphics.rox_drawImage(ResKeeper.getAssetImage("res/bg_play.jpg"), null, true, true, 0, 0, screenWidth, screenHeight);
         content.graphics.rox_drawImage(bmd, null, false, true, 0, 0, bmd.width, bmd.height);
 //        onNextStep();
@@ -162,17 +162,27 @@ class HarryCamera extends MakerScreen {
         return v < min ? min : v > max ? max : v;
     }
 
-    private function onActive1(_) {
+    override public function onScreenResult(_, _, _) {
+        finish(RoxScreen.CANCELED);
+    }
+
+    private function onActive(_) {
 #if android
         var s = HaxeStub.getResult(112);
         var json: Dynamic = haxe.Json.parse(s);
         trace(">>HarryCamera active, result=" + s + ",parsed=" + json);
-        if (untyped json.resultCode != "ok") return;
+        if (untyped json.resultCode != "ok") { // canceled
+            finish(RoxScreen.CANCELED);
+            return;
+        }
         var path = untyped json.intentDataPath;
-        image = ResKeeper.loadLocalImage(path);
+        image = { path: path, bmd: ResKeeper.loadLocalImage(path) };
+        trace("HarryCamera.onActive: image=" + image);
+//        var bmp = new nme.display.Bitmap(image);
+//        content.addChild(bmp);
         var appdata: AppData = status.appData;
-        appdata.width = image.width;
-        appdata.height = image.height;
+        appdata.width = image.bmd.width;
+        appdata.height = image.bmd.height;
         appdata.type = "image";
         onNextStep();
 #end

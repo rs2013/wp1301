@@ -23,25 +23,25 @@ class HpManager
 	}
 	
 	
-	private static var _check_func:Dynamic;
+	private static var _login_func:Dynamic;
 
-	public static function check():Bool
+	public static function login():Bool
 	{
-		if (_check_func == null)
-			_check_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "check", "()Z", true);
+		if (_login_func == null)
+			_login_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "login", "()Z", true);
 		var a = new Array<Dynamic>();
-		return _check_func(a);
+		return _login_func(a);
 	}
 	
 	
-	private static var _login_func:Dynamic;
+	private static var _loginOld_func:Dynamic;
 
-	public static function login():Void
+	public static function loginOld():Void
 	{
-		if (_login_func == null)
-			_login_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "login", "()V", true);
+		if (_loginOld_func == null)
+			_loginOld_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "loginOld", "()V", true);
 		var a = new Array<Dynamic>();
-		_login_func(a);
+		_loginOld_func(a);
 	}
 	
 	
@@ -118,10 +118,10 @@ class HpManager
 	
 	private static var _postStatus_func:Dynamic;
 
-	public static function postStatus(arg0:String, arg1:String, arg2:String, arg3:String, arg4:String, arg5:String, arg6:Dynamic /*org.haxe.nme.HaxeObject*/):Void
+	public static function postStatus(arg0:Array<String>, arg1:String, arg2:String, arg3:String, arg4:String, arg5:String, arg6:String, arg7:Dynamic /*org.haxe.nme.HaxeObject*/):Void
 	{
 		if (_postStatus_func == null)
-			_postStatus_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "postStatus", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/haxe/nme/HaxeObject;)V", true);
+			_postStatus_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "postStatus", "([Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/haxe/nme/HaxeObject;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);
@@ -130,6 +130,7 @@ class HpManager
 		a.push(arg4);
 		a.push(arg5);
 		a.push(arg6);
+		a.push(arg7);
 		_postStatus_func(a);
 	}
 	
@@ -229,6 +230,31 @@ class HpManager
 	}
 	
 	
+	private static var _isBindingEnabled_func:Dynamic;
+
+	public static function isBindingEnabled(arg0:String):Bool
+	{
+		if (_isBindingEnabled_func == null)
+			_isBindingEnabled_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "isBindingEnabled", "(Ljava/lang/String;)Z", true);
+		var a = new Array<Dynamic>();
+		a.push(arg0);
+		return _isBindingEnabled_func(a);
+	}
+	
+	
+	private static var _setBindingEnabled_func:Dynamic;
+
+	public static function setBindingEnabled(arg0:String, arg1:Bool):Void
+	{
+		if (_setBindingEnabled_func == null)
+			_setBindingEnabled_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "setBindingEnabled", "(Ljava/lang/String;Z)V", true);
+		var a = new Array<Dynamic>();
+		a.push(arg0);
+		a.push(arg1);
+		_setBindingEnabled_func(a);
+	}
+	
+	
 	private static var _isBindingSessionValid_func:Dynamic;
 
 	public static function isBindingSessionValid(arg0:String):Bool
@@ -238,6 +264,19 @@ class HpManager
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		return _isBindingSessionValid_func(a);
+	}
+	
+	
+	private static var _startAuth_func:Dynamic;
+
+	public static function startAuth(arg0:String, arg1:Dynamic /*org.haxe.nme.HaxeObject*/):Void
+	{
+		if (_startAuth_func == null)
+			_startAuth_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "startAuth", "(Ljava/lang/String;Lorg/haxe/nme/HaxeObject;)V", true);
+		var a = new Array<Dynamic>();
+		a.push(arg0);
+		a.push(arg1);
+		_startAuth_func(a);
 	}
 	
 	
@@ -274,6 +313,17 @@ class HpManager
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		return _createBinding_func(a);
+	}
+	
+	
+	private static var _getCandidate_func:Dynamic;
+
+	public static function getCandidate():Dynamic
+	{
+		if (_getCandidate_func == null)
+			_getCandidate_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getCandidate", "()Lcom/harryphoto/bind/Binding;", true);
+		var a = new Array<Dynamic>();
+		return _getCandidate_func(a);
 	}
 	
 	

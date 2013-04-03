@@ -1,6 +1,8 @@
 package com.weiplus.client;
 
 #if cpp
+import com.weiplus.client.model.Routine;
+import com.roxstudio.haxe.ui.UiUtil;
 import sys.FileSystem;
 import sys.io.File;
 #end
@@ -45,9 +47,9 @@ class TimelineScreen extends BaseScreen {
     private static inline var REFRESH_HEIGHT = 150;
     private static inline var TRIGGER_HEIGHT = 100;
 #if android
-    private static inline var CACHE_DIR = "/sdcard/.harryphoto/cache";
+    public static inline var CACHE_DIR = "/sdcard/.harryphoto/cache";
 #elseif windows
-    private static inline var CACHE_DIR = "cache";
+    public static inline var CACHE_DIR = "cache";
 #end
 
     var btnSingleCol: RoxFlowPane;
@@ -62,10 +64,10 @@ class TimelineScreen extends BaseScreen {
     var animating: Bool = false;
     var screenTabIndex = 1;
     var storedStatuses: Array<Dynamic>;
+    var page: PageModel;
 
     override public function onCreate() {
         title = UiUtil.bitmap("res/icon_logo.png");
-        hasBack = false;
         super.onCreate();
         btnCol = btnSingleCol = UiUtil.button("res/icon_single_column.png", null, "res/btn_common.9.png", onButton);
         addTitleButton(btnCol, UiUtil.RIGHT);
@@ -76,6 +78,26 @@ class TimelineScreen extends BaseScreen {
         content.addEventListener(RoxGestureEvent.GESTURE_SWIPE, onGesture);
         content.addEventListener(RoxGestureEvent.GESTURE_TAP, onGesture);
         content.addEventListener(RoxGestureEvent.GESTURE_PINCH, onGesture);
+        var btnpanel = buttonPanel();
+        btnpanel.name = "buttonPanel";
+
+        addChild(btnpanel.rox_move(0, screenHeight));
+//        trace("btnpanel="+btnpanel.x+","+btnpanel.y+","+btnpanel.width+","+btnpanel.height);
+        viewh = height - 95 * d2rScale;
+
+    }
+
+    override public function onNewRequest(data: Dynamic) {
+        super.onNewRequest(data);
+#if cpp
+        restore();
+#end
+        if (storedStatuses == null || storedStatuses.length == 0) {
+            addChild(MyUtils.getLoadingAnim("载入中").rox_move(screenWidth / 2, screenHeight / 2));
+            refresh(false);
+        } else {
+            updateList(storedStatuses, false);
+        }
     }
 
     override public function createContent(height: Float) : Sprite {
@@ -84,7 +106,10 @@ class TimelineScreen extends BaseScreen {
         main = new Sprite();
 //        update(2);
         sp.addChild(main);
+        return sp;
+    }
 
+    private function buttonPanel() : Sprite {
         var btnpanel = new Sprite();
         var btnbg = UiUtil.bitmap("res/bg_main_bottom.png", UiUtil.LEFT | UiUtil.BOTTOM);
         btnpanel.addChild(btnbg);
@@ -102,28 +127,13 @@ class TimelineScreen extends BaseScreen {
             btnpanel.addChild(button.rox_move(xoff, 0));
             xoff += w + 2;
         }
-        sp.addChild(btnpanel.rox_scale(d2rScale).rox_move(0, height));
-//        trace("btnpanel="+btnpanel.x+","+btnpanel.y+","+btnpanel.width+","+btnpanel.height);
-        viewh = height - 95 * d2rScale;
-
-#if cpp
-        restore();
-#end
-        if (storedStatuses == null || storedStatuses.length == 0) {
-            refresh(false);
-        } else {
-            updateList(null, false);
-        }
-
-        return sp;
+        btnpanel.rox_scale(d2rScale);
+        return btnpanel;
     }
 
     private function refresh(append: Bool) {
-        trace("refresh: append=" + append);
         var jsonStr = ResKeeper.getAssetText("res/home.json");
-        trace("=================\n"+Json.parse(jsonStr));
         var statuses: Array<Dynamic> = Json.parse(jsonStr).statuses.records;
-        trace("statuses.length=" + statuses.length);
         updateList(statuses, append);
     }
 
@@ -133,7 +143,8 @@ class TimelineScreen extends BaseScreen {
 
 //    private function
     private function updateList(statuses: Array<Dynamic>, append: Bool) {
-        trace("00000000000000000");
+        UiUtil.rox_removeByName(this, MyUtils.LOADING_ANIM_NAME);
+
         if (postits == null || !append) postits = [];
         if (statuses != null) {
             if (storedStatuses == null || !append) storedStatuses = [];
@@ -144,14 +155,15 @@ class TimelineScreen extends BaseScreen {
         } else {
             statuses = storedStatuses;
         }
-        trace("11111111111111");
         var spacing = screenWidth * SPACING_RATIO;
         var postitw = (screenWidth - (numCol + 1) * spacing) / numCol;
-        trace("2222222222222");
+        var oldest: Float = 999999999999.0;
         for (i in 0...statuses.length) {
             var ss = statuses[i];
             var status = new Status();
             status.id = ss.id;
+            var lid = Std.parseFloat(ss.id);
+            if (lid < oldest) oldest = lid;
             status.text = ss.status;
             status.createdAt = Date.fromTime(ss.ctime);
             status.commentCount = ss.commentCount;
@@ -179,18 +191,17 @@ class TimelineScreen extends BaseScreen {
             postit.addEventListener(Event.SELECT, onPlay);
             postits.push(postit);
         }
-        trace("33333333333333");
+        if (page != null && statuses.length > 0) page.oldestId = oldest;
         update(numCol);
-        trace("444444444444444");
     }
 
 #if cpp
 
     private function restore() {
         var filename = StringTools.replace(Type.getClassName(Type.getClass(this)), ".", "_") + ".json";
-        var path = CACHE_DIR + "/" + filename;
-        if (FileSystem.exists(path)) {
-            storedStatuses = Json.parse(File.getContent(path));
+        var cache = ResKeeper.get("cache:" + filename);
+        if (cache != null) {
+            storedStatuses = Json.parse(cast cache);
         }
     }
 
@@ -198,7 +209,9 @@ class TimelineScreen extends BaseScreen {
         var filename = StringTools.replace(Type.getClassName(Type.getClass(this)), ".", "_") + ".json";
         FileUtil.mkdirs(CACHE_DIR);
         var path = CACHE_DIR + "/" + filename;
-        File.saveContent(CACHE_DIR + "/" + filename, Json.stringify(storedStatuses));
+        var jsonStr = Json.stringify(storedStatuses);
+        File.saveContent(CACHE_DIR + "/" + filename, jsonStr);
+        ResKeeper.add("cache:" + filename, jsonStr, ResKeeper.DEFAULT_BUNDLE);
     }
 
 #end
@@ -224,12 +237,15 @@ class TimelineScreen extends BaseScreen {
         }
         main.rox_removeAll();
         main.graphics.clear();
+        mainh = 0;
+
         var spacing = screenWidth * SPACING_RATIO;
         var yoffset = 0.0;
         var headPanel = getHeadPanel();
         if (headPanel != null) {
             yoffset += headPanel.height + spacing;
             main.addChild(headPanel);
+            mainh += headPanel.height;
         }
         var colh: Array<Float> = [];
         for (i in 0...numCol) colh.push(0);
@@ -254,7 +270,6 @@ class TimelineScreen extends BaseScreen {
                 postity = postit.y;
             }
         }
-        mainh = 0;
         for (i in 0...colh.length) {
             if (colh[i] > mainh) { mainh = colh[i]; }
         }
@@ -348,36 +363,20 @@ class TimelineScreen extends BaseScreen {
                 update(2);
             case "icon_home":
 //                sys.io.File.saveBytes("test.png", GameUtil.encodePng(ResKeeper.getAssetImage("res/icon_maker.png")));
-                if (checkLogin()) {
-                    if (screenTabIndex != 0) startScreen(Type.getClassName(HomeScreen), screenTabIndex != 1);
-                }
+                if (screenTabIndex != 0) finish(SCREEN(Type.getClassName(HomeScreen)), RoxScreen.CANCELED);
 //                startScreen(Type.getClassName(com.weiplus.client.TestGesture), new RoxAnimate(RoxAnimate.ZOOM_IN, new Rectangle(80, 80, 200, 300)));
             case "icon_selected":
-                if (screenTabIndex != 1) finish(Type.getClassName(SelectedScreen), RoxScreen.CANCELED);
+                if (screenTabIndex != 1) startScreen(Type.getClassName(SelectedScreen), screenTabIndex != 0 ? PARENT : null);
             case "icon_maker":
-                if (checkLogin()) {
-                    if (screenTabIndex != 2) startScreen(Type.getClassName(MakerList), screenTabIndex != 1);
+                if (screenTabIndex != 2) {
+                    var btnRect = new Rectangle(screenWidth * 0.4, screenHeight - 100, screenWidth * 0.2, 100);
+                    startScreen(Type.getClassName(MakerList), new RoxAnimate(RoxAnimate.ZOOM_IN, btnRect), this.className);
                 }
             case "icon_message":
-#if android
-                HpManager.logout();
-#end
-//                if (tabIndex != 3) startScreen(Type.getClassName(MessageScreen), tabIndex != 1);
+                if (screenTabIndex != 3) startScreen(Type.getClassName(RoutineScreen), screenTabIndex != 0 ? PARENT : null);
             case "icon_account":
-                if (checkLogin()) {
-                    if (screenTabIndex != 4) startScreen(Type.getClassName(UserScreen), screenTabIndex != 1);
-                }
+                if (screenTabIndex != 4) startScreen(Type.getClassName(UserScreen), screenTabIndex != 0 ? PARENT : null);
         }
-    }
-
-    private inline function checkLogin() : Bool {
-#if android
-        var sessionValid = HpManager.check();
-        if (!sessionValid) HpManager.login();
-        return sessionValid;
-#else
-        return true;
-#end
     }
 
 }

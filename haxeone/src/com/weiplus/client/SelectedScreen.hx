@@ -11,7 +11,6 @@ using com.roxstudio.haxe.game.GfxUtil;
 class SelectedScreen extends TimelineScreen {
 
     private var append: Bool;
-    private var page: PageModel;
     private var refreshing: Bool = false;
 
     public function new() {
@@ -20,35 +19,30 @@ class SelectedScreen extends TimelineScreen {
     }
 
     override private function refresh(append: Bool) {
-//        trace("HpManager.check=" + HpManager.check());
-//        super.refresh(top);
-//        if (HpManager.check()) {
-//            startScreen(Type.getClassName(HomeScreen));
-//            return;
-//        }
+        if (refreshing) return;
         this.append = append && page != null;
-        if (refreshing || append && page != null && page.page == page.totalPages) return;
-        var nextPage = append && page != null ? UiUtil.rangeValue(page.page + 1, 1, page.totalPages) : 1;
 
-#if android
-        HpManager.getPublicTimeline(nextPage, 10, 0, this);
-#else
-        var ldr = new RoxURLLoader("http://s-56378.gotocdn.com/harryphoto/statuses/public_timeline.json?page=" +
-                nextPage + "&rows=10&accessToken=&refreshToken=&format=json", RoxURLLoader.TEXT);
-        trace("refreshUrl="+ldr.url);
-        ldr.addEventListener(Event.COMPLETE, function(_) { onApiCallback(null, "ok", ldr.data); } );
+//#if android
+//        HpManager.getPublicTimeline(nextPage, 10, 0, this);
+//#else
+        var param = { sinceId: 0, rows: 20 };
+        if (this.append) untyped param.maxId = Std.int(page.oldestId - 1);
+        HpApi.instance.get("/statuses/public_timeline", param, onComplete);
+//        var ldr = new RoxURLLoader("http://s-56378.gotocdn.com/harryphoto/statuses/public_timeline.json?" +
+//            "sinceId=0&rows=20&refreshToken=&format=json&" +
+//            (this.append ? "maxId=" + Std.int(page.oldestId - 1) + "&" : "")  +
+//            "accessToken=", RoxURLLoader.TEXT);
+//        trace("refreshUrl="+ldr.url);
+//        ldr.addEventListener(Event.COMPLETE, onComplete);
         refreshing = true;
-#end
+//#end
     }
 
-    private function onApiCallback(apiName: String, resultCode: String, jsonStr: String) {
-//        jsonStr = StringTools.replace(jsonStr, "http://s-56378.gotocdn.com/", "http://s-56378.gotocdn.com:8080/");
-        trace("onApiCallback: name="+apiName+",result="+resultCode);//+",text="+jsonStr);
+    private function onComplete(code: Int, data: Dynamic) {
         refreshing = false;
-        if (resultCode != "ok") return;
-        var pageInfo = Json.parse(jsonStr).statuses;
+        if (code != 200) return;
+        var pageInfo = data.statuses;
         if (page == null) page = new PageModel();
-        page.page = pageInfo.page;
         page.rows = pageInfo.rows;
         page.totalPages = pageInfo.totalPages;
         page.totalRows = pageInfo.totalRows;

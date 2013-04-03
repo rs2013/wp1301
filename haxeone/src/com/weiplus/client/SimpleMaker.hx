@@ -97,6 +97,7 @@ class SimpleMaker extends MakerScreen {
         var xscale = screenWidth / bmp.width;
         var viewh = viewHeight - levelPane.height;
         var yscale = viewh / bmp.height;
+//        trace("bmp="+bmp.width+","+bmp.height+",scale="+xscale+",yscale"+",viewh="+viewh);
         preview.rox_scale(GameUtil.min(xscale, yscale));
         preview.rox_move(screenWidth / 2, viewh / 2);
     }
@@ -123,7 +124,7 @@ class SimpleMaker extends MakerScreen {
 //        path = StringTools.replace(path, "\\/", "/");
         var bmd = ResKeeper.loadLocalImage(path);
 #else
-        var bmd = ResKeeper.loadAssetImage("res/data/11.jpg");
+        var bmd = ResKeeper.loadAssetImage("res/8.jpg");
 #end
         requestCode = -1;
         var stdbmd = new BitmapData(SIDELEN, SIDELEN, true, 0);

@@ -59,10 +59,8 @@ class App extends PlayScreen {
         var xscale: Float = viewWidth / image.width, yscale: Float = viewHeight / image.height;
         var sc: Float = GameUtil.min(xscale, yscale);
         var origw = viewWidth / sc, origh = viewHeight / sc;
-        trace("view="+viewWidth+","+viewHeight+",orig="+origw+","+origh+",sc="+sc+","+xscale+","+yscale);
 
         groups = new IntHash<TileGroup>();
-        var top = 1, left: Int;
         var isNew = saved == null || saved.tiles == null;
         var savedTiles: IntHash<Array<Int>> = null;
         if (!isNew) {
@@ -79,10 +77,13 @@ class App extends PlayScreen {
                 }
             }
         }
+        var bottoms: Array<Int> = [];
         for (i in 0...rows) {
-            var bottom = i == rows - 1 ? 1 : Std.random(2) + 2;
-            left = 1;
+            var left = 1;
             for (j in 0...columns) {
+                var top = i == 0 ? 1 : 3 - (bottoms[j] - 2);
+                var bottom = i == rows - 1 ? 1 : Std.random(2) + 2;
+                bottoms[j] = bottom;
                 var right = j == columns - 1 ? 1 : Std.random(2) + 2;
                 var sides: Array<Int>, x: Float, y: Float;
                 if (isNew) {
@@ -112,7 +113,6 @@ class App extends PlayScreen {
                 }
                 left = 3 - (right - 2);
             }
-            top = 3 - (bottom - 2);
         }
         board.rox_scale(sc);
 
@@ -172,6 +172,7 @@ class App extends PlayScreen {
 
     private function onTouch(e: RoxGestureEvent) : Void {
         var tile = cast(e.target.parent, Tile);
+//        trace("tile="+tile);
         if (e.type == RoxGestureEvent.GESTURE_PAN) {
             //trace(">>released<<=" + tile);
             var lpt = RoxGestureAgent.localOffset(tile, e.extra);

@@ -7,6 +7,11 @@ class User {
     public var createdAt: Date;
     public var profileUrl: String; // url
     public var profileImage: String; // url
+    public var lastVisitAt: Date;
+
+    public var followerCount: Int;
+    public var postCount: Int;
+    public var friendCount: Int;
 
     public function new() {
     }

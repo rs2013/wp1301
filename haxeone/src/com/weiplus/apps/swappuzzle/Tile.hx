@@ -1,6 +1,7 @@
 package com.weiplus.apps.swappuzzle;
 
 import com.roxstudio.haxe.game.GameUtil;
+import com.roxstudio.haxe.io.IOUtil;
 import nme.display.Bitmap;
 import nme.display.Sprite;
 import nme.display.BitmapData;
@@ -55,7 +56,7 @@ class Tile extends Sprite {
         mask.draw(shape, new Matrix(scale, 0, 0, scale, 0, 0));
         var mbuf = mask.getPixels(new Rectangle(0, 0, sl, sl));
         var bbuf = bmd.getPixels(new Rectangle(0, 0, sl, sl));
-        var obuf = UiUtil.byteArray(mbuf.length);
+        var obuf = IOUtil.byteArray(mbuf.length);
         //mbuf.position = bbuf.position = 0;
         //trace(">>>>>mb=" + mbuf.bytesAvailable + ",len=" + mbuf.length + ",bb=" + bbuf.bytesAvailable + ",len=" + bbuf.length + ",pos=" + mbuf.position);
         for (i in 0...mbuf.length) {

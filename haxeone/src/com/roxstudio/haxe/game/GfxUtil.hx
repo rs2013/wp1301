@@ -29,8 +29,8 @@ class GfxUtil {
     }
 
     public static inline function rox_drawRegion(g: Graphics, bmd: BitmapData, ?region: Rectangle,
-                                                x: Float, y: Float, ?w: Null<Float>, ?h: Null<Float>,
-                                                ?smooth: Bool = true) : Graphics {
+                                                 x: Float, y: Float, ?w: Null<Float>, ?h: Null<Float>,
+                                                 ?smooth: Bool = true) : Graphics {
         if (region == null) region = new Rectangle(0, 0, bmd.width, bmd.height);
         if (w == null) w = region.width;
         if (h == null) h = region.height;
@@ -38,6 +38,42 @@ class GfxUtil {
         var mat = new Matrix(xsc, 0, 0, ysc, x - region.x * xsc, y - region.y * ysc);
         g.beginBitmapFill(bmd, mat, false, smooth);
         g.drawRect(x, y, w, h);
+        g.endFill();
+        return g;
+    }
+
+    public static inline function rox_drawRegionRound(g: Graphics, bmd: BitmapData, ?region: Rectangle,
+                                                 x: Float, y: Float, ?w: Null<Float>, ?h: Null<Float>,
+                                                 hRadius: Float = 6, ?vRadius: Null<Float>,
+                                                 ?smooth: Bool = true) : Graphics {
+        if (region == null) region = new Rectangle(0, 0, bmd.width, bmd.height);
+        if (w == null) w = region.width;
+        if (h == null) h = region.height;
+        var xsc = w / region.width, ysc = h / region.height;
+        var mat = new Matrix(xsc, 0, 0, ysc, x - region.x * xsc, y - region.y * ysc);
+        g.beginBitmapFill(bmd, mat, false, smooth);
+        if (vRadius == null) vRadius = hRadius;
+        g.drawRoundRect(x, y, w, h, 2 * hRadius, 2 * vRadius);
+        g.endFill();
+        return g;
+    }
+
+    public static inline function rox_bitmapFill(g: Graphics, bmd: BitmapData, ?region: Rectangle,
+                                               x: Float, y: Float, w: Float, h: Float) : Graphics {
+        if (region == null) region = new Rectangle(0, 0, bmd.width, bmd.height);
+        var rx = region.x, ry = region.y, rw = region.width, rh = region.height;
+        var mat = new Matrix(1, 0, 0, 1, 0, 0);
+        var cols = Std.int((w + rw - 1) / rw), rows = Std.int((h + rh - 1) / rh);
+        var remw = w + rw - rw * cols, remh = h + rh - rh * rows;
+        for (i in 0...rows) {
+            for (j in 0...cols) {
+                var xx = x + j * rw, yy = y + i * rh;
+                mat.tx = xx - rx;
+                mat.ty = yy - ry;
+                g.beginBitmapFill(bmd, mat, false, false);
+                g.drawRect(xx, yy, j == cols - 1 ? remw : rw, i == rows - 1 ? remh : rh);
+            }
+        }
         g.endFill();
         return g;
     }
@@ -65,6 +101,16 @@ class GfxUtil {
         if (vRadius == null) vRadius = hRadius;
         g.drawRoundRect(x, y, w, h, 2 * hRadius, 2 * vRadius);
         g.endFill();
+        return g;
+    }
+
+    public static inline function rox_drawRoundRect(g: Graphics, thinkness: Float, color: Int,
+                                                    x: Float, y: Float, w: Float, h: Float,
+                                                    hRadius: Float = 6, ?vRadius: Null<Float>) : Graphics {
+        g.lineStyle(thinkness, color & 0xFFFFFF, (color >>> 24) / 255);
+        if (vRadius == null) vRadius = hRadius;
+        g.drawRoundRect(x, y, w, h, 2 * hRadius, 2 * vRadius);
+        g.lineStyle();
         return g;
     }
 

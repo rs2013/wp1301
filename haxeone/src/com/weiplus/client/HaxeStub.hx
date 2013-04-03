@@ -64,6 +64,20 @@ class HaxeStub
 	}
 	
 	
+	private static var _startInputDialog_func:Dynamic;
+
+	public static function startInputDialog(arg0:String, arg1:String, arg2:Dynamic /*org.haxe.nme.HaxeObject*/):Void
+	{
+		if (_startInputDialog_func == null)
+			_startInputDialog_func = nme.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startInputDialog", "(Ljava/lang/String;Ljava/lang/String;Lorg/haxe/nme/HaxeObject;)V", true);
+		var a = new Array<Dynamic>();
+		a.push(arg0);
+		a.push(arg1);
+		a.push(arg2);
+		_startInputDialog_func(a);
+	}
+	
+	
 	private static var _onActivityResult_func:Dynamic;
 
 	public static function onActivityResult(arg0:Int, arg1:Int, arg2:Dynamic /*android.content.Intent*/):Void

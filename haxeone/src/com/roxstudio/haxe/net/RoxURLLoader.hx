@@ -43,21 +43,26 @@ class RoxURLLoader extends EventDispatcher {
 
     public function load(url: String, ?type: Int = BINARY) {
         if (status == LOADING) throw "Cannot load while previous task is not completed.";
+//        trace("AAAAAAAAAAAAAA url=" + url);
         this.url = url;
         this.type = type;
         status = LOADING;
         data = null;
         progress = bytesTotal = 0.0;
+//        trace("BBBBBBBBBBBB");
         try {
             loader = new URLLoader();
             loader.dataFormat = type == TEXT ? URLLoaderDataFormat.TEXT : URLLoaderDataFormat.BINARY;
+//            trace("CCCCCCCCCCCCC");
             loader.load(new URLRequest(url));
+//            trace("DDDDDDDDDDDDDDDDD");
             loader.addEventListener(Event.COMPLETE, onComplete);
             loader.addEventListener(ProgressEvent.PROGRESS, onProgress);
             loader.addEventListener(IOErrorEvent.IO_ERROR, onError);
 #if !html5
             loader.addEventListener(nme.events.SecurityErrorEvent.SECURITY_ERROR, onError);
 #end
+//            trace("EEEEEEEEEEEEEEEee");
         } catch (e: Dynamic) {
             trace("url=" + url + ",error="+e);
             onError(null);
@@ -65,6 +70,7 @@ class RoxURLLoader extends EventDispatcher {
     }
 
     private inline function onComplete(_) {
+//        trace("RoxURLLoader.onComplete, url=" + url);
         status = OK;
         switch (type) {
             case IMAGE:
@@ -90,7 +96,7 @@ class RoxURLLoader extends EventDispatcher {
     }
 
     private inline function onError(e: Dynamic) {
-        trace("url=" + url + ",error=!" + e);
+        trace("RoxURLLoader.onError. url=" + url + ",error=!" + e);
         status = ERROR;
         loader = null;
         dispatchEvent(new Event(Event.COMPLETE));

@@ -153,6 +153,7 @@ public class MainActivity extends org.haxe.nme.GameActivity implements SurfaceHo
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i("MainActivity", "onActivityResult: code=" + requestCode + ",result=" + resultCode + ",data=" + data);
         super.onActivityResult(requestCode, resultCode, data);
+        if (HpManager.getCandidate() != null) HpManager.getCandidate().onActivityResult(this, requestCode, resultCode, data);
         HaxeStub.onActivityResult(requestCode, resultCode, data);
     }
     

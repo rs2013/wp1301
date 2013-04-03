@@ -1,5 +1,7 @@
 package com.weiplus.client;
 
+import haxe.Json;
+import com.roxstudio.haxe.ui.RoxScreenManager;
 import com.roxstudio.haxe.game.GameUtil;
 import nme.geom.Rectangle;
 import nme.display.Shape;
@@ -7,7 +9,6 @@ import nme.text.TextField;
 import nme.display.BitmapData;
 import com.roxstudio.haxe.game.ResKeeper;
 import nme.display.Bitmap;
-import com.roxstudio.haxe.ui.UiUtil;
 import com.roxstudio.haxe.ui.RoxNinePatch;
 import nme.geom.Rectangle;
 import com.roxstudio.haxe.ui.RoxNinePatchData;
@@ -34,10 +35,12 @@ class PostScreen extends BaseScreen {
     var data: Dynamic;
     var preview: Sprite;
     var input: TextField;
+    var main: Sprite;
+    var useBinds: Hash<Bool>;
 
     override public function onCreate() {
         title = new Sprite();
-        title.addChild(UiUtil.staticText("发布", 0xFF0000, 36));
+        title.addChild(UiUtil.staticText("发布", 0xFFFFFF, 36));
         super.onCreate();
         graphics.rox_fillRect(0xFF2C2C2C, 0, 0, screenWidth, screenHeight);
         var btn = UiUtil.button(UiUtil.TOP_LEFT, null, "发布", 0xFFFFFF, 36, "res/btn_red.9.png", doPost);
@@ -46,21 +49,29 @@ class PostScreen extends BaseScreen {
 
     override public function createContent(height: Float) : Sprite {
         var content = super.createContent(height);
-        var main = new Sprite();
+
+        useBinds = new Hash<Bool>();
+        for (t in com.weiplus.client.model.Binding.allTypes()) {
+            var enabled = true;
+#if android
+            enabled = HpManager.isBindingEnabled(com.weiplus.client.model.Binding.id(t));
+#end
+            useBinds.set(com.weiplus.client.model.Binding.id(t), enabled);
+        }
+        trace("useBinds="+useBinds);
+
+        main = new Sprite();
         var mainh = height / d2rScale;
 
         preview = new Sprite();
         preview.graphics.rox_fillRect(0xFFFFFFFF, 0, 0, 320, 320);
+        preview.graphics.rox_fillRect(0xFF2C2C2C, 4, 4, 312, 312);
 
         main.addChild(preview.rox_move((designWidth - preview.width) / 2, SPACING));
 
         var sharepanel = sharePanel();
         main.addChild(sharepanel.rox_move(0, mainh - sharepanel.height));
 
-//        var shape = new Shape();
-//        shape.graphics.rox_fillRect(0xFFFF0000, 0, 0, 6, sharepanel.height);
-//        main.addChild(shape.rox_move(0, mainh - sharepanel.height));
-//
         var inputh = mainh - sharepanel.height - preview.height - 3 * SPACING;
         var shape = new Shape();
         shape.graphics.rox_fillRoundRect(0xFFFFFFFF, 0, 0, 80, 80);
@@ -81,7 +92,7 @@ class PostScreen extends BaseScreen {
 
     override public function onNewRequest(makerData: Dynamic) {
         status = makerData.status;
-        image = makerData.image;
+        image = makerData.image.bmd;
         data = makerData.data;
         trace("PostScreen: image.w=" + image.width + ",h=" + image.height);
         input.text = status.appData.type == "image" ? TEXT2 : TEXT1;
@@ -89,16 +100,19 @@ class PostScreen extends BaseScreen {
             null;
         } else {
             var min: Float = GameUtil.min(image.width, image.height);
-            trace("min=" + min);
             new Rectangle((image.width - min) / 2, (image.height - min) / 2, min, min);
         }
         preview.graphics.rox_drawRegion(image, rect, 4, 4, 312, 312);
-        if (status.appData.type != "image") {
+//        var bmp = new Bitmap(image);
+//        preview.addChild(bmp);
+        var type = status.appData.type;
+        if (type != "image") {
             var playButton = UiUtil.button("res/btn_play.png", onPlay);
             playButton.rox_scale(0.6);
             preview.addChild(playButton);
             playButton.rox_move((preview.width - playButton.width) / 2, (preview.height - playButton.height) / 2);
         }
+
     }
 
     private function onPlay(_) {
@@ -110,25 +124,43 @@ class PostScreen extends BaseScreen {
     private function doPost(_) {
         trace("doPost");
 #if android
-        var mask = new Sprite();
-        mask.graphics.rox_fillRect(0x77000000, 0, 0, screenWidth, screenHeight);
-        var loading = UiUtil.staticText("发布中...", 0xFFFFFF, 36);
-        loading.rox_move((screenWidth - loading.width) / 2, (screenHeight - loading.height) / 2);
-        mask.addChild(loading);
-        addChild(mask);
+        addChild(waitingAnim("发布中"));
         var imgPath = MAKER_DIR + "/image.jpg";
         if (!sys.FileSystem.exists(imgPath)) imgPath = "";
         var zipPath = MAKER_DIR + "/data.zip";
         if (!sys.FileSystem.exists(zipPath)) zipPath = "";
-        HpManager.postStatus(input.text, imgPath, status.appData.type, zipPath, "", "", this);
+        var types: Array<String> = [];
+        for (t in useBinds.keys()) {
+            if (useBinds.get(t)) types.push(t);
+        }
+        HpManager.postStatus(types, input.text, imgPath, status.appData.type, zipPath, "", "", this);
 #else
-        finish(Type.getClassName(SelectedScreen), RoxScreen.OK);
+        onApiCallback(null, "ok", "");
 #end
     }
 
-    private function onApiCallback(apiName: String, resultCode: String, jsonStr: String) {
-        removeChildAt(numChildren - 1); // remove mask
-        finish(Type.getClassName(SelectedScreen), RoxScreen.OK);
+    private function waitingAnim(label: String) : Sprite {
+        var mask = new Sprite();
+        mask.graphics.rox_fillRect(0x77000000, 0, 0, screenWidth, screenHeight);
+        var loading = MyUtils.getLoadingAnim(label).rox_move(screenWidth / 2, screenHeight / 2);
+        mask.addChild(loading);
+        return mask;
+    }
+
+    private function onApiCallback(apiName: String, resultCode: String, str: String) {
+        trace("onApiCallback: name="+apiName+",result="+resultCode+",str="+str);
+        UiUtil.rox_removeByName(this, MyUtils.LOADING_ANIM_NAME); // remove mask
+        switch (apiName) {
+            case "statuses_create":
+                if (resultCode != "ok") return;
+                var makerList: MakerList = cast manager.getScreen(Type.getClassName(MakerList));
+                var toScreen = makerList.parentScreen;
+                finish(SCREEN(toScreen != null ? toScreen : Type.getClassName(SelectedScreen)), RoxScreen.OK);
+            case "startAuth":
+                if (resultCode == "ok" && str == "ok") {
+                    resetSharePanel();
+                }
+        }
     }
 
     private function sharePanel() : Sprite {
@@ -150,28 +182,46 @@ class PostScreen extends BaseScreen {
 
 //        var input = UiUtil.input(TEXT, 0, 30, UiUtil.LEFT, false, 576, 56);
 //        sp.addChild(input.rox_move(20, label.height + 12 + lpanel.height + 5));
+        sp.name = "sharePanel";
         return sp;
     }
 
     private function shareButton(icon: String, name: String, bg: String, type: String) : RoxFlowPane {
         var bg = UiUtil.ninePatch("res/btn_share_" + bg + ".9.png");
 #if android
-        var valid = type != "" && HpManager.hasBinding(type) && HpManager.isBindingSessionValid(type);
-        trace("type=" + type + ",hasBinding=" + HpManager.hasBinding(type) + ",isValid=" + HpManager.isBindingSessionValid(type));
+        var valid = type != "" && HpManager.isBindingSessionValid(type) && useBinds.get(type);
+//        trace("type=" + type + ",hasBinding=" + HpManager.hasBinding(type) + ",isValid=" + HpManager.isBindingSessionValid(type));
 #else
         var valid = true;
 #end
-        var ico = icon != null ? new Bitmap(ResKeeper.getAssetImage("res/ico_" + icon + (valid ? "" : "_g") + ".png")).rox_smooth() : null;
+        var ico = icon != null ? new Bitmap(ResKeeper.getAssetImage("res/icon_" + icon + (valid ? "" : "_g") + ".png")).rox_smooth() : null;
         var txt = icon != null ? UiUtil.staticText(name, valid ? 0xFFFFFF : 0x666666, 32, UiUtil.LEFT, 150) : null;
 
         var sp = new RoxFlowPane(308, 88, UiUtil.TOP_LEFT, icon != null ? [ ico, txt ] : [],
                 bg, UiUtil.VCENTER, [ 10 ], icon != null ? onShareButton : null);
-        sp.name = name;
+        sp.name = type;
         return sp;
+    }
+
+    private function resetSharePanel() {
+        var sharepanel = main.getChildByName("sharePanel");
+        var y = sharepanel.y;
+        main.removeChild(sharepanel);
+        main.addChild(sharePanel().rox_move(0, y));
     }
 
     private function onShareButton(e: Dynamic) {
         trace("share button " + e.target.name + " clicked");
+#if android
+        var type = e.target.name;
+        if (HpManager.isBindingSessionValid(type)) {
+            useBinds.set(type, !useBinds.get(type));
+            resetSharePanel();
+            return;
+        }
+        addChild(waitingAnim("登录中"));
+        HpManager.startAuth(type, this);
+#end
     }
 
 }

@@ -36,6 +36,7 @@ class FileUtil {
 
     public static function rmdir(path: String, ?force: Bool = false) {
         path = path.replace("\\", "/");
+        if (!FileSystem.exists(path) || !FileSystem.isDirectory(path)) return;
         if (!force) { FileSystem.deleteDirectory(path); return; }
         for (name in FileSystem.readDirectory(path)) {
             var sub = path + "/" + name;

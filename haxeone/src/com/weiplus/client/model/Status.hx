@@ -20,6 +20,7 @@ class Status {
 
     public var isNew: Bool; // read or not
     public var makerData: Dynamic = null;
+    public var praised: Bool = false;
 
     public function new() {
     }

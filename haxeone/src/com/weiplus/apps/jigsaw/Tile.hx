@@ -1,5 +1,6 @@
 package com.weiplus.apps.jigsaw;
 
+import com.roxstudio.haxe.io.IOUtil;
 import nme.display.Bitmap;
 import nme.display.Sprite;
 import nme.display.BitmapData;
@@ -58,6 +59,11 @@ class Tile extends Sprite {
         hitarea.mouseEnabled = true;
         this.mouseEnabled = false;
 
+//        var h = new Sprite();
+//        h.graphics.rox_fillRect(0x5500FF00, 0, 0, sideLen, sideLen);
+//        addChild(h.rox_move(-sideLen / 2, -sideLen / 2));
+//        h.mouseEnabled = false;
+
         update();
     }
 
@@ -85,6 +91,97 @@ class Tile extends Sprite {
         bmd.copyPixels(image, r, p);
 //		trace("r=" + RocUtils.rect2str(r) + ",p=" + RocUtils.point2str(p));
 
+//        var v = new Vector<Float>();
+//        var ii = new Vector<Int>();
+//        var uv = new Vector<Float>();
+//        var half = maxLen / 2;
+//        v.push(0);
+//        v.push(0);
+//        v.push(maxLen);
+//        v.push(0);
+//        v.push(half);
+//        v.push(half);
+//        v.push(maxLen);
+//        v.push(0);
+//        v.push(maxLen);
+//        v.push(maxLen);
+//        v.push(half);
+//        v.push(half);
+//        v.push(maxLen);
+//        v.push(maxLen);
+//        v.push(0);
+//        v.push(maxLen);
+//        v.push(half);
+//        v.push(half);
+//        v.push(0);
+//        v.push(maxLen);
+//        v.push(0);
+//        v.push(0);
+//        v.push(half);
+//        v.push(half);
+//        for (i in 0...12) ii.push(i);
+//        var uvoff = sides[0] * 0.25;
+//        uv.push(uvoff);
+//        uv.push(0);
+//        uv.push(uvoff + 0.25);
+//        uv.push(0);
+//        uv.push(uvoff + 0.125);
+//        uv.push(0.5);
+//        uvoff = sides[1] * 0.25;
+//        uv.push(uvoff + 0.25);
+//        uv.push(0);
+//        uv.push(uvoff + 0.25);
+//        uv.push(1);
+//        uv.push(uvoff + 0.125);
+//        uv.push(0.5);
+//        uvoff = sides[2] * 0.25;
+//        uv.push(uvoff + 0.25);
+//        uv.push(1);
+//        uv.push(uvoff);
+//        uv.push(1);
+//        uv.push(uvoff + 0.125);
+//        uv.push(0.5);
+//        uvoff = sides[3] * 0.25;
+//        uv.push(uvoff);
+//        uv.push(1);
+//        uv.push(uvoff);
+//        uv.push(0);
+//        uv.push(uvoff + 0.125);
+//        uv.push(0.5);
+//        var s = new Shape();
+//        var gfx = s.graphics;
+//        gfx.beginBitmapFill(shape, false, true);
+//        gfx.drawTriangles(v, ii, uv);
+//        gfx.endFill();
+//        var mask = new BitmapData(Std.int(ml), Std.int(ml), true, 0);
+//        mask.draw(s);
+
+        var mask = getMask(shape, maxLen, sides);
+
+        var mbuf = mask.getPixels(new Rectangle(0, 0, ml, ml));
+        var bbuf = bmd.getPixels(new Rectangle(0, 0, ml, ml));
+        var obuf = IOUtil.byteArray(mbuf.length);
+        //mbuf.position = bbuf.position = 0;
+        //trace(">>>>>mb=" + mbuf.bytesAvailable + ",len=" + mbuf.length + ",bb=" + bbuf.bytesAvailable + ",len=" + bbuf.length + ",pos=" + mbuf.position);
+        for (i in 0...mbuf.length) {
+            var mb = mbuf[i], bb = bbuf[i];// .readByte() & 0xFF, bb = bbuf.readByte() & 0xFF;
+            if ((i & 0x3) == 0) { // alpha
+                obuf[i] = mb; // obuf.writeByte(mb);
+            } else if (mb > 100 && mb < 155) {
+                obuf[i] = bb; // obuf.writeByte(bb);
+            } else if (mb > 220) {
+                obuf[i] = 255;
+            } else { // mb != 127
+                var v = (bb * mb) >> 7;
+                obuf[i] = v > 255 ? 255 : v;
+            }
+        }
+        //obuf.position = 0;
+        bmd.setPixels(new Rectangle(0, 0, ml, ml), obuf);
+//        cast(this.getChildAt(0), Bitmap).bitmapData = mask;
+    }
+
+    public static function getMask(shape: BitmapData, maxLen: Float, sides: Array<Int>) : BitmapData {
         var v = new Vector<Float>();
         var ii = new Vector<Int>();
         var uv = new Vector<Float>();
@@ -147,30 +244,9 @@ class Tile extends Sprite {
         gfx.beginBitmapFill(shape, false, true);
         gfx.drawTriangles(v, ii, uv);
         gfx.endFill();
-        var mask = new BitmapData(Std.int(ml), Std.int(ml), true, 0);
+        var mask = new BitmapData(Std.int(maxLen), Std.int(maxLen), true, 0);
         mask.draw(s);
-
-        var mbuf = mask.getPixels(new Rectangle(0, 0, ml, ml));
-        var bbuf = bmd.getPixels(new Rectangle(0, 0, ml, ml));
-        var obuf = UiUtil.byteArray(mbuf.length);
-        //mbuf.position = bbuf.position = 0;
-        //trace(">>>>>mb=" + mbuf.bytesAvailable + ",len=" + mbuf.length + ",bb=" + bbuf.bytesAvailable + ",len=" + bbuf.length + ",pos=" + mbuf.position);
-        for (i in 0...mbuf.length) {
-            var mb = mbuf[i], bb = bbuf[i];// .readByte() & 0xFF, bb = bbuf.readByte() & 0xFF;
-            if ((i & 0x3) == 0) { // alpha
-                obuf[i] = mb; // obuf.writeByte(mb);
-            } else if (mb > 100 && mb < 155) {
-                obuf[i] = bb; // obuf.writeByte(bb);
-            } else if (mb > 220) {
-                obuf[i] = 255;
-            } else { // mb != 127
-                var v = (bb * mb) >> 7;
-                obuf[i] = v > 255 ? 255 : v;
-            }
-        }
-        //obuf.position = 0;
-        bmd.setPixels(new Rectangle(0, 0, ml, ml), obuf);
-//        cast(this.getChildAt(0), Bitmap).bitmapData = mask;
+        return mask;
     }
 
     override public function toString() : String {

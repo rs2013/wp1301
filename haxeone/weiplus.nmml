@@ -2,7 +2,7 @@
 <project>
 
     <app title="WeiPlus" file="weiplus" main="com.weiplus.client.Main" package="com.weiplus.client" version="1.0.0" company="WeiplusSuperTeam" />
-    <window width="640" height="960" fps="60"
+    <window width="540" height="800" fps="60"
             orientation="portrait" background="0xffffff" resizable="false"
             hardware="true" />
 <!--          fullscreen="true" -->
@@ -25,15 +25,20 @@
     <haxelib name="spritesheet" />
     <haxelib name="format" />
 
-    <icon path="res/icon.svg" />
+<!--<icon path="res/icon.svg" /> -->
+    <icon path="res/icon/icon96.png" size="96"/>
+    <icon path="res/icon/icon72.png" size="72"/>
+    <icon path="res/icon/icon48.png" size="48"/>
+    <icon path="res/icon/icon36.png" size="36"/>
     <assets path="eng" include="*" unless="flash" />
-    <assets path="res" include="*" exclude="icon.svg" />
+    <assets path="res" include="*" exclude="icon/*.*" />
 
     <include path="../android/haxe_include.nmml" if="android"/>
     <!--template path="javasrc/com/weiplus/client/HaxeStub.java" rename="src/com/weiplus/client/HaxeStub.java" if="android" /-->
     <template path="javasrc/com/weiplus/client/MainActivity.java" rename="src/com/weiplus/client/MainActivity.java" if="android" />
     <!--template path="src/org/haxe/nme/GameActivity.java" if="android" /-->
     <template path="javasrc/org/haxe/nme/MainView.java" rename="src/org/haxe/nme/MainView.java" if="android" />
+    <template path="javasrc/org/haxe/nme/GameActivity.java" rename="src/org/haxe/nme/GameActivity.java" if="android" />
     <template path="AndroidManifest.xml" if="android" />
 
     <ndll name="std" />

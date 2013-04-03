@@ -45,13 +45,14 @@ class RoxAsyncBitmap extends Sprite {
                 loadingDisplay;
         }
         if (numChildren > 0) removeChildAt(0);
-        if (dp != null) {
+        if (dp != null && dp.width != 0 && dp.height != 0) {
             if (w != null) dp.width = w;
             if (h != null) dp.height = h;
             addChild(dp);
         } else {
             if (w != null && h != null) graphics.rox_fillRect(0x01FFFFFF, 0, 0, w, h);
         }
+//        trace("asyncBitmap: dp="+dp+",w="+w+",h="+h+",width="+width+",height="+height+",st="+loader.status);
 //        trace(">2>min="+minWidth+","+minHeight+",this="+this.width+","+this.height+(dp!=null?",dp="+dp.width+","+dp.height:""));
     }
 
