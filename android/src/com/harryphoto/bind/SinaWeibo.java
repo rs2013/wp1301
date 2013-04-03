@@ -75,32 +75,38 @@ public class SinaWeibo extends Binding implements WeiboAuthListener {
     public void startAuth(final Activity activity, HpListener listener) {
         this.listener = listener;
         if (accessToken.isSessionValid()) { // make test
-            AccountAPI accountApi = new AccountAPI(accessToken);
-            accountApi.getUid(new com.weibo.sdk.android.net.RequestListener() {
-                
-                @Override
-                public void onComplete(String text) { 
-                    Bundle values = new Bundle();
-                    values.putString(KEY_TOKEN, accessToken.getToken());
-                    values.putString(KEY_EXPIRES, "" + (accessToken.getExpiresTime() - System.currentTimeMillis()) / 1000);
-                    values.putString(KEY_REFRESHTOKEN, accessToken.getRefreshToken());
-                    SinaWeibo.this.onComplete(values);
-                }
-
-                @Override
-                public void onError(WeiboException arg0) {
-                    startAuthDialog(activity);
-                }
-
-                @Override
-                public void onIOException(IOException arg0) {
-                    startAuthDialog(activity);
-                }
-            });
-            
-            return;
+            logout();
+//            AccountAPI accountApi = new AccountAPI(accessToken);
+//            accountApi.getUid(new com.weibo.sdk.android.net.RequestListener() {
+//                
+//                @Override
+//                public void onComplete(String text) { 
+//                    Bundle values = new Bundle();
+//                    values.putString(KEY_TOKEN, accessToken.getToken());
+//                    values.putString(KEY_EXPIRES, "" + (accessToken.getExpiresTime() - System.currentTimeMillis()) / 1000);
+//                    values.putString(KEY_REFRESHTOKEN, accessToken.getRefreshToken());
+//                    SinaWeibo.this.onComplete(values);
+//                }
+//
+//                @Override
+//                public void onError(WeiboException arg0) {
+//                    startAuthDialog(activity);
+//                }
+//
+//                @Override
+//                public void onIOException(IOException arg0) {
+//                    startAuthDialog(activity);
+//                }
+//            });
+//            
+//            return;
         }
-        startAuthDialog(activity);
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                startAuthDialog(activity);
+            }
+        });
     }
     
     @Override

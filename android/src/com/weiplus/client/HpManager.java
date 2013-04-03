@@ -2,7 +2,11 @@ package com.weiplus.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.haxe.nme.HaxeObject;
 import org.json.JSONArray;
@@ -37,7 +41,9 @@ public class HpManager {
     private static HashMap<String, Binding> bindings = new HashMap<String, Binding>();
     private static HashMap<String, String> imgMapping = new HashMap<String, String>();
     
-    public static boolean check() {
+    static Binding candidate = null;
+    
+    public static boolean login() {
         getAccessToken();
         if (accessToken.isSessionValid() && bindings.size() == 0) {
             AuthAPI api = new AuthAPI(accessToken);
@@ -47,7 +53,7 @@ public class HpManager {
                 public void onComplete(String response) {
                     try {
                         JSONObject obj = new JSONObject(response);
-                        if (obj.getInt("code") != 200) throw new Exception("login error, code=" + obj.getInt("code"));
+                        if (obj.getInt("code") != 200) throw new Exception("error code " + obj.getInt("code"));
                         JSONArray bindUsers = obj.getJSONArray("users").getJSONObject(0).getJSONArray("bindUsers");
                         for (int i = 0, n = bindUsers.length(); i < n; i++) {
                             JSONObject bu = bindUsers.getJSONObject(i);
@@ -55,6 +61,9 @@ public class HpManager {
                             String[] param = new String[] { bu.optString("accessToken", ""), bu.optString("bindId", "") };
                             Binding b = HpManager.createBinding(type, param);
                             HpManager.addBinding(b);
+                            if (accessToken.getDisabledBindings().contains(type.name())) {
+                                b.setEnabled(false);
+                            }
                         }
                     } catch (Exception e) {
                         onError(new HpException(e));
@@ -68,7 +77,7 @@ public class HpManager {
 
                 @Override
                 public void onError(HpException e) {
-                    Utility.safeToast("账户同步异常。ex=" + e.getMessage(), Toast.LENGTH_SHORT);
+                    Utility.safeToast("登陆哈利波图服务器失败，请检查网络。ex=" + e.getMessage(), Toast.LENGTH_LONG);
                 }
                 
             });
@@ -76,7 +85,7 @@ public class HpManager {
         return accessToken.isSessionValid();
     }
     
-    public static void login() {
+    public static void loginOld() {
         Activity activity = MainActivity.getInstance();
         HpAccessToken token = getAccessToken();
         Intent intent = new Intent(activity, LoginActivity.class); 
@@ -125,7 +134,8 @@ public class HpManager {
         api.show(uid, new HaxeCallback("users_show", callback));
     }
     
-    public static void postStatus(final String text, final String imgPath, 
+    public static void postStatus(final String[] bindTypes, 
+            final String text, final String imgPath, 
             final String type, final String filePath, 
             final String lat, final String lon, final HaxeObject callback) {
         StatusAPI api = new StatusAPI(accessToken);
@@ -142,8 +152,11 @@ public class HpManager {
                         String imgUrl = st.getJSONArray("attachments").getJSONObject(0).getString("thumbUrl");
                         imgMapping.put(imgPath, imgUrl);
                         String link = LINK.replace("${ID}", "" + statusId);
+                        List<String> list = bindTypes != null ? Arrays.asList(bindTypes) : null;
                         for (Binding b: bindings.values()) {
-                            b.postStatus(text, link, imgPath, lat, lon, new ToastCallback(MainActivity.getInstance(), b.getType() + "同步"));
+                            if (b.isSessionValid() && (list == null || list.contains(b.getType().name()))) {
+                                b.postStatus(text, link, imgPath, lat, lon, new ToastCallback(MainActivity.getInstance(), b.getType() + "同步"));
+                            }
                         }
                         Utility.haxeOk(callback, "statuses_create", response);
                     } else {
@@ -176,6 +189,7 @@ public class HpManager {
             token.setRefreshToken(pref.getString("refreshToken", ""));
             token.setExpiresTime(pref.getLong("expiresTime", 0));
             token.setUid(pref.getString("uid", ""));
+            token.setDisabledBindingsFromString(pref.getString("disabledBindings", ""));
         }
         return accessToken;
     }
@@ -204,6 +218,7 @@ public class HpManager {
         editor.putString("refreshToken", accessToken.getRefreshToken());
         editor.putLong("expiresTime", accessToken.getExpiresTime());
         editor.putString("uid", accessToken.getUid());
+        editor.putString("disabledBindings", accessToken.getDisabledBindingsAsString());
         editor.commit();
     }
     
@@ -217,8 +232,14 @@ public class HpManager {
             accessToken.setToken("");
             accessToken.setRefreshToken("");
             accessToken.setUid("");
+            accessToken.setDisabledBindings(new HashSet<String>());
         }
-        for (Binding b: bindings.values()) b.logout();
+        Binding.Type[] types = new Binding.Type[] { 
+                Binding.Type.SINA_WEIBO, Binding.Type.TENCENT_WEIBO, Binding.Type.RENREN_WEIBO,
+        };
+        for (Binding.Type t: types) {
+            createBinding(t, new String[] { "", "" } ).logout();
+        }
     }
     
     public static void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
@@ -233,9 +254,57 @@ public class HpManager {
         return bindings.containsKey(type);
     }
     
+    public static boolean isBindingEnabled(String type) {
+        return bindings.containsKey(type) && bindings.get(type).isEnabled();
+    }
+    
+    public static void setBindingEnabled(String type, boolean enabled) {
+        if (bindings.containsKey(type)) {
+            bindings.get(type).setEnabled(enabled);
+            Set<String> disabled = accessToken.getDisabledBindings();
+            if (enabled) {
+                disabled.remove(type);
+            } else {
+                disabled.add(type);
+            }
+            accessToken.setDisabledBindings(disabled);
+            saveAccessToken();
+        }
+    }
+    
     public static boolean isBindingSessionValid(String type) {
         Binding b;
         return (b = bindings.get(type)) != null ? b.isSessionValid() : false;
+    }
+    
+    public static void startAuth(final String type, final HaxeObject callback) {
+        candidate = bindings.get(type);
+        if (candidate == null) candidate = createBinding(Binding.Type.valueOf(type));
+        candidate.startAuth(MainActivity.getInstance(), new HpListener() {
+
+            @Override
+            public void onComplete(String response) {
+                if ("ok".equals(response)) {
+                    new AuthAPI(HpManager.getAccessToken())
+                            .bind(candidate.getType(), candidate.getBindInfo(), new BindListener(callback));
+                } else if ("cancel".equals(response)) {
+                    Utility.haxeOk(callback, "startAuth", "cancel");
+                }
+            }
+
+            @Override
+            public void onIOException(IOException e) {
+                onError(new HpException(e));
+            }
+
+            @Override
+            public void onError(HpException e) {
+                Utility.safeToast(Binding.Type.valueOf(type) + "登录失败，请重试", Toast.LENGTH_SHORT);
+                Utility.haxeError(callback, "startAuth", e);
+                candidate = null;
+            }
+            
+        });
     }
     
     public static String getImageUrl(String imagePath) {
@@ -248,6 +317,10 @@ public class HpManager {
     
     public static Binding createBinding(Binding.Type type) {
         return createBinding(type, new String[] { "", "" });
+    }
+    
+    public static Binding getCandidate() {
+        return candidate;
     }
     
     public static Binding createBinding(Binding.Type type, String[] param) {
@@ -270,3 +343,104 @@ public class HpManager {
     
 }
 
+class BindListener implements HpListener {
+    
+    private static final String TAG = "BindListener";
+    private HaxeObject callback;
+    
+    public BindListener(HaxeObject callback) {
+        this.callback = callback;
+    }
+    
+    @Override
+    public void onComplete(String response) {
+        Log.i(TAG, "onComplete: " + response);
+        try {
+            JSONObject json = new JSONObject(response);
+            if (json.getInt("code") != 200) {
+                throw new Exception("error code=" + json.getInt("code"));
+            }
+            if (!HpManager.getAccessToken().isSessionValid()) {
+                HpAccessToken tok = new HpAccessToken();
+                tok.setToken(json.getString("accessToken"));
+                tok.setRefreshToken(json.getString("refreshToken"));
+                tok.setExpiresTime(Long.MAX_VALUE);
+                tok.setUid("" + json.getJSONArray("users").getJSONObject(0).getLong("id"));
+                HpManager.setAccessToken(tok);
+            }
+            JSONArray users = json.getJSONArray("users");
+            Activity activity = MainActivity.getInstance();
+            if (users.length() > 1) { // needing merge
+                JSONObject second = null;
+                Binding cand = HpManager.candidate;
+outer:
+                for (int i = users.length(); --i >= 0;) {
+                    JSONObject u = users.getJSONObject(i);
+                    JSONArray bindusers = u.getJSONArray("bindUsers");
+                    for (int j = bindusers.length(); --j >= 0;) {
+                        JSONObject bu = bindusers.getJSONObject(j);
+                        if (cand.getType().name().equals(bu.getString("bindType")) && 
+                                cand.getBindInfo()[1].equals(bu.getString("accessToken"))) {
+                            second = u;
+                            break outer;
+                        }
+                    }
+                }
+                AuthAPI api = new AuthAPI(HpManager.getAccessToken());
+                api.merge(second.getString("accessToken"), new HpListener() {
+
+                    @Override
+                    public void onComplete(String response) {
+                        try {
+                            JSONObject json = new JSONObject(response);
+                            if (json.getInt("code") != 200) {
+                                throw new Exception("error code=" + json.getInt("code"));
+                            }
+                            HpManager.addBinding(HpManager.candidate);
+                            Utility.safeToast(MainActivity.getInstance(), HpManager.candidate.getType() + "账号合并成功", Toast.LENGTH_SHORT);
+                            HpManager.candidate = null;
+                            Utility.haxeOk(callback, "startAuth", "ok");
+                        } catch (Exception e) {
+                            onError(new HpException(e));
+                        }
+                    }
+
+                    @Override
+                    public void onIOException(IOException e) {
+                        onError(new HpException(e));
+                    }
+
+                    @Override
+                    public void onError(HpException e) {
+                        Log.i(TAG, "Merge.onError: " + e);
+                        Activity activity = MainActivity.getInstance();
+                        Utility.safeToast(activity, HpManager.candidate.getType() + "账号合并失败, ex=" + e.getMessage(), Toast.LENGTH_LONG);
+                        Utility.haxeError(callback, "startAuth", e);
+                    }
+                    
+                });
+            } else {
+                HpManager.addBinding(HpManager.candidate);
+                Utility.safeToast(activity, HpManager.candidate.getType() + "账号登录成功", Toast.LENGTH_SHORT);
+                HpManager.candidate = null;
+                Utility.haxeOk(callback, "startAuth", "ok");
+            }
+        } catch (Exception e) {
+            onError(new HpException(e));
+        }
+    }
+
+    @Override
+    public void onIOException(IOException e) {
+        onError(new HpException(e));
+    }
+
+    @Override
+    public void onError(HpException e) {
+        Log.i(TAG, "onError: " + e);
+        Activity activity = MainActivity.getInstance();
+        Utility.safeToast(activity, HpManager.candidate.getType() + "账号绑定失败, ex=" + e.getMessage(), Toast.LENGTH_LONG);
+        Utility.haxeError(callback, "startAuth", e);
+    }
+    
+}

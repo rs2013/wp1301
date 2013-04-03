@@ -96,37 +96,20 @@ public class HttpManager {
                 byte[] data = null;
 
                 bos = new ByteArrayOutputStream();
-//                if (params.hasFile()) {
-                    post.setHeader("Content-Type", MULTIPART_FORM_DATA + "; boundary=" + BOUNDARY);
-                    for (int i = 0, n = params.size(); i < n; i++) {
-                        String k = params.getKey(i);
-                        String v = params.getValue(i);
-                        if (TextUtils.isEmpty(v)) v = "";
-                        if (params.isFile(i)) {
-                            imageContentToUpload(bos, k, v);
-                        } else {
-                            paramToUpload(bos, k, v);
-                        }
+                post.setHeader("Content-Type", MULTIPART_FORM_DATA + "; boundary=" + BOUNDARY);
+                for (int i = 0, n = params.size(); i < n; i++) {
+                    String k = params.getKey(i);
+                    String v = params.getValue(i);
+                    if (TextUtils.isEmpty(v)) v = "";
+                    if (params.isFile(i)) {
+                        imageContentToUpload(bos, k, v);
+                    } else {
+                        paramToUpload(bos, k, v);
                     }
-                    bos.write((END_MP_BOUNDARY + "\r\n").getBytes());
-//                } else {
-//                    String _contentType = params.getValue("content-type");
-//                    if (_contentType != null) {
-//                        params.remove("content-type");
-//                        post.setHeader("Content-Type", _contentType);
-//                    } else {
-//                        post.setHeader("Content-Type", "application/x-www-form-urlencoded");
-//                    }
-//
-//                    String postParam = Utility.encodeParameters(params);
-//                    data = postParam.getBytes("UTF-8");
-//                    bos.write(data);
-//                }
+                }
+                bos.write((END_MP_BOUNDARY + "\r\n").getBytes());
                 bos.close();
                 data = bos.toByteArray();
-//                FileOutputStream fos = new FileOutputStream("/sdcard/post.dat");
-//                fos.write(data);
-//                fos.close();
                 ByteArrayEntity formEntity = new ByteArrayEntity(data);
                 post.setEntity(formEntity);
             } else if (method.equals("DELETE")) {
@@ -305,8 +288,8 @@ public class HttpManager {
             }
 
             int readBytes = 0;
-            byte[] sBuffer = new byte[512];
-            while ((readBytes = inputStream.read(sBuffer)) != -1) {
+            byte[] sBuffer = new byte[4000];
+            while ((readBytes = inputStream.read(sBuffer)) > 0) {
                 content.write(sBuffer, 0, readBytes);
             }
             result = new String(content.toByteArray());

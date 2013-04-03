@@ -23,6 +23,6 @@
     </style>
     <style name="FittingRoomTheme" parent="android:Theme.Light.NoTitleBar">
     </style>
-    <style name="CameraTheme" parent="android:Theme.Light.NoTitleBar.Fullscreen">
+    <style name="CameraTheme" parent="android:Theme.Light.NoTitleBar">
     </style>
 </resources>

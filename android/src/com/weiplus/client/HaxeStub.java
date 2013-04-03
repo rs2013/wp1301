@@ -6,14 +6,22 @@ import java.util.Iterator;
 import java.util.Map;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
+import org.haxe.nme.HaxeObject;
 import org.json.*;
+
+import com.harryphoto.api.Utility;
 
 public class HaxeStub {
     
@@ -101,6 +109,39 @@ public class HaxeStub {
         MainActivity.getInstance().startActivityForResult(it, requestCode);
     }
     
+    public static void startInputDialog(final String title, final String buttonLabel, final HaxeObject callback) {
+        final Activity activity = MainActivity.getInstance(); 
+        final EditText edit = new EditText(MainActivity.getInstance());
+        edit.setFocusable(true);
+        edit.setFocusableInTouchMode(true);
+        activity.runOnUiThread(new Runnable() {
+            @Override public void run() {
+                new AlertDialog.Builder(activity)
+                        .setTitle(title)
+                        .setView(edit)
+                        .setPositiveButton(buttonLabel, new DialogInterface.OnClickListener() {
+                            @Override public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                Utility.haxeOk(callback, "startInputDialog", edit.getText().toString());
+                            }
+                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                Utility.haxeOk(callback, "startInputDialog", "");
+                            }
+                        })
+                        .show();
+            }
+        });
+        activity.runOnUiThread(new Runnable() {
+            @Override public void run() {
+                edit.requestFocus();
+                InputMethodManager inputManager = (InputMethodManager) edit.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputManager.showSoftInput(edit, 0);
+            }
+        });
+    }
+    
     public static void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i(TAG, "onActivityResult, result=" + resultCode + 
 //                ",data=" + (data != null ? data.getDataString() : null) + 
@@ -129,6 +170,10 @@ public class HaxeStub {
             if (extras != null) {
                 for (String key: extras.keySet()) {
                     Object o = extras.get(key);
+                    if (o == null) {
+                        Log.d(TAG, "NULL value for key '" + key + "'");
+                        continue;
+                    }
                     if (o instanceof Integer) {
                         ret.put(key, ((Integer) o).intValue());
                     } else if (o instanceof String) {

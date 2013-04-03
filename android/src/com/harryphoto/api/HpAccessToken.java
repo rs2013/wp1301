@@ -1,8 +1,11 @@
 package com.harryphoto.api;
 
+import java.util.*;
+
 import org.json.*;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * 此类封装了“access_token”，“expires_in”，"refresh_token"，
@@ -13,6 +16,7 @@ public class HpAccessToken {
 	private String mRefreshToken = "";
 	private String mUid = "";
 	private long mExpiresTime = 0;
+	private Set<String> disabledBindings = new HashSet<String>();
 
 //	private String mOauth_verifier = "";
 //	protected String[] responseStr = null;
@@ -88,6 +92,36 @@ public class HpAccessToken {
 	public void setUid(String uid) {
 	    this.mUid = uid;
 	}
+	
+	public Set<String> getDisabledBindings() {
+	    return this.disabledBindings;
+	}
+	
+	public void setDisabledBindings(Set<String> disabledBindings) {
+	    this.disabledBindings = disabledBindings;
+	}
+	
+    public String getDisabledBindingsAsString() {
+        StringBuilder buf = new StringBuilder();
+        int i = 0;
+        for (String s: this.disabledBindings) {
+            if (i++ > 0) buf.append(',');
+            buf.append(s);
+        }
+        Log.d("HpAccessToken", "getDisabledBindingAsString: '" + buf + "'");
+        return buf.toString();
+    }
+    
+    public void setDisabledBindingsFromString(String disabledBindings) {
+        Set<String> set = new HashSet<String>();
+        if (disabledBindings.length() > 0) {
+            String[] ss = TextUtils.split(disabledBindings, ",");
+            for (String s: ss) set.add(s);
+        }
+        Log.d("HpAccessToken", "setDisabledBindingsFromString: '" + disabledBindings + "';set=" + set);
+        this.disabledBindings = set;
+    }
+    
 //	/**
 //	 * 设置检验者
 //	 * @param verifier

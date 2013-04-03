@@ -70,22 +70,28 @@ public class TencentWeibo extends Binding {
     @Override
     public void startAuth(final Activity activity, HpListener listener) {
         this.listener = listener;
-        if (oAuth.getAccessToken().length() > 0) { // make test
-            new Thread() {
-                @Override
-                public void run() {
-                    UserAPI accountApi = new UserAPI(OAuthConstants.OAUTH_VERSION_2_A);
-                    try {
-                        String info = accountApi.info(oAuth, "json");
-                        if (info == null || info.length() == 0) throw new Exception();
-                    } catch (Exception ex) {
-                        startAuthDialog(activity);
-                    }
-                }
-            }.start();
-            return;
+        if (isSessionValid()) {
+            logout();
+//            new Thread() {
+//                @Override
+//                public void run() {
+//                    UserAPI accountApi = new UserAPI(OAuthConstants.OAUTH_VERSION_2_A);
+//                    try {
+//                        String info = accountApi.info(oAuth, "json");
+//                        if (info == null || info.length() == 0) throw new Exception();
+//                    } catch (Exception ex) {
+//                        startAuthDialog(activity);
+//                    }
+//                }
+//            }.start();
+//            return;
         }
-        startAuthDialog(activity);
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                startAuthDialog(activity);
+            }
+        });
     }
     
     @Override
@@ -141,7 +147,8 @@ public class TencentWeibo extends Binding {
 
     @Override
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-        if (requestCode == 13123 && resultCode == OAuthV2AuthorizeWebView.RESULT_CODE) {
+        if (requestCode != 13123) return;
+        if (resultCode == OAuthV2AuthorizeWebView.RESULT_CODE) {
             oAuth = (OAuthV2) data.getExtras().getSerializable("oauth");
             SharedPreferences pref = MainActivity.getInstance().getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
             Editor editor = pref.edit();
@@ -151,6 +158,8 @@ public class TencentWeibo extends Binding {
             editor.putString("openKey", oAuth.getOpenkey());
             editor.commit();
             listener.onComplete("ok");
+        } else {
+            listener.onComplete("cancel");
         }
     }
 

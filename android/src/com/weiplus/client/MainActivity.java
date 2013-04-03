@@ -78,7 +78,7 @@ public class MainActivity extends Activity {
                     HpManager.login();
 //                    HpManager.bind("RENREN_WEIBO");
                 } else {
-                    HpManager.check();
+                    HpManager.loginOld();
                     MainActivity.this.checked = true;
                 }
             }
@@ -108,19 +108,19 @@ public class MainActivity extends Activity {
         Button btnPost = (Button) findViewById(R.id.btnPost);
         btnPost.setOnClickListener(new OnClickListener() {
             @Override public void onClick(View v) {
-                HpManager.postStatus("This a test from rocks " + System.currentTimeMillis(), null, null, null, "", "", null);
+                HpManager.postStatus(null, "This a test from rocks " + System.currentTimeMillis(), null, null, null, "", "", null);
             }
         });
         Button btnImage = (Button) findViewById(R.id.btnPostImage);
         btnImage.setOnClickListener(new OnClickListener() {
             @Override public void onClick(View v) {
-                HpManager.postStatus("This a test from rocks" + System.currentTimeMillis(), "/sdcard/a.jpg", null, null, "", "", null);
+                HpManager.postStatus(null, "This a test from rocks" + System.currentTimeMillis(), "/sdcard/a.jpg", null, null, "", "", null);
             }
         });
         Button btnFile = (Button) findViewById(R.id.btnPostFile);
         btnFile.setOnClickListener(new OnClickListener() {
             @Override public void onClick(View v) {
-                HpManager.postStatus("This a test from rocks" + System.currentTimeMillis(), "/sdcard/a.jpg", "json", "/sdcard/aaaa.json", "", "", null);
+                HpManager.postStatus(null, "This a test from rocks" + System.currentTimeMillis(), "/sdcard/a.jpg", "json", "/sdcard/aaaa.json", "", "", null);
             }
         });
         Button btnCamera = (Button) findViewById(R.id.btnCamera);

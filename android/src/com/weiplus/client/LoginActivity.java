@@ -68,7 +68,7 @@ public class LoginActivity extends Activity {
             @Override
             public void onClick(View v) {
                 final Binding binding = LoginActivity.this.currBinding = HpManager.createBinding(type);
-                final HpListener listener = new BindListener(LoginActivity.this, binding);
+                final HpListener listener = new OldBindListener(LoginActivity.this, binding);
                 LoginActivity.this.enableButtons(LoginActivity.this.bindTypes, false);
                 binding.startAuth(LoginActivity.this, new HpListener() {
                     @Override
@@ -125,13 +125,13 @@ public class LoginActivity extends Activity {
     }
 }
 
-class BindListener implements HpListener {
+class OldBindListener implements HpListener {
     
     private Binding binding;
     private LoginActivity activity;
     private static final String TAG = "BindListener";
     
-    public BindListener(LoginActivity activity, Binding binding) {
+    public OldBindListener(LoginActivity activity, Binding binding) {
         this.activity = activity;
         this.binding = binding;
     }

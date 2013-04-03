@@ -24,8 +24,18 @@ abstract public class Binding {
             return "";
         }
     }
+    
+    protected boolean isEnabled = true;
 
     public Binding() {
+    }
+    
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+    
+    public void setEnabled(boolean enabled) {
+        this.isEnabled = enabled;
     }
     
     abstract public Type getType();

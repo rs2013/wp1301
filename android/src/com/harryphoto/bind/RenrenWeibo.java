@@ -53,9 +53,14 @@ public class RenrenWeibo extends Binding {
     public void startAuth(final Activity activity, HpListener listener) {
         this.listener = listener;
         if (renren.isSessionKeyValid()) { 
-            return;
+            logout();
         }
-        startAuthDialog(activity);
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                startAuthDialog(activity);
+            }
+        });
     }
     
     @Override
