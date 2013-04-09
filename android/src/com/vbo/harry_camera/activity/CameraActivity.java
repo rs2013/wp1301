@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.hardware.Camera;
@@ -83,6 +84,7 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
     private Bitmap mPicTaked;
     private File mPicSavedFile;
     private Bitmap mRingSelectedBitmap;
+    private String mSelectedCategoryName;
 
     private int mViewState;
     private static final int STATE_DEFAULT = 0;
@@ -137,7 +139,8 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
                             mCategorysView.setVisibility(View.VISIBLE);
                             mCategorysView.setAdapter(mImageFittingAdapter);
                             mCategoryTitleView.setVisibility(View.VISIBLE);
-                            mCategoryTitleView.setText((String) msg.obj);
+                            mCategoryTitleView.setText(mSelectedCategoryName);
+                            mFittingView.setVisibility(View.GONE);
                             break;
                         case STATE_FITTING_SELECTED:
                             mCategorysView.setVisibility(View.GONE);
@@ -306,7 +309,7 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
                                         mFittingSelectItems = goods;
                                         mImageFittingAdapter = new ImageFittingAdapter(mFittingSelectItems);
                                         Message msg = new Message();
-                                        msg.obj = categoryName;
+                                        mSelectedCategoryName = categoryName;
                                         msg.what = UPDATE_STATE;
                                         mHandler.sendMessage(msg);
                                     }
@@ -356,16 +359,23 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
             }
             final Good item = mItems.get(position);
             if (item.mIconBitmap == null) {
+                if (item.mIconPathLocal == null) {
                 DataHelper.ImageDownloadTask task = new DataHelper.ImageDownloadTask(){
 
                     @Override
                     protected void onPostExecute(Bitmap result) {
                         super.onPostExecute(result);
                         item.mIconBitmap = result;
+                            item.mIconPathLocal = PictureUtil.saveIcon(CameraActivity.this, result);
                         holder.mImage.setImageBitmap(item.mIconBitmap);
                     }
                 };
                 task.execute(item.mIconPath);
+            } else {
+                    item.mIconBitmap = PictureUtil.decodePicToBitmap(item.mIconPathLocal.getPath(), PictureUtil.PIC_SIZE_SMALL);
+                    holder.mImage.setImageBitmap(item.mIconBitmap);
+                }
+                
             } else {
                 holder.mImage.setImageBitmap(item.mIconBitmap);
             }
@@ -376,12 +386,14 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
                     if (BuildConfig.DEBUG)
                         Log.d(TAG, "image category");
                     if (item.mImageBitmap == null) {
+                        if (item.mImagePathLocal == null) {
                         final DataHelper.ImageDownloadTask task = new DataHelper.ImageDownloadTask(){
 
                             @Override
                             protected void onPostExecute(Bitmap result) {
                                 super.onPostExecute(result);
                                 item.mImageBitmap = result;
+                                    item.mImagePathLocal = PictureUtil.saveIcon(CameraActivity.this, result);
                                 mFittingImageWidth = result.getWidth();
                                 mFittingImageHeight = result.getHeight();
                                 mFittingView.setImageBitmap(item.mImageBitmap);
@@ -396,6 +408,19 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
                         };
                         mTasks.add(task);
                         task.execute(item.mImagePath);
+                    } else {
+                            item.mImageBitmap = PictureUtil.decodePicToBitmap(item.mImagePathLocal.getPath(), PictureUtil.PIC_SIZE_SMALL);
+                            mFittingImageWidth = item.mImageBitmap.getWidth();
+                            mFittingImageHeight = item.mImageBitmap.getHeight();
+                            mFittingView.setImageBitmap(item.mImageBitmap);
+                            mRingSelectedBitmap = item.mImageBitmap;
+                            mFittingView.setImageMatrix(matrixDefaultInCenter());
+                            mFittingMatrixInit = true;
+                            mViewState = STATE_FITTING_SELECTED;
+                            mHandler.sendEmptyMessage(UPDATE_STATE);
+                            if (BuildConfig.DEBUG)
+                                Log.d(TAG, "mFittingImageWidth = " + mFittingImageWidth + " mFittingImageHeight = " + mFittingImageHeight);
+                        }
                     } else {
                         mFittingImageWidth = item.mImageBitmap.getWidth();
                         mFittingImageHeight = item.mImageBitmap.getHeight();
@@ -589,5 +614,18 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
             if (BuildConfig.DEBUG) Log.d(TAG, "angle = " + angle + " degree = " + degree);
         }
         return (float) Math.toDegrees(angle);
+    }
+
+    @Override
+    public void onBackPressed() {
+        mViewState--;
+        if (BuildConfig.DEBUG)
+            Log.d(TAG, "onBackPressed and mState = " + mViewState);
+        if (mViewState >= 0) { 
+            mHandler.sendEmptyMessage(UPDATE_STATE);
+        } else {
+            super.onBackPressed();
+        }
+        
     }
 }

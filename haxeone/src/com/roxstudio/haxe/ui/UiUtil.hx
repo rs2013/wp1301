@@ -1,5 +1,6 @@
 package com.roxstudio.haxe.ui;
 
+import nme.events.Event;
 import nme.Lib;
 import com.roxstudio.haxe.ui.UiUtil;
 import com.roxstudio.haxe.game.GfxUtil;
@@ -63,7 +64,7 @@ class UiUtil {
 
     private static var textfieldCanvas: BitmapData;
     public static function staticText(text: String, ?color: Int = 0, ?size: Float = 24, ?hAlign: Int = LEFT,
-                                      ?multiline: Bool = false, ?width: Null<Float>) : TextField {
+                                      ?multiline: Bool = false, ?width: Null<Float>, ?height: Null<Float>) : TextField {
         if (textfieldCanvas == null) textfieldCanvas = new BitmapData(100, 100);
         var tf = new TextField();
         var ox = tf.x, oy = tf.y;
@@ -72,11 +73,12 @@ class UiUtil {
         tf.defaultTextFormat = textFormat(color, size, hAlign);
         tf.multiline = tf.wordWrap = multiline;
         if (width != null) tf.width = width;
+        if (height != null) tf.height = height;
         tf.x = tf.y = 0;
         tf.text = text;
         textfieldCanvas.draw(tf); // force textfield to update width & height
         if (width == null) tf.width = tf.textWidth + 5;
-        tf.height = tf.textHeight + 5;
+        if (height == null) tf.height = tf.textHeight + 5;
         tf.x = ox;
         tf.y = oy;
         return tf;
@@ -136,6 +138,23 @@ class UiUtil {
             if (width != null) bmp.width = width;
             if (height != null) bmp.height = height;
             return bmp;
+        }
+    }
+
+    public static function asyncImage(url: String, onComplete: BitmapData -> Void, ?bundleId: String) {
+        var img = ResKeeper.get(url);
+        if (img == null) {
+            var ldr = new RoxURLLoader(url, RoxURLLoader.IMAGE);
+            ldr.addEventListener(Event.COMPLETE, function(_) {
+                if (ldr.status == RoxURLLoader.OK) {
+                    onComplete(cast ldr.data);
+                    ResKeeper.add(url, ldr.data, bundleId);
+                } else {
+                    onComplete(null);
+                }
+            });
+        } else { // already in cache
+            delay(function() { onComplete(cast img); });
         }
     }
 
@@ -265,7 +284,8 @@ class UiUtil {
         GfxUtil.rox_fillRoundRect(box.graphics, 0xBB333333, 0, 0, label.width + 20, label.height + 16);
         box.addChild(UiUtil.rox_move(label, (box.width - label.width) / 2, (box.height - label.height) / 2));
         var stage = Lib.current.stage;
-        stage.addChild(UiUtil.rox_move(box, (stage.stageWidth - box.width) / 2, stage.stageHeight - box.height - 20));
+        var ratio = stage.stageWidth / 640;
+        stage.addChild(UiUtil.rox_move(box, (stage.stageWidth - box.width) / 2, stage.stageHeight - box.height - 100 * ratio));
         delay(function() { stage.removeChild(box); }, timeInSec * 1000);
     }
 

@@ -15,6 +15,7 @@ class HomeScreen extends TimelineScreen {
 
     public function new() {
         super();
+        this.disposeAtFinish = false;
         this.screenTabIndex = 0;
     }
 

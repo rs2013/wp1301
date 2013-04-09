@@ -5,10 +5,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.util.Log;
 
 import com.weiplus.client.BuildConfig;
 import com.weiplus.client.R;
+import com.vbo.harry_camera.utils.FileUtil;
 import com.vbo.harry_camera.utils.PictureUtil;
 
 import org.apache.http.Header;
@@ -32,7 +34,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -43,6 +47,10 @@ public class DataHelper {
 
     private static boolean sIsResLoaded;
     private static ResLoadingListener sResLoadingListener;
+    private static String sCacheDir;
+    private static ArrayList<Category> sCategorys = new ArrayList<Category>();
+    private static HashMap<Integer, ArrayList<Good>> sGoods = new HashMap<Integer, ArrayList<Good>>();
+    private static boolean sIsReadingCache;
 
     // For Json
     private static final String CATEGORY_PATH =
@@ -64,6 +72,10 @@ public class DataHelper {
     private static final String KEY_PRICE = "price";
     private static final String KEY_CID = "cid";
     private static final String KEY_IMAGE = "image";
+
+    //private static final long DATA_RETETION_TIME = 1000 * 60 * 60 * 2;
+    private static final long DATA_RETETION_TIME = 1000 * 60;
+    private static final String CACHE_FILE_NAME_CATELOGS = "catalogs.idx";
 
     public static final int[] TEST_THUMBS = {
         R.drawable.test_01_thumb,
@@ -95,7 +107,7 @@ public class DataHelper {
 
     public static void initDataCache(Context context) {
         // XXX Just for test, May be need download from network.
-        Random random = new Random();
+        /*Random random = new Random();
         for (int i = 0; i < TEST_THUMBS.length; i++) {
             Ring ring = new  Ring();
             ring.mPrice = random.nextInt(300);
@@ -106,7 +118,9 @@ public class DataHelper {
             //        .getBitmap();
             //ring.mFitting = TEST_FITTING[i];
             sDataCache.add(ring);
-        }
+        }*/
+        // file cache TODO
+        initCatelogsCache(context);
     }
 
     public static void refreshDataCache(Context context) {
@@ -198,8 +212,40 @@ public class DataHelper {
     }
 
     public static void getCategory(CategoryLoadListener listener) {
-        ArrayList<Category> result = new ArrayList<Category>();
+        //ArrayList<Category> result = new ArrayList<Category>();
+        if (sCategorys.isEmpty()) {
         try {
+            URL url = new URL(CATEGORY_PATH);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setReadTimeout(TIME_OUT_FOR_READ_JSON);
+            conn.setRequestMethod("GET");
+            InputStream inStream = conn.getInputStream();
+            byte[] data = readInputSream(inStream);
+            String json = new String(data);
+            JSONObject jsonMain = new JSONObject(json);
+            JSONObject jsonCatelogs = jsonMain.getJSONObject(KEY_CATEGORYS);
+            JSONArray jsonRecords = jsonCatelogs.getJSONArray(KEY_RECORDS);
+            for (int i = 0; i< jsonRecords.length(); i++) {
+                Category oneCategory = new Category();
+                JSONObject jsonOneCategory = jsonRecords.getJSONObject(i);
+                oneCategory.mName = jsonOneCategory.getString(KEY_NAME);
+                oneCategory.mId = jsonOneCategory.getInt(KEY_ID);
+                oneCategory.mIconPath = jsonOneCategory.getString(KEY_ICON_PATH);
+                    sCategorys.add(oneCategory);
+                }
+                listener.onCategoryLoaded(sCategorys);
+                if (BuildConfig.DEBUG) Log.d(TAG, "json = " + json);
+            } catch (MalformedURLException e) {
+                Log.w(TAG, "getCategory", e);
+            } catch (IOException e) {
+                Log.w(TAG, "getCategory", e);
+            } catch (JSONException e) {
+                Log.w(TAG, "getCategory", e);
+            }
+        } else {
+            listener.onCategoryLoaded(sCategorys);
+        }
+        /*try {
             URL url = new URL(CATEGORY_PATH);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(TIME_OUT_FOR_READ_JSON);
@@ -226,7 +272,7 @@ public class DataHelper {
             Log.w(TAG, "getCategory", e);
         } catch (JSONException e) {
             Log.w(TAG, "getCategory", e);
-        }
+        }*/
     }
 
     public static byte[] readInputSream(InputStream inStream) throws IOException {
@@ -241,8 +287,87 @@ public class DataHelper {
     }
 
     public static void getGoods(int id, String categoryName,GoodLoadListener listener) {
-        ArrayList<Good> result = new ArrayList<Good>();
+        //ArrayList<Good> result = new ArrayList<Good>();
+        if (sGoods.isEmpty()) {
         try {
+                ArrayList<Good> one = new ArrayList<Good>();
+                URL url = new URL(GOODS_PATH + id + ".json");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(TIME_OUT_FOR_READ_JSON);
+                conn.setRequestMethod("GET");
+                InputStream inStream = conn.getInputStream();
+                byte[] data = readInputSream(inStream);
+                String json = new String(data);
+                JSONObject jsonMain = new JSONObject(json);
+                JSONObject jsonGoods = jsonMain.getJSONObject(KEY_GOODS);
+                JSONArray jsonRecords = jsonGoods.getJSONArray(KEY_RECORDS);
+                for (int i = 0; i< jsonRecords.length(); i++) {
+                    Good oneGood = new Good();
+                    JSONObject jsonOneGood = jsonRecords.getJSONObject(i);
+                    oneGood.mName = jsonOneGood.getString(KEY_NAME);
+                    oneGood.mType = jsonOneGood.getString(KEY_TYPE);
+                    oneGood.mDescription = jsonOneGood.getString(KEY_DESCRIPTION);
+                    oneGood.mIconPath = jsonOneGood.getString(KEY_ICON_PATH);
+                    oneGood.mPrice = jsonOneGood.getString(KEY_PRICE);
+                    oneGood.mCid = jsonOneGood.getInt(KEY_CID);
+                    oneGood.mImagePath = jsonOneGood.getString(KEY_IMAGE);
+                    oneGood.mId = jsonOneGood.getInt(KEY_ID);
+                    one.add(oneGood);
+                }
+                sGoods.put(id, one);
+                listener.onGoodLoaded(one, categoryName);
+                if (BuildConfig.DEBUG) Log.d(TAG, "category and json = " + json);
+            } catch (MalformedURLException e) {
+                Log.w(TAG, "category", e);
+            } catch (IOException e) {
+                Log.w(TAG, "category", e);
+            } catch (JSONException e) {
+                Log.w(TAG, "category", e);
+            }
+        } else {
+            ArrayList<Good> one = sGoods.get(id);
+            if (one == null) {
+                try {
+                    one = new ArrayList<Good>();
+                    URL url = new URL(GOODS_PATH + id + ".json");
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setReadTimeout(TIME_OUT_FOR_READ_JSON);
+                    conn.setRequestMethod("GET");
+                    InputStream inStream = conn.getInputStream();
+                    byte[] data = readInputSream(inStream);
+                    String json = new String(data);
+                    JSONObject jsonMain = new JSONObject(json);
+                    JSONObject jsonGoods = jsonMain.getJSONObject(KEY_GOODS);
+                    JSONArray jsonRecords = jsonGoods.getJSONArray(KEY_RECORDS);
+                    for (int i = 0; i< jsonRecords.length(); i++) {
+                        Good oneGood = new Good();
+                        JSONObject jsonOneGood = jsonRecords.getJSONObject(i);
+                        oneGood.mName = jsonOneGood.getString(KEY_NAME);
+                        oneGood.mType = jsonOneGood.getString(KEY_TYPE);
+                        oneGood.mDescription = jsonOneGood.getString(KEY_DESCRIPTION);
+                        oneGood.mIconPath = jsonOneGood.getString(KEY_ICON_PATH);
+                        oneGood.mPrice = jsonOneGood.getString(KEY_PRICE);
+                        oneGood.mCid = jsonOneGood.getInt(KEY_CID);
+                        oneGood.mImagePath = jsonOneGood.getString(KEY_IMAGE);
+                        oneGood.mId = jsonOneGood.getInt(KEY_ID);
+                        one.add(oneGood);
+                    }
+                    sGoods.put(id, one);
+                    listener.onGoodLoaded(one, categoryName);
+                    if (BuildConfig.DEBUG) Log.d(TAG, "category and json = " + json);
+                } catch (MalformedURLException e) {
+                    Log.w(TAG, "category", e);
+                } catch (IOException e) {
+                    Log.w(TAG, "category", e);
+                } catch (JSONException e) {
+                    Log.w(TAG, "category", e);
+                }
+                
+            } else {
+                listener.onGoodLoaded(one, categoryName);
+            }
+        }
+        /*try {
             URL url = new URL(GOODS_PATH + id + ".json");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(TIME_OUT_FOR_READ_JSON);
@@ -274,7 +399,7 @@ public class DataHelper {
             Log.w(TAG, "category", e);
         } catch (JSONException e) {
             Log.w(TAG, "category", e);
-        }
+        }*/
     }
 
     public interface CategoryLoadListener{
@@ -357,4 +482,149 @@ public class DataHelper {
             }
         } 
     }
+
+    public static boolean isExternalStorageAvailable() {
+        boolean state = false;
+        String extStorageState = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(extStorageState)) {
+            state = true;
+        }
+        return state;
+    }
+
+    public static boolean isExternalStorageReadOnly() {
+        boolean state = false;
+        String extStorageState = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState)) {
+            state = true;
+        }
+        return state;
+    }
+
+    public static String getInternalCacheDirectory(Context context) {
+        String cacheDirPath = null;
+        File cacheDir = context.getCacheDir();
+        if (cacheDir != null) {
+            cacheDirPath = cacheDir.getPath();
+        }
+        return cacheDirPath;
+    }
+
+    public static String getExternalCacheDirectory(Context context) {
+        String extCacheDirPath = null;
+        File cacheDir = context.getExternalCacheDir();
+        if (cacheDir != null) {
+            extCacheDirPath = cacheDir.getPath();
+        }
+        return extCacheDirPath;
+    }
+
+    public static boolean initCatelogsCache(Context context) {
+        int flag = checkFileCache(context, CACHE_FILE_NAME_CATELOGS);
+        if (BuildConfig.DEBUG)
+            Log.d(TAG, "checkCache  = " + flag);
+        switch (flag) {
+            case FLAG_CACHE_AVAILABLE:
+                readCache(false);
+                break;
+            case FLAG_CACHE_EMPTY:
+            case FLAG_CACHE_PAST_DUE:
+                readCache(true);
+                break;
+            case FLAG_CACHE_EMPTY_CANT_CREAT:
+            case FLAG_CACHE_STORAGE_UNAVAILABLE:
+                break;
+        }
+        return false;
+    }
+
+    private static void readCache(boolean fromNetWork) {
+        try {
+            JSONObject jsonMain = new JSONObject(getCatelogsJsonString(fromNetWork));
+            JSONObject jsonCatelogs = jsonMain.getJSONObject(KEY_CATEGORYS);
+            JSONArray jsonRecords = jsonCatelogs.getJSONArray(KEY_RECORDS);
+            for (int i = 0; i< jsonRecords.length(); i++) {
+                Category oneCategory = new Category();
+                JSONObject jsonOneCategory = jsonRecords.getJSONObject(i);
+                oneCategory.mName = jsonOneCategory.getString(KEY_NAME);
+                oneCategory.mId = jsonOneCategory.getInt(KEY_ID);
+                oneCategory.mIconPath = jsonOneCategory.getString(KEY_ICON_PATH);
+                sCategorys.add(oneCategory);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void writeTofile(String filePath, String textToWrite) {
+        File catelogs = new File(sCacheDir + "/" + filePath);
+        try {
+            FileUtil.writeTextFile(catelogs, textToWrite);
+        } catch (IOException e) {
+            Log.w(TAG, "during write file " + catelogs);
+        }
+    }
+
+    private static int checkFileCache(Context context, String filePath) {
+        if (isExternalStorageAvailable() && !isExternalStorageReadOnly()) {
+            sCacheDir = getExternalCacheDirectory(context);
+        } else {
+            sCacheDir = getInternalCacheDirectory(context);
+        }
+        if (sCacheDir != null) {
+            File catelogs = new File(sCacheDir + "/" + filePath);
+            if (catelogs.exists()) {
+                long lastModified = catelogs.lastModified();
+                if ((System.currentTimeMillis() - lastModified) < DATA_RETETION_TIME) {
+                    return FLAG_CACHE_AVAILABLE;
+                } else {
+                    return FLAG_CACHE_PAST_DUE;
+                }
+            } else {
+                try {
+                    catelogs.createNewFile();
+                } catch (IOException e) {
+                    Log.w(TAG, "during create file " + catelogs.toString());
+                    return FLAG_CACHE_EMPTY_CANT_CREAT;
+                }
+                return FLAG_CACHE_EMPTY;
+            }
+        } else {
+            return FLAG_CACHE_STORAGE_UNAVAILABLE;
+        }
+    }
+
+    private static String getCatelogsJsonString(boolean fromNetwork) {
+        if (fromNetwork) {
+            URL url;
+            try {
+                url = new URL(CATEGORY_PATH);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(TIME_OUT_FOR_READ_JSON);
+                conn.setRequestMethod("GET");
+                InputStream inStream = conn.getInputStream();
+                byte[] data = readInputSream(inStream);
+                return new String(data);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            File file = new File(sCacheDir + "/" + CACHE_FILE_NAME_CATELOGS);
+            try {
+                return FileUtil.readTextFile(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    
+    public static final int FLAG_CACHE_AVAILABLE           = 0;
+    public static final int FLAG_CACHE_EMPTY               = -1;
+    public static final int FLAG_CACHE_PAST_DUE            = -2;
+    public static final int FLAG_CACHE_EMPTY_CANT_CREAT    = -3;
+    public static final int FLAG_CACHE_STORAGE_UNAVAILABLE = -4;
 }

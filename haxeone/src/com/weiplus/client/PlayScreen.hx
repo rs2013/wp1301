@@ -88,8 +88,8 @@ class PlayScreen extends BaseScreen {
         }
         var mask = new Sprite();
         mask.graphics.rox_fillRect(0x77000000, 0, 0, viewWidth, viewHeight);
-        var loading = UiUtil.staticText("载入中...", 0xFFFFFF, 36);
-        loading.rox_move((viewWidth - loading.width) / 2, (viewHeight - loading.height) / 2);
+        var loading = MyUtils.getLoadingAnim("载入中");
+        loading.rox_move(viewWidth / 2, viewHeight / 2);
         mask.addChild(loading);
         content.addChild(mask);
     }

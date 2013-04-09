@@ -20,7 +20,7 @@ public class HarryCameraApp extends Application {
         super.onCreate();
         WindowManager wmManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         sDefaultDisplay = wmManager.getDefaultDisplay();
-        DataHelper.initDataCache(getApplicationContext());
+        //DataHelper.initDataCache(getApplicationContext());
         new Thread(new Runnable() {
 
             @Override

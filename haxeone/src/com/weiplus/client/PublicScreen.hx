@@ -34,7 +34,9 @@ class PublicScreen extends TimelineScreen {
     override private function buttonPanel() : Sprite {
         var btnpanel = new Sprite();
         btnpanel.graphics.rox_fillRect(0xAA000000, 0, -100, screenWidth, 100);
-        btnLogin = UiUtil.button(UiUtil.TOP_LEFT, null, "登录哈利波图", 0xFFFFFF, 40, "res/btn_common.9.png", doLogin);
+        var btnBg = UiUtil.bitmap("res/btn_login.png").rox_scale(d2rScale);
+        btnpanel.addChild(btnBg.rox_move((screenWidth - btnBg.width) / 2, (100 - btnBg.height) / 2 - btnpanel.height));
+        btnLogin = UiUtil.button(UiUtil.TOP_LEFT, null, "登录哈利波图", 0xFFFFFF, 40, null, doLogin);
         btnpanel.addChild(btnLogin.rox_move((screenWidth - btnLogin.width) / 2, (btnpanel.height - btnLogin.height) / 2  - btnpanel.height));
         return btnpanel;
     }

@@ -65,6 +65,7 @@ class TimelineScreen extends BaseScreen {
     var screenTabIndex = 1;
     var storedStatuses: Array<Dynamic>;
     var page: PageModel;
+    var compactMode = false;
 
     override public function onCreate() {
         title = UiUtil.bitmap("res/icon_logo.png");
@@ -83,7 +84,7 @@ class TimelineScreen extends BaseScreen {
 
         addChild(btnpanel.rox_move(0, screenHeight));
 //        trace("btnpanel="+btnpanel.x+","+btnpanel.y+","+btnpanel.width+","+btnpanel.height);
-        viewh = height - 95 * d2rScale;
+        viewh = screenHeight - titleBar.height - btnpanel.height;
 
     }
 
@@ -187,7 +188,7 @@ class TimelineScreen extends BaseScreen {
                 status.appData.url = att.attachUrl;
                 status.appData.label = att.attachName;
             }
-            var postit = new Postit(status, postitw, numCol == 1);
+            var postit = new Postit(status, postitw, compactMode ? Postit.COMPACT : numCol == 1 ? Postit.FULL : Postit.NORMAL);
             postit.addEventListener(Event.SELECT, onPlay);
             postits.push(postit);
         }
@@ -253,7 +254,7 @@ class TimelineScreen extends BaseScreen {
         var postity = 0.0;
         for (i in 0...postits.length) {
             var postit = postits[i];
-            if (updateCol) postit.setWidth(postitw, numCol == 1);
+            if (updateCol) postit.setWidth(postitw, compactMode ? Postit.COMPACT : numCol == 1 ? Postit.FULL : Postit.NORMAL);
             var shadow = UiUtil.ninePatch("res/shadow6.9.png");
             shadow.setDimension(postitw + 3, postit.height + 6);
 
@@ -329,12 +330,31 @@ class TimelineScreen extends BaseScreen {
             case RoxGestureEvent.GESTURE_PAN:
                 var pt = RoxGestureAgent.localOffset(main, cast(e.extra));
                 main.y = UiUtil.rangeValue(main.y + pt.y, UiUtil.rangeValue(viewh - mainh - REFRESH_HEIGHT, GameUtil.IMIN, 0), REFRESH_HEIGHT);
+                if (main.y > 0) {
+                    if (main.getChildByName("topRefresher") == null) {
+                        var refresher = new Refresher("topRefresher", true);
+                        main.addChild(refresher.rox_move(0, -refresher.height));
+                    } else if (main.y > TRIGGER_HEIGHT) {
+                        cast(main.getChildByName("topRefresher"), Refresher).updateText();
+                    }
+                } else if (main.y < viewh - mainh) {
+                    if (main.getChildByName("bottomRefresher") == null) {
+                        var refresher = new Refresher("bottomRefresher", false);
+                        main.addChild(refresher.rox_move(0, main.height));
+                    } else if (main.y < viewh - mainh - TRIGGER_HEIGHT) {
+                        cast(main.getChildByName("bottomRefresher"), Refresher).updateText();
+                    }
+                }
             case RoxGestureEvent.GESTURE_SWIPE:
                 var pt = RoxGestureAgent.localOffset(main, cast(new Point(e.extra.x * 2.0, e.extra.y * 2.0)));
                 var desty = UiUtil.rangeValue(main.y + pt.y, UiUtil.rangeValue(viewh - mainh, GameUtil.IMIN, 0), 0);
                 var tm = main.y > 0 || main.y < viewh - mainh ? 1 : 2;
                 if (main.y > TRIGGER_HEIGHT || main.y < viewh - mainh - TRIGGER_HEIGHT) refresh(main.y <= 0);
                 agent.startTween(main, tm, { y: desty });
+                UiUtil.delay(function() {
+                    main.rox_removeByName("topRefresher");
+                    main.rox_removeByName("bottomRefresher");
+                }, tm * 1000);
             case RoxGestureEvent.GESTURE_PINCH:
 //                trace("pinch:numCol=" + numCol + ",extra=" + e.extra);
                 if (numCol > 1 && e.extra > 1) {

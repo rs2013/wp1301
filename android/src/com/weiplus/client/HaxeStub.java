@@ -109,13 +109,14 @@ public class HaxeStub {
         MainActivity.getInstance().startActivityForResult(it, requestCode);
     }
     
-    public static void startInputDialog(final String title, final String buttonLabel, final HaxeObject callback) {
+    public static void startInputDialog(final String title, final String text, final String buttonLabel, final HaxeObject callback) {
         final Activity activity = MainActivity.getInstance(); 
-        final EditText edit = new EditText(MainActivity.getInstance());
-        edit.setFocusable(true);
-        edit.setFocusableInTouchMode(true);
         activity.runOnUiThread(new Runnable() {
             @Override public void run() {
+                final EditText edit = new EditText(MainActivity.getInstance());
+                edit.setText(text);
+                edit.setFocusable(true);
+                edit.setFocusableInTouchMode(true);
                 new AlertDialog.Builder(activity)
                         .setTitle(title)
                         .setView(edit)
@@ -131,13 +132,12 @@ public class HaxeStub {
                             }
                         })
                         .show();
-            }
-        });
-        activity.runOnUiThread(new Runnable() {
-            @Override public void run() {
-                edit.requestFocus();
-                InputMethodManager inputManager = (InputMethodManager) edit.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputManager.showSoftInput(edit, 0);
+//                try {
+//                    Thread.sleep(500);
+//                } catch (Exception ex) {}
+//                edit.requestFocus();
+//                InputMethodManager inputManager = (InputMethodManager) edit.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//                inputManager.showSoftInput(edit, 0);
             }
         });
     }

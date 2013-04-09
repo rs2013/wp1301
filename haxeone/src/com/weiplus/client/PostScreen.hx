@@ -78,8 +78,12 @@ class PostScreen extends BaseScreen {
         var bmd = new BitmapData(80, 80, true, 0);
         bmd.draw(shape);
         var npd = new RoxNinePatchData(new Rectangle(20, 20, 40, 40), bmd);
-        input = UiUtil.input("", 0, 30, UiUtil.LEFT, true, 576, inputh - 40);
-        var inputbox = new RoxFlowPane(616, inputh, UiUtil.TOP_LEFT, [ input ], new RoxNinePatch(npd));
+        input = UiUtil.staticText("", 0, 30, UiUtil.LEFT, true, 576, inputh - 40);
+        var inputbox = new RoxFlowPane(616, inputh, UiUtil.TOP_LEFT, [ input ], new RoxNinePatch(npd), function(_) {
+#if android
+            HaxeStub.startInputDialog("编辑内容", input.text, "完成", this);
+#end
+        });
 
         main.addChild(inputbox.rox_move(12, preview.height + 2 * SPACING));
         trace("inputh="+inputh+",mainh="+mainh+",inputboxh="+inputbox.height+",input=("+input.width+","+input.height
@@ -144,12 +148,13 @@ class PostScreen extends BaseScreen {
         mask.graphics.rox_fillRect(0x77000000, 0, 0, screenWidth, screenHeight);
         var loading = MyUtils.getLoadingAnim(label).rox_move(screenWidth / 2, screenHeight / 2);
         mask.addChild(loading);
+        mask.name = "waitingMask";
         return mask;
     }
 
     private function onApiCallback(apiName: String, resultCode: String, str: String) {
         trace("onApiCallback: name="+apiName+",result="+resultCode+",str="+str);
-        UiUtil.rox_removeByName(this, MyUtils.LOADING_ANIM_NAME); // remove mask
+        UiUtil.rox_removeByName(this, "waitingMask"); // remove mask
         switch (apiName) {
             case "statuses_create":
                 if (resultCode != "ok") return;
@@ -159,6 +164,10 @@ class PostScreen extends BaseScreen {
             case "startAuth":
                 if (resultCode == "ok" && str == "ok") {
                     resetSharePanel();
+                }
+            case "startInputDialog":
+                if (resultCode == "ok" && str.length > 0) {
+                    input.text = str;
                 }
         }
     }

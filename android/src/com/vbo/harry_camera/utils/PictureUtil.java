@@ -356,4 +356,21 @@ public class PictureUtil {
             return upperBound;
         }
     }
+
+    public static File saveIcon(Context context, Bitmap bitmap) {
+
+        File pictureFile = new File("/Android/data/" + context.getPackageName() + "/files/" + System.currentTimeMillis() + ".jpg");
+
+        try {
+            FileOutputStream fos = new FileOutputStream(pictureFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            Log.w(TAG, "File not found: " + e.getMessage());
+        } catch (IOException e) {
+            Log.w(TAG, "Error accessing file: " + e.getMessage());
+        }
+        return pictureFile;
+    }
 }

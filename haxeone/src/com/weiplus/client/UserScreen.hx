@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import nme.events.MouseEvent;
 import com.weiplus.client.MyUtils;
 import com.roxstudio.haxe.game.ResKeeper;
 import com.roxstudio.haxe.ui.UiUtil;
@@ -15,7 +16,6 @@ import nme.display.Shape;
 import nme.display.Sprite;
 import com.weiplus.client.model.PageModel;
 import nme.events.Event;
-import com.roxstudio.haxe.net.RoxURLLoader;
 import haxe.Json;
 
 using com.roxstudio.haxe.ui.UiUtil;
@@ -35,6 +35,7 @@ class UserScreen extends TimelineScreen {
         super();
         this.screenTabIndex = 4;
         user = new User();
+        compactMode = true;
     }
 
     override public function onCreate() {
@@ -75,6 +76,7 @@ class UserScreen extends TimelineScreen {
         }
         if (MyUtils.isEmpty(HpApi.instance.uid)) {
             UiUtil.rox_removeByName(this, "buttonPanel");
+            viewh = screenHeight - titleBar.height;
         }
 
         HpApi.instance.get("/users/show/" + user.id, { }, function(code: Int, json: Dynamic) {
@@ -110,7 +112,7 @@ class UserScreen extends TimelineScreen {
 //
     override private function getHeadPanel() : Sprite {
         var sp = new Sprite();
-        var spacing = 20;
+        var spacing = 20.0;
         sp.graphics.rox_fillRect(0xFF2F2F2F, 0, 0, designWidth, 100);
         sp.graphics.rox_line(2, 0xFF3c3c3c, 310, 0, 310, 100);
         sp.graphics.rox_line(2, 0xFF000000, 312, 0, 312, 100);
@@ -120,37 +122,61 @@ class UserScreen extends TimelineScreen {
         sp.graphics.rox_line(2, 0xFF000000, 532, 0, 532, 100);
         sp.graphics.rox_line(2, 0xFFe2e2e2, 0, 100, designWidth, 100);
         if (!MyUtils.isEmpty(user.profileImage)) {
-            var img: BitmapData = ResKeeper.get(user.profileImage);
-            if (img != null && img.width > 0) {
+            UiUtil.asyncImage(user.profileImage, function(img: BitmapData) {
+                if (img == null || img.width == 0) {
+                    img = ResKeeper.getAssetImage("res/no_avatar.png");
+                }
                 sp.graphics.rox_drawRegionRound(img, spacing, spacing, 60, 60);
                 sp.graphics.rox_drawRoundRect(3, 0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
-            } else {
-                sp.graphics.rox_fillRoundRect(0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
-                var ldr = new RoxURLLoader(user.profileImage, RoxURLLoader.IMAGE);
-                ldr.addEventListener(Event.COMPLETE, function(_) {
-                    var img: BitmapData = if (ldr.status == RoxURLLoader.OK && (cast(ldr.data, BitmapData).width > 0)) {
-                        ResKeeper.add(user.profileImage, ldr.data);
-                        cast ldr.data;
-                    } else {
-                        ResKeeper.getAssetImage("res/no_avatar.png");
-                    }
-                    sp.graphics.rox_drawRegionRound(img, spacing, spacing, 60, 60);
-                    sp.graphics.rox_drawRoundRect(3, 0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
-                });
-            }
-
-        } else {
-            sp.graphics.rox_fillRoundRect(0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
+            });
+//            var img: BitmapData = ResKeeper.get(user.profileImage);
+//            if (img != null && img.width > 0) {
+//                sp.graphics.rox_drawRegionRound(img, spacing, spacing, 60, 60);
+//                sp.graphics.rox_drawRoundRect(3, 0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
+//            } else {
+//                sp.graphics.rox_fillRoundRect(0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
+//                var ldr = new RoxURLLoader(user.profileImage, RoxURLLoader.IMAGE);
+//                ldr.addEventListener(Event.COMPLETE, function(_) {
+//                    var img: BitmapData = if (ldr.status == RoxURLLoader.OK && (cast(ldr.data, BitmapData).width > 0)) {
+//                        ResKeeper.add(user.profileImage, ldr.data);
+//                        cast ldr.data;
+//                    } else {
+//                        ResKeeper.getAssetImage("res/no_avatar.png");
+//                    }
+//                    sp.graphics.rox_drawRegionRound(img, spacing, spacing, 60, 60);
+//                    sp.graphics.rox_drawRoundRect(3, 0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
+//                });
+//            }
+//
+//        } else {
+//            sp.graphics.rox_fillRoundRect(0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
         }
+        sp.graphics.rox_drawRegionRound(ResKeeper.getAssetImage("res/no_avatar.png"), spacing, spacing, 60, 60);
+        sp.graphics.rox_drawRoundRect(3, 0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
         if (HpApi.instance.uid != user.id) {
             // add friend button
         }
-        var arr = [ [ "作品", user.postCount, 310 ], [ "关注", user.friendCount, 420 ], [ "粉丝", user.followerCount, 530 ] ];
+        var arr = [
+            [ "作品", user.postCount, 310, null ],
+            [ "关注", user.friendCount, 420, "friends" ],
+            [ "粉丝", user.followerCount, 530, "followers" ]
+        ];
         for (info in arr) {
             var label = UiUtil.staticText(info[0], 0xFFFFFF, 24);
             var num = UiUtil.staticText("" + info[1], 0xFFFFFF, 24);
-            sp.addChild(label.rox_move(info[2] + 56 - label.width / 2, spacing));
-            sp.addChild(num.rox_move(info[2] + 56 - num.width / 2, 100 - spacing - num.height));
+            var panel = new Sprite();
+            var gap = (100 - num.height - label.height) / 3;
+            panel.graphics.rox_fillRect(0x01FFFFFF, 0, 0, 110, 100);
+            panel.addChild(label.rox_move(55 - label.width / 2, gap));
+            panel.addChild(num.rox_move(55 - num.width / 2, 2 * gap + label.height));
+            if (info[3] != null) {
+                panel.mouseEnabled = true;
+                panel.addEventListener(MouseEvent.CLICK, function(_) {
+                    trace("FriendScreen, uid=" + user.id + ",type=" + info[3]);
+                    startScreen(Type.getClassName(FriendsList), { user: user, type: info[3] });
+                });
+            }
+            sp.addChild(panel.rox_move(info[2], 0));
         }
         sp.rox_scale(screenWidth / designWidth);
         headPanel = sp;

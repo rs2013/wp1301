@@ -52,6 +52,8 @@ class RoxScreenManager extends Sprite {
         if (finishToScreen != null) {
             finishScreen(source, finishToScreen, RoxScreen.CANCELED, null, RoxAnimate.NO_ANIMATE);
             source = null;
+        } else {
+            hide(source, false);
         }
 
         ResKeeper.currentBundle = screenClassName;
@@ -67,7 +69,7 @@ class RoxScreenManager extends Sprite {
         stack.push({ className: screenClassName, requestCode: requestCode, animate: animate });
         dest.onNewRequest(requestData);
 
-        switchScreen(source, dest, false);
+        show(dest);
         if (srcbmp != null && animate.type != RoxAnimate.NONE) startAnimate(srcbmp, snap(dest), animate);
 //        trace(">>End startScreen: stack=" + stack);
     }
@@ -82,7 +84,7 @@ class RoxScreenManager extends Sprite {
         var top: StackItem = stack.pop();
         if (top == null || top.className != screen.className)
             throw "finishScreen: Illegal stack state or bad source screen '" + top + "'";
-        switchScreen(screen, null, true);
+        hide(screen, true);
         if (stack.isEmpty()) return;
 
         if (animate == null) animate = top.animate.getReverse();
@@ -105,13 +107,13 @@ class RoxScreenManager extends Sprite {
         }
 
         while ((top = stack.first()) != null && top.className != toScreen) {
-            switchScreen(screens.get(top.className), null, true);
+            hide(screens.get(top.className), true);
             stack.pop();
         }
 
         if (top != null) {
             var topscreen: RoxScreen = screens.get(top.className);
-            switchScreen(null, topscreen, false);
+            show(topscreen);
             if (animate.type != RoxAnimate.NONE) startAnimate(srcbmp, snap(topscreen), animate);
             topscreen.onScreenResult(requestCode, resultCode, resultData);
         }
@@ -166,26 +168,48 @@ class RoxScreenManager extends Sprite {
         removeChild(dest);
     }
 
-    private function switchScreen(source: RoxScreen, dest: RoxScreen, finish: Bool) {
-//        trace("switchScreen:source="+source+",dest="+dest+",finish="+finish);
-        if (source != null) {
-            if (contains(source)) {
-                removeChild(source);
-                source.onHidden();
-            }
-            if (finish && source.disposeAtFinish) {
-                var classname = source.className;
-                screens.remove(classname);
-                ResKeeper.disposeBundle(classname);
-                source.onDestroy();
-            }
+//    private function switchScreen(source: RoxScreen, dest: RoxScreen, finish: Bool) {
+////        trace("switchScreen:source="+source+",dest="+dest+",finish="+finish);
+//        if (source != null) {
+//            if (contains(source)) {
+//                removeChild(source);
+//                source.onHidden();
+//            }
+//            if (finish && source.disposeAtFinish) {
+//                var classname = source.className;
+//                screens.remove(classname);
+//                ResKeeper.disposeBundle(classname);
+//                source.onDestroy();
+//            }
+//        }
+//        if (dest != null && !contains(dest)) {
+//            dest.x = dest.y = 0;
+//            dest.alpha = dest.scaleX = dest.scaleY = 1;
+//            addChild(dest);
+//            dest.onShown();
+//        }
+//    }
+//
+    private function hide(screen: RoxScreen, finish: Bool) {
+        if (screen == null) return;
+        if (contains(screen)) {
+            removeChild(screen);
+            screen.onHidden();
         }
-        if (dest != null && !contains(dest)) {
-            dest.x = dest.y = 0;
-            dest.alpha = dest.scaleX = dest.scaleY = 1;
-            addChild(dest);
-            dest.onShown();
+        if (finish && screen.disposeAtFinish) {
+            var classname = screen.className;
+            screens.remove(classname);
+            ResKeeper.disposeBundle(classname);
+            screen.onDestroy();
         }
+    }
+
+    private function show(dest: RoxScreen) {
+        if (dest == null || contains(dest)) return;
+        dest.x = dest.y = 0;
+        dest.alpha = dest.scaleX = dest.scaleY = 1;
+        addChild(dest);
+        dest.onShown();
     }
 
 }

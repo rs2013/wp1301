@@ -1,5 +1,7 @@
 package com.roxstudio.haxe.game;
 
+import nme.display.CapsStyle;
+import nme.display.LineScaleMode;
 import nme.display.BitmapData;
 import nme.display.Graphics;
 import nme.geom.Matrix;
@@ -12,7 +14,7 @@ class GfxUtil {
 
     public static inline function rox_line(g: Graphics, thickness: Int = 1, color: Int,
                                            x1: Float, y1: Float, x2: Float, y2: Float) : Graphics {
-        g.lineStyle(thickness, color & 0xFFFFFF, (color >>> 24) / 255);
+        g.lineStyle(thickness, color & 0xFFFFFF, (color >>> 24) / 255, false, LineScaleMode.NONE, CapsStyle.NONE);
         g.moveTo(x1, y1);
         g.lineTo(x2, y2);
         g.lineStyle();

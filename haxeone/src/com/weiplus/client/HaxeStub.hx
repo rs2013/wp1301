@@ -66,14 +66,15 @@ class HaxeStub
 	
 	private static var _startInputDialog_func:Dynamic;
 
-	public static function startInputDialog(arg0:String, arg1:String, arg2:Dynamic /*org.haxe.nme.HaxeObject*/):Void
+	public static function startInputDialog(arg0:String, arg1:String, arg2: String, arg3:Dynamic /*org.haxe.nme.HaxeObject*/):Void
 	{
 		if (_startInputDialog_func == null)
-			_startInputDialog_func = nme.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startInputDialog", "(Ljava/lang/String;Ljava/lang/String;Lorg/haxe/nme/HaxeObject;)V", true);
+			_startInputDialog_func = nme.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startInputDialog", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/haxe/nme/HaxeObject;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);
-		a.push(arg2);
+        a.push(arg2);
+        a.push(arg3);
 		_startInputDialog_func(a);
 	}
 	

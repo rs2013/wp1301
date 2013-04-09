@@ -55,16 +55,7 @@ public class HpManager {
                         JSONObject obj = new JSONObject(response);
                         if (obj.getInt("code") != 200) throw new Exception("error code " + obj.getInt("code"));
                         JSONArray bindUsers = obj.getJSONArray("users").getJSONObject(0).getJSONArray("bindUsers");
-                        for (int i = 0, n = bindUsers.length(); i < n; i++) {
-                            JSONObject bu = bindUsers.getJSONObject(i);
-                            Type type = Type.valueOf(bu.getString("bindType"));
-                            String[] param = new String[] { bu.optString("accessToken", ""), bu.optString("bindId", "") };
-                            Binding b = HpManager.createBinding(type, param);
-                            HpManager.addBinding(b);
-                            if (accessToken.getDisabledBindings().contains(type.name())) {
-                                b.setEnabled(false);
-                            }
-                        }
+                        restoreBindings(bindUsers);
                     } catch (Exception e) {
                         onError(new HpException(e));
                     }
@@ -83,6 +74,19 @@ public class HpManager {
             });
         }
         return accessToken.isSessionValid();
+    }
+    
+    public static void restoreBindings(JSONArray bindUsers) throws JSONException {
+        for (int i = 0, n = bindUsers.length(); i < n; i++) {
+            JSONObject bu = bindUsers.getJSONObject(i);
+            Type type = Type.valueOf(bu.getString("bindType"));
+            String[] param = new String[] { bu.optString("accessToken", ""), bu.optString("bindId", "") };
+            Binding b = HpManager.createBinding(type, param);
+            HpManager.addBinding(b);
+            if (accessToken.getDisabledBindings().contains(type.name())) {
+                b.setEnabled(false);
+            }
+        }
     }
     
     public static void loginOld() {
@@ -399,6 +403,7 @@ outer:
                             HpManager.addBinding(HpManager.candidate);
                             Utility.safeToast(MainActivity.getInstance(), HpManager.candidate.getType() + "账号合并成功", Toast.LENGTH_SHORT);
                             HpManager.candidate = null;
+                            HpManager.login();
                             Utility.haxeOk(callback, "startAuth", "ok");
                         } catch (Exception e) {
                             onError(new HpException(e));
@@ -420,7 +425,8 @@ outer:
                     
                 });
             } else {
-                HpManager.addBinding(HpManager.candidate);
+//                HpManager.addBinding(HpManager.candidate);
+                HpManager.restoreBindings(users.getJSONObject(0).getJSONArray("bindUsers"));
                 Utility.safeToast(activity, HpManager.candidate.getType() + "账号登录成功", Toast.LENGTH_SHORT);
                 HpManager.candidate = null;
                 Utility.haxeOk(callback, "startAuth", "ok");

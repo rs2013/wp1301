@@ -6,7 +6,7 @@ class Routine {
     public var type: String;
     public var user: User;
     public var follower: User;
-    public var createAt: Date;
+    public var createdAt: Date;
     public var oid: String;
     public var digest: String;
 

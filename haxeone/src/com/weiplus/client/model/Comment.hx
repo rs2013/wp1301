@@ -6,7 +6,7 @@ class Comment {
     public var user: User;
     public var commenter: User;
     public var text: String;
-    public var createAt: Date;
+    public var createdAt: Date;
 
     public function new() {
     }

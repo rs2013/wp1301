@@ -15,6 +15,7 @@ class SelectedScreen extends TimelineScreen {
 
     public function new() {
         super();
+        this.disposeAtFinish = false;
         this.screenTabIndex = 1;
     }
 
