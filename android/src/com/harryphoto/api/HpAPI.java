@@ -10,7 +10,7 @@ public abstract class HpAPI {
     /**
      */
 //  public static final String API_SERVER = "http://api.harryphoto.com";
-    public static final String API_SERVER = "http://s-56378.gotocdn.com/harryphoto";
+    public static final String API_SERVER = "http://www.appmagics.com/api";
 	public static final String POST = "POST";
 	public static final String GET = "GET";
 

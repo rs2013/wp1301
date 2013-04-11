@@ -17,6 +17,7 @@ class Status {
     public var reposts: Array<Retweet>;
     public var comments: Array<Comment>;
     public var geo: Geo;
+    public var mark: Int;
 
     public var isNew: Bool; // read or not
     public var makerData: Dynamic = null;

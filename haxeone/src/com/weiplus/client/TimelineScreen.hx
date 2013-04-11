@@ -171,6 +171,8 @@ class TimelineScreen extends BaseScreen {
             status.praiseCount = ss.praiseCount;
             status.repostCount = ss.repostCount;
             status.favoriteCount = ss.favoriteCount;
+            status.praised = ss.praise == 1;
+            status.mark = ss.mark;
 
             status.user = new User();
             status.user.id = ss.uid;

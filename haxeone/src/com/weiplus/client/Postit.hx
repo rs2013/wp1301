@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import com.weiplus.client.HpApi;
 import nme.display.DisplayObjectContainer;
 import com.roxstudio.haxe.ui.RoxScreen;
 import nme.events.Event;
@@ -80,7 +81,8 @@ class Postit extends Sprite {
             h += margin;
             var bub = UiUtil.bitmap("res/icon_bubble.png");
             layout = new RoxNinePatchData(new Rectangle(margin, 0, 20, 20), null, null, new Rectangle(0, 0, 20 + 2 * margin, 20 + margin));
-            var text = UiUtil.staticText(status.text, 0, fontsize, true, width - bub.width - 4 - 2 * layout.contentGrid.x);
+            var txt = status.user.id == HpApi.instance.uid || status.mark <= 100 ? status.text : "此条微博已经被设置为私有";
+            var text = UiUtil.staticText(txt, 0, fontsize, true, width - bub.width - 4 - 2 * layout.contentGrid.x);
             imageLabel = new RoxFlowPane([ bub, text ], new RoxNinePatch(layout), UiUtil.TOP, [ 4 ]);
             addChild(imageLabel.rox_move(0, h));
             h += imageLabel.height;
@@ -92,7 +94,7 @@ class Postit extends Sprite {
             var head: Sprite = new Sprite();
             head.graphics.rox_fillRect(0xFFFFFFFF, 0, 0, 60, 60);
             UiUtil.asyncImage(status.user.profileImage, function(img: BitmapData) {
-                if (img == null || img.width == 0) img = ResKeeper.getLocalImage("res/no_avatar.png");
+                if (img == null || img.width == 0) img = ResKeeper.getAssetImage("res/no_avatar.png");
                 head.graphics.clear();
                 head.graphics.rox_drawRegion(img, 0, 0, 60, 60);
             });
@@ -200,9 +202,9 @@ class Postit extends Sprite {
                         case 200:
                             var stat = data.statuses[0];
                             status.praiseCount = stat.praiseCount;
-                            status.praised = true;
+                            status.praised = !status.praised;
                             setWidth(w, mode);
-                            UiUtil.message("赞 +1");
+                            UiUtil.message(status.praised ? "赞 +1" : "赞已取消");
                         case 19:
                             UiUtil.message("已经赞过了");
 //                            UiUtil.message

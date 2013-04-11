@@ -34,11 +34,11 @@ class App extends PlayScreen {
     public var shapeSideLen: Float;
     public var image: BitmapData;
     public var sideLen: Float;
-    private var victory: Bool;
     private var board: Sprite;
     private var preview: Sprite;
 
     override public function onStart(saved: Dynamic) {
+        super.onStart(saved);
 //        trace("jigsaw.onstart: \nsaved=" + saved + "\nstatus=" + status);
         if (status.makerData != null) {
             image = status.makerData.image;
@@ -55,7 +55,6 @@ class App extends PlayScreen {
 
         columns = Std.int(image.width / sideLen);
         rows = Std.int(image.height / sideLen);
-        victory = false;
         var xscale: Float = viewWidth / image.width, yscale: Float = viewHeight / image.height;
         var sc: Float = GameUtil.min(xscale, yscale);
         var origw = viewWidth / sc, origh = viewHeight / sc;
@@ -203,15 +202,7 @@ class App extends PlayScreen {
                     }
                 }
             }
-            if (!victory && Lambda.count(mygroup) == columns * rows) { // complete
-                victory = true;
-//                trace("--victory!!--");
-                if (content.getChildByName("tipsbar") == null) {
-                    var tip = UiUtil.bitmap("res/bg_play_tip.png").rox_move(0, -130).rox_scale(d2rScale);
-                    content.addChild(tip);
-                    Actuate.tween(tip, 1.0, { y: -10 }).ease(Elastic.easeOut);
-                }
-            }
+            if (!victory && Lambda.count(mygroup) == columns * rows) setVictory();
         }
     }
 

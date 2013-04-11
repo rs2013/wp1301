@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 
-    <app title="WeiPlus" file="weiplus" main="com.weiplus.client.Main" package="com.weiplus.client" version="1.0.0" company="WeiplusSuperTeam" />
+    <app title="哈利波图" file="harryphoto"
+         main="com.weiplus.client.Main"
+         package="com.weiplus.client" version="1.0.0"
+         company="迈吉客科技（上海）有限公司" />
     <window width="540" height="800" fps="60"
             orientation="portrait" background="0xffffff" resizable="false"
             hardware="true" />

@@ -1,5 +1,8 @@
 package com.roxstudio.haxe.ui;
 
+import nme.events.MouseEvent;
+import nme.display.InteractiveObject;
+import nme.events.EventDispatcher;
 import nme.events.Event;
 import nme.Lib;
 import com.roxstudio.haxe.ui.UiUtil;
@@ -70,7 +73,7 @@ class UiUtil {
         var ox = tf.x, oy = tf.y;
         tf.selectable = false;
         tf.mouseEnabled = false;
-        tf.defaultTextFormat = textFormat(color, size, hAlign);
+        tf.defaultTextFormat = textFormat(color & 0x00FFFFFF, size, hAlign);
         tf.multiline = tf.wordWrap = multiline;
         if (width != null) tf.width = width;
         if (height != null) tf.height = height;
@@ -189,8 +192,14 @@ class UiUtil {
         }
         var bg = ninePatchPath != null ? ninePatch(ninePatchPath) : null;
         var children: Array<DisplayObject> = [];
-        if (iconPath != null) children.push(rox_smooth(new Bitmap(ResKeeper.getAssetImage(iconPath))));
-        if (text != null) children.push(staticText(text, fontColor, fontSize));
+        if (iconPath != null) {
+            var iconsp = UiUtil.bitmap(iconPath);
+            children.push(iconsp);
+        }
+        if (text != null) {
+            var texttf = staticText(text, fontColor, fontSize);
+            children.push(texttf);
+        }
 
         var sp = new RoxFlowPane(null, null, anchor, children, bg, childrenAlign, listener);
         sp.name = name;
@@ -268,6 +277,11 @@ class UiUtil {
         var dp = dpc.getChildByName(name);
         if (dp != null) dpc.removeChild(dp);
         return dpc;
+    }
+    public static inline function rox_onClick(sp: InteractiveObject, listener: Dynamic -> Void) : InteractiveObject {
+        sp.mouseEnabled = true;
+        sp.addEventListener(MouseEvent.CLICK, listener);
+        return sp;
     }
 
     public static inline function rangeValue<T: Float>(v: T, min: T, max: T) : T {

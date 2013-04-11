@@ -35,6 +35,7 @@ class FriendsList extends BaseScreen {
     private var viewh: Float;
     private var user: User;
     private var type: String;
+    private var isOwner: Bool;
 
     public function new() {
         super();
@@ -43,6 +44,7 @@ class FriendsList extends BaseScreen {
     override public function onNewRequest(data: Dynamic) {
         user = data.user;
         type = data.type;
+        isOwner = HpApi.instance.uid == user.id;
         addChild(MyUtils.getLoadingAnim("载入中").rox_move(screenWidth / 2, screenHeight / 2));
         refresh(false);
     }
@@ -104,6 +106,7 @@ class FriendsList extends BaseScreen {
             fs.friendName = c.friendNickname;
             fs.friendAvatar = c.friendAvatar;
             fs.status = c.status;
+            fs.bilateral = c.bilateral == 1;
             fs.createdAt = Date.fromTime(c.ctime);
             list.push(fs);
         }
@@ -113,40 +116,61 @@ class FriendsList extends BaseScreen {
         }
 
         var spacing = SPACING_RATIO * screenWidth;
+
+        main.graphics.clear();
+        main.rox_removeAll();
+
         if (list.length == 0) {
-            var name = HpApi.instance.uid == user.id ? "您" : user.name;
+            var name = isOwner ? "您" : user.name;
             var label = UiUtil.staticText(name + (type == "friends" ? "尚未关注任何人" : "目前还没有粉丝"), 0, 24);
             main.addChild(label.rox_move((screenWidth - label.width) / 2, spacing * 2));
             return;
         }
 
-        main.graphics.clear();
-        main.rox_removeAll();
         var yoff: Float = 0;
         for (c in list) {
             var sp = new Sprite();
             var h = 60 + 2 * spacing;
-            var text = UiUtil.staticText(c.friendName, 0, 22);
+            var fid = c.fid, avatar = c.friendAvatar, name = c.friendName;
+            if (type == "followers") {
+                fid = c.uid;
+                avatar = c.avatar;
+                name = c.name;
+            }
+            var text = UiUtil.staticText(name, 0, 22);
             sp.addChild(text.rox_move(60 + 2 * spacing, (h - text.height) / 2));
-            var btn = UiUtil.button(UiUtil.TOP_LEFT, null,
-                    HpApi.instance.uid == user.id && (type == "friends" || c.status != null) ? "取消关注" : "添加关注", 0, 20,
-                    "res/btn_grey.9.png", function(_) {
-                var cmd = HpApi.instance.uid == user.id && (type == "friends" || c.status != null) ? "update" : "create";
-                HpApi.instance.get("/friendships/" + cmd + "/" + c.fid, {}, function(code: Int, data: Dynamic) {
-                    if (code == 200) {
-                        refresh(false);
-                    }
+            if (isOwner) {
+                var label = (type == "friends" || c.bilateral) ? "取消关注" : "添加关注";
+                var btn = UiUtil.button(UiUtil.TOP_LEFT, null, label, 0, 20, "res/btn_grey.9.png", function(_) {
+                    var cmd = type == "friends" || c.bilateral ? "delete" : "create";
+                    trace("update friendship: cmd=" + cmd + ",fid=" + fid + ",fname=" + (type == "friends" ? c.friendName : c.name));
+                    HpApi.instance.get("/friendships/" + cmd + "/" + fid, {}, function(code: Int, data: Dynamic) {
+                        var msg = if (code == 200) {
+                            refresh(false);
+                            "关系更新成功";
+                        } else {
+                            "网络错误，code=" + code;
+                        }
+                        UiUtil.message(msg);
+                    });
                 });
-            });
-            sp.addChild(btn.rox_move(screenWidth - btn.width - spacing, (h - btn.height) / 2));
+                sp.addChild(btn.rox_move(screenWidth - btn.width - spacing, (h - btn.height) / 2));
+            }
             sp.graphics.rox_fillRect(0x01FFFFFF, 0, 0, screenWidth, h);
             sp.graphics.rox_line(2, 0xFFEEEEEE, 0, h, screenWidth, h);
-            sp.graphics.rox_drawRoundRect(1, 0xFF000000, spacing, spacing, 60, 60);
-            UiUtil.asyncImage(c.friendAvatar, function(bmd: BitmapData) {
-                if (bmd == null && bmd.width == 0) bmd = ResKeeper.getAssetImage("res/no_avatar.png");
-                sp.graphics.rox_drawRegionRound(bmd, spacing, spacing, 60, 60);
-                sp.graphics.rox_drawRoundRect(1, 0xFF000000, spacing, spacing, 60, 60);
+
+            var head = new Sprite();
+            head.graphics.rox_drawRoundRect(2, 0xFF000000, 0, 0, 60, 60);
+            UiUtil.asyncImage(avatar, function(bmd: BitmapData) {
+                if (bmd == null || bmd.width == 0) bmd = ResKeeper.getAssetImage("res/no_avatar.png");
+                head.graphics.rox_drawRegionRound(bmd, 0, 0, 60, 60);
+                head.graphics.rox_drawRoundRect(2, 0xFF000000, 0, 0, 60, 60);
             });
+            head.rox_onClick(function(_) {
+                startScreen(Type.getClassName(UserScreen), fid);
+            });
+            sp.addChild(head.rox_move(spacing, spacing));
+
             main.addChild(sp.rox_move(0, yoff));
             yoff += sp.height;
 

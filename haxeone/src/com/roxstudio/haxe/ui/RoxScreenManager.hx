@@ -13,16 +13,16 @@ import nme.Lib;
 
 class RoxScreenManager extends Sprite {
 
-    private var screens: Hash<RoxScreen>;
+    private var screenPool: Hash<RoxScreen>;
     private var stack: List<StackItem>;
 
     public function new() {
         super();
-        screens = new Hash<RoxScreen>();
+        screenPool = new Hash<RoxScreen>();
         stack = new List<StackItem>();
         RoxApp.stage.addEventListener(KeyboardEvent.KEY_UP, function(e: KeyboardEvent) {
             if (e.keyCode == 27 && stack.length > 1) {
-                var topscreen: RoxScreen = screens.get(stack.first().className);
+                var topscreen: RoxScreen = stack.first().screen;
                 if (topscreen.onBackKey()) {
                     finishScreen(topscreen, null, RoxScreen.CANCELED, null, null);
                     e.stopPropagation();
@@ -31,8 +31,15 @@ class RoxScreenManager extends Sprite {
         });
     }
 
-    public inline function getScreen(screenClassName: String) : RoxScreen {
-        return screens.get(screenClassName);
+    public inline function findScreen(screenClassName: String) : RoxScreen {
+        var screen: RoxScreen = null;
+        for (si in stack) {
+            if (si.className == screenClassName) {
+                screen = si.screen;
+                break;
+            }
+        }
+        return screen;
     }
 
     public function startRootScreen(screenClassName: String, ?requestData: Dynamic) {
@@ -57,16 +64,15 @@ class RoxScreenManager extends Sprite {
         }
 
         ResKeeper.currentBundle = screenClassName;
-        var dest = screens.get(screenClassName);
+        var dest = screenPool.get(screenClassName); // check for reusable screen
         if (dest == null) {
             dest = Type.createInstance(Type.resolveClass(screenClassName), [ ]);
             if (dest == null) throw "Invalid screenClassName: " + screenClassName;
             dest.init(this, RoxApp.screenWidth, RoxApp.screenHeight);
-            screens.set(screenClassName, dest);
             dest.onCreate();
         }
         if (animate == null) animate = RoxAnimate.SLIDE_LEFT;
-        stack.push({ className: screenClassName, requestCode: requestCode, animate: animate });
+        stack.push({ className: screenClassName, screen: dest, requestCode: requestCode, animate: animate });
         dest.onNewRequest(requestData);
 
         show(dest);
@@ -107,12 +113,12 @@ class RoxScreenManager extends Sprite {
         }
 
         while ((top = stack.first()) != null && top.className != toScreen) {
-            hide(screens.get(top.className), true);
+            hide(top.screen, true);
             stack.pop();
         }
 
         if (top != null) {
-            var topscreen: RoxScreen = screens.get(top.className);
+            var topscreen: RoxScreen = top.screen;
             show(topscreen);
             if (animate.type != RoxAnimate.NONE) startAnimate(srcbmp, snap(topscreen), animate);
             topscreen.onScreenResult(requestCode, resultCode, resultData);
@@ -168,39 +174,18 @@ class RoxScreenManager extends Sprite {
         removeChild(dest);
     }
 
-//    private function switchScreen(source: RoxScreen, dest: RoxScreen, finish: Bool) {
-////        trace("switchScreen:source="+source+",dest="+dest+",finish="+finish);
-//        if (source != null) {
-//            if (contains(source)) {
-//                removeChild(source);
-//                source.onHidden();
-//            }
-//            if (finish && source.disposeAtFinish) {
-//                var classname = source.className;
-//                screens.remove(classname);
-//                ResKeeper.disposeBundle(classname);
-//                source.onDestroy();
-//            }
-//        }
-//        if (dest != null && !contains(dest)) {
-//            dest.x = dest.y = 0;
-//            dest.alpha = dest.scaleX = dest.scaleY = 1;
-//            addChild(dest);
-//            dest.onShown();
-//        }
-//    }
-//
     private function hide(screen: RoxScreen, finish: Bool) {
         if (screen == null) return;
         if (contains(screen)) {
             removeChild(screen);
             screen.onHidden();
         }
-        if (finish && screen.disposeAtFinish) {
-            var classname = screen.className;
-            screens.remove(classname);
-            ResKeeper.disposeBundle(classname);
+        if (!finish) return;
+        if (screen.disposeAtFinish) {
+            ResKeeper.disposeBundle(screen.className);
             screen.onDestroy();
+        } else { // add to pool for recycling
+            screenPool.set(screen.className, screen);
         }
     }
 
@@ -216,6 +201,7 @@ class RoxScreenManager extends Sprite {
 
 private typedef StackItem = {
     var className: String;
+    var screen: RoxScreen;
     var requestCode: Int;
     var animate: RoxAnimate;
 }

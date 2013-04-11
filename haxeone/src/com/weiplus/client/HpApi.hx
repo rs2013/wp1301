@@ -7,7 +7,8 @@ import haxe.BaseCode;
 
 class HpApi {
 
-    public static inline var BASE_URL = "http://s-56378.gotocdn.com/harryphoto";
+//    public static inline var BASE_URL = "http://s-56378.gotocdn.com/harryphoto";
+    public static inline var BASE_URL = "http://www.appmagics.com/api";
 
     public static var instance(get_instance, null): HpApi;
 

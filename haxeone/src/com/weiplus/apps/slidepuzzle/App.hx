@@ -31,13 +31,13 @@ class App extends PlayScreen {
     public var shape: BitmapData;
     public var image: BitmapData;
     public var sideLen: Float;
-    private var victory: Bool;
     private var board: Sprite;
     private var boardw: Float;
     private var boardh: Float;
     private var preview: Sprite;
 
     override public function onStart(saved: Dynamic) {
+        super.onStart(saved);
 //        trace("slidepuzzle.onstart: \nsaved=" + saved + "\nstatus=" + status);
         if (status.makerData != null) {
             image = status.makerData.image;
@@ -52,7 +52,6 @@ class App extends PlayScreen {
         shape = ResKeeper.getAssetImage("res/shape184.png");
         columns = Std.int(image.width / sideLen);
         rows = Std.int(image.height / sideLen);
-        victory = false;
 
         boardw = columns * sideLen;
         boardh = rows * sideLen;
@@ -155,7 +154,7 @@ class App extends PlayScreen {
             Actuate.tween(tile, 0.5, { x: nx, y: ny });
             map[row][col] = null;
             map[nrow][ncol] = tile;
-            victory = true;
+            var victory = true;
             for (idx in 0...rows * columns) {
                 var c = idx % columns, r = Std.int(idx / columns), t = map[r][c];
                 if ((t == null && (c != columns - 1 || r != rows - 1))
@@ -164,12 +163,7 @@ class App extends PlayScreen {
                     break;
                 }
             }
-            if (victory) {
-//                trace("--victory!!--");
-                var tip = UiUtil.bitmap("res/bg_play_tip.png").rox_move(0, -130).rox_scale(d2rScale);
-                content.addChild(tip);
-                Actuate.tween(tip, 1.0, { y: -10 }).ease(Elastic.easeOut);
-            }
+            if (victory) setVictory();
         }
     }
 

@@ -146,14 +146,16 @@ class CommentsScreen extends BaseScreen {
         }
 
         var spacing = SPACING_RATIO * screenWidth;
+
+        main.graphics.clear();
+        main.rox_removeAll();
+
         if (comments.length == 0) {
             var label = UiUtil.staticText("暂时没有评论", 0, 24);
             main.addChild(label.rox_move((screenWidth - label.width) / 2, spacing * 2));
             return;
         }
 
-        main.graphics.clear();
-        main.rox_removeAll();
         var yoff: Float = 0;
         for (c in comments) {
             var sp = new Sprite();
@@ -168,7 +170,7 @@ class CommentsScreen extends BaseScreen {
             sp.graphics.rox_line(2, 0xFFEEEEEE, 0, h, screenWidth, h);
             sp.graphics.rox_drawRoundRect(1, 0xFF000000, spacing, spacing, 60, 60);
             UiUtil.asyncImage(c.commenter.profileImage, function(bmd: BitmapData) {
-                if (bmd == null && bmd.width == 0) bmd = ResKeeper.getAssetImage("res/no_avatar.png");
+                if (bmd == null || bmd.width == 0) bmd = ResKeeper.getAssetImage("res/no_avatar.png");
                 sp.graphics.rox_drawRegionRound(bmd, spacing, spacing, 60, 60);
                 sp.graphics.rox_drawRoundRect(1, 0xFF000000, spacing, spacing, 60, 60);
             });

@@ -42,6 +42,7 @@ class UserScreen extends TimelineScreen {
         super.onCreate();
         btnSetting = UiUtil.button("res/icon_settings.png", null, "res/btn_common.9.png", function(_) {
             MyUtils.logout();
+            startScreen(Type.getClassName(PublicScreen), CLEAR);
             UiUtil.message("你已经登出");
         });
         removeTitleButton(btnCol);
@@ -74,7 +75,7 @@ class UserScreen extends TimelineScreen {
             refresh(false);
             removeTitleButton(btnSetting);
         }
-        if (MyUtils.isEmpty(HpApi.instance.uid)) {
+        if (data != null || MyUtils.isEmpty(HpApi.instance.uid)) {
             UiUtil.rox_removeByName(this, "buttonPanel");
             viewh = screenHeight - titleBar.height;
         }
@@ -90,6 +91,17 @@ class UserScreen extends TimelineScreen {
                 user.postCount = 0;
                 user.friendCount = 0;
                 user.followerCount = 0;
+                var stats: Array<Dynamic> = u.stats;
+                if (stats != null && stats.length > 0) {
+                    for (stat in stats) {
+                        var cnt = stat.count;
+                        switch (stat.type) {
+                            case "FRIENDS": user.friendCount = cnt;
+                            case "FOLLOWERS": user.followerCount = cnt;
+                            case "STATUSES": user.postCount = cnt;
+                        }
+                    }
+                }
 
                 titleBar.rox_remove(title);
                 var txt = UiUtil.staticText(user.name, 0xFFFFFF, 36);
@@ -123,9 +135,7 @@ class UserScreen extends TimelineScreen {
         sp.graphics.rox_line(2, 0xFFe2e2e2, 0, 100, designWidth, 100);
         if (!MyUtils.isEmpty(user.profileImage)) {
             UiUtil.asyncImage(user.profileImage, function(img: BitmapData) {
-                if (img == null || img.width == 0) {
-                    img = ResKeeper.getAssetImage("res/no_avatar.png");
-                }
+                if (img == null || img.width == 0) img = ResKeeper.getAssetImage("res/no_avatar.png");
                 sp.graphics.rox_drawRegionRound(img, spacing, spacing, 60, 60);
                 sp.graphics.rox_drawRoundRect(3, 0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
             });
@@ -154,7 +164,16 @@ class UserScreen extends TimelineScreen {
         sp.graphics.rox_drawRegionRound(ResKeeper.getAssetImage("res/no_avatar.png"), spacing, spacing, 60, 60);
         sp.graphics.rox_drawRoundRect(3, 0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
         if (HpApi.instance.uid != user.id) {
-            // add friend button
+            var btn: RoxFlowPane = UiUtil.button(UiUtil.TOP_LEFT, null, "关注", 0xFFFFFF, 24, "res/btn_common.9.png", function(_) {
+                HpApi.instance.get("/friendships/create/" + user.id, {}, function(code: Int, _) {
+                    if (code == 200) {
+                        UiUtil.message("关注成功");
+                    } else {
+                        UiUtil.message("错误,code=" + code);
+                    }
+                });
+            });
+            sp.addChild(btn.rox_move(60 + 2 * spacing, (100 - btn.height) / 2));
         }
         var arr = [
             [ "作品", user.postCount, 310, null ],

@@ -11,6 +11,7 @@ class Friendship {
     public var friendAvatar: String;
     public var createdAt: Date;
     public var status: String;
+    public var bilateral: Bool;
 
     public function new() {
     }

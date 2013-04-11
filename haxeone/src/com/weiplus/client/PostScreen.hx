@@ -158,7 +158,7 @@ class PostScreen extends BaseScreen {
         switch (apiName) {
             case "statuses_create":
                 if (resultCode != "ok") return;
-                var makerList: MakerList = cast manager.getScreen(Type.getClassName(MakerList));
+                var makerList: MakerList = cast manager.findScreen(Type.getClassName(MakerList));
                 var toScreen = makerList.parentScreen;
                 finish(SCREEN(toScreen != null ? toScreen : Type.getClassName(SelectedScreen)), RoxScreen.OK);
             case "startAuth":
