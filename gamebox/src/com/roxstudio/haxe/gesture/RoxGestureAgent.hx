@@ -32,7 +32,6 @@ class RoxGestureAgent {
     public static inline var PAN_XY = 3;
 
     public static var multitouchSupported(get_multitouchSupported, null): Bool;
-
     public var mode(default, null): Int;
     public var longPressDelay = 1.0;
     public var swipeTimeout = 0.1; // can be zero, means no timeout

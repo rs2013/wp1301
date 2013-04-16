@@ -364,14 +364,14 @@ class BindListener implements HpListener {
             if (json.getInt("code") != 200) {
                 throw new Exception("error code=" + json.getInt("code"));
             }
-            if (!HpManager.getAccessToken().isSessionValid()) {
+//            if (!HpManager.getAccessToken().isSessionValid()) {
                 HpAccessToken tok = new HpAccessToken();
                 tok.setToken(json.getString("accessToken"));
                 tok.setRefreshToken(json.getString("refreshToken"));
                 tok.setExpiresTime(Long.MAX_VALUE);
                 tok.setUid("" + json.getJSONArray("users").getJSONObject(0).getLong("id"));
                 HpManager.setAccessToken(tok);
-            }
+//            }
             JSONArray users = json.getJSONArray("users");
             Activity activity = MainActivity.getInstance();
             if (users.length() > 1) { // needing merge

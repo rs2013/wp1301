@@ -70,27 +70,28 @@ class PlayScreen extends BaseScreen {
         designWidth = DESIGN_WIDTH;
         d2rScale = screenWidth / designWidth;
         designHeight = screenHeight / d2rScale;
-        titleBar = UiUtil.bitmap("res/bg_play_top.png");
-        titleBtnOffsetL = BTN_SPACING;
-        titleBtnOffsetR = titleBar.width - BTN_SPACING;
-        if (title != null) {
-            titleBar.addChild(title.rox_anchor(UiUtil.CENTER).rox_move(titleBar.width / 2, titleBar.height / 2));
-        }
-        titleBar.rox_scale(d2rScale);
+
         viewWidth = screenWidth;
-        viewHeight = (designHeight - TOP_HEIGHT) * d2rScale;
+        viewHeight = screenHeight;
+        reset(null);
+        addEventListener(Event.DEACTIVATE, onDeactive);
+
+    }
+
+    override public function addTitleButton(btn: RoxFlowPane, align: Int) {
+        frontLayer.addChild(btn.rox_move(screenWidth - btn.width - 20, 20));
+    }
+
+    public function reset(status: Dynamic) {
+        this.rox_removeAll();
         content = createContent(viewHeight);
-        content.rox_move(0, TOP_HEIGHT * d2rScale);
+        content.rox_move(0, 0);
         contentBg(viewWidth, viewHeight);
         addChild(content);
         frontLayer = new Sprite();
-        addChild(frontLayer.rox_move(0, TOP_HEIGHT * d2rScale));
-        addChild(titleBar);
-        var btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回", 0xFFFFFF, 36, "res/btn_dark.9.png", function(_) { finish(RoxScreen.OK); } );
-        addTitleButton(btnBack, UiUtil.LEFT);
-
-        addEventListener(Event.DEACTIVATE, onDeactive);
-
+        addChild(frontLayer.rox_move(0, 0));
+        victory = false;
+        if (status != null) onNewRequest(status);
     }
 
     override public function onNewRequest(data: Dynamic) {
@@ -158,10 +159,10 @@ class PlayScreen extends BaseScreen {
         startTime = Timer.stamp();
         var timertf = UiUtil.button(UiUtil.TOP_LEFT, "res/icon_time.png", timestr(getElapsedTime()), 0xFFFFFF, 24);
         timertf.name = "timer";
-        frontLayer.addChild(timertf.rox_move(screenWidth - 140, 20));
+        frontLayer.addChild(timertf.rox_move((screenWidth - timertf.width * d2rScale) / 2, 22));
         timer = new Timer(1000);
         timer.run = function() {
-//            trace("" + timestr(getElapsedTime()));
+//            trace("已使�?" + timestr(getElapsedTime()));
             cast(timertf.childAt(1), TextField).text = timestr(getElapsedTime());
         }
     }
@@ -213,30 +214,23 @@ class PlayScreen extends BaseScreen {
         var text = UiUtil.staticText("你太有才了！", 0xFFFFFF, 24);
         var textx = 2 * spacing + head.width;
         var dist = textx + text.width;
-        var button: Sprite = null;
-        if (status.makerData == null && !MyUtils.isEmpty(HpApi.instance.uid)) {
-            button = UiUtil.bitmap("res/btn_game_comment.png");
-            button.rox_scale(d2rScale);
-            button.mouseEnabled = true;
-            button.addEventListener(MouseEvent.CLICK, function(_) {
-                var txt = "我用" + timestr2(getElapsedTime()) + "完成了你制作的游戏！";
-#if android
-            HaxeStub.startInputDialog("发表感受", txt, "发布", this);
-#else
-                onApiCallback(null, "ok", txt);
-#end
-            });
-        }
+        var button: RoxFlowPane = UiUtil.button(UiUtil.TOP_LEFT, null, "重玩", 0xFFFFFF, 36, "res/btn_dark.9.png", function(_) {
+            reset(status);
+        });
+
         frontLayer.addChild(tip.rox_move(0, -tip.height));
         frontLayer.addChild(head.rox_move(spacing - dist, spacing));
         frontLayer.addChild(text.rox_move(textx - dist, (tiph - text.height) / 2));
-        if (button != null) frontLayer.addChild(button.rox_move(screenWidth + spacing, (tiph - button.height) / 2));
+        if (button != null) addTitleButton(button, UiUtil.RIGHT);
         Actuate.tween(tip, 0.8, { y: 0 }).ease(Elastic.easeOut);
         Actuate.tween(head, 0.8, { x: spacing }).delay(0.2).ease(Elastic.easeOut);
         Actuate.tween(text, 0.8, { x: textx }).delay(0.4).ease(Elastic.easeOut);
-        if (button != null) Actuate.tween(button, 0.8, { x: screenWidth - spacing - button.width }).delay(0.2).ease(Elastic.easeOut);
+        if (button != null) {
+            Actuate.tween(button, 0.8, { x: button.x }).delay(0.2).ease(Elastic.easeOut);
+            button.x += 200;
+        }
         var arr = [ "res/img_star.png", "res/img_heart.png", "res/img_flower.png" ];
-        var wd2 = screenWidth / 2, hd2 = (screenHeight - titleBar.height * d2rScale) / 2;
+        var wd2 = screenWidth / 2, hd2 = screenHeight / 2;
         var r = new Point(wd2, hd2).length;
         var idx: Array<Float> = [];
         for (i in 0...20) idx.push(i * 18 * GameUtil.D2R);
