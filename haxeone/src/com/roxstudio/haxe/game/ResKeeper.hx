@@ -89,6 +89,14 @@ class ResKeeper {
         return map.get(id);
     }
 
+    public static function remove(id: String) {
+        if (map.remove(id)) {
+            for (arr in bundles) {
+                arr.remove(id);
+            }
+        }
+    }
+
     /**
     * asset: id-prefix "assets://", e.g.: "assets://res/image.jpg"
     **/

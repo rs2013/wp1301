@@ -56,6 +56,8 @@ class UiUtil {
         var format = new TextFormat();
 #if android
         format.font = new nme.text.Font("/system/fonts/DroidSansFallback.ttf").fontName;
+#else
+        format.font = "Microsoft YaHei";
 #end
         format.color = color;
         format.size = Std.int(size);
@@ -206,6 +208,73 @@ class UiUtil {
         return sp;
     }
 
+    public static function switchControl(on: Bool) : Sprite {
+        var d2rscale = RoxApp.screenWidth / 640;
+        var sp = new Sprite();
+        GfxUtil.rox_fillRect(sp.graphics, 0x33333333, 0, 0, 100 * d2rscale, 40 * d2rscale);
+        var txt = UiUtil.staticText(on ? "ON" : "OFF", 0xFFFFFF, 26 * d2rscale);
+        if (on) {
+            GfxUtil.rox_fillRoundRect(sp.graphics, 0xFF0000FF, 50 * d2rscale, 0, 50 * d2rscale, 40 * d2rscale, 8);
+        } else {
+            GfxUtil.rox_fillRoundRect(sp.graphics, 0xFF555555, 0, 0, 50 * d2rscale, 40 * d2rscale, 8);
+        }
+        sp.addChild(UiUtil.rox_move(txt, (on ? 50 * d2rscale : 0) + (50 * d2rscale - txt.width) / 2, (40 * d2rscale - txt.height) / 2));
+        return sp;
+    }
+
+    public static function list(items: Array<ListItem>, width: Float, onClick: ListItem -> Bool) : Sprite {
+        var d2rscale = RoxApp.screenWidth / 640;
+        var spacing = 16 * d2rscale;
+        var fontsize = 36 * d2rscale;
+        var yoff = 0.0;
+        var sp = new Sprite();
+        for (i in 0...items.length) {
+            var item = items[i];
+            var spi = new Sprite();
+            var ico = item.icon != null ? UiUtil.rox_scale(UiUtil.bitmap(item.icon), d2rscale) : null;
+            var txt = UiUtil.staticText(item.name, 0, fontsize);
+            var h = txt.height + 2 * spacing;
+            GfxUtil.rox_fillRect(spi.graphics, 0x01FFFFFF, 0, 0, width, h);
+            if (i < items.length - 1) {
+                GfxUtil.rox_line(spi.graphics, 2, 0xFFCACACA, 1, h - 2, width - 1, h - 2);
+                GfxUtil.rox_line(spi.graphics, 2, 0xFFFFFFFF, 1, h, width - 1, h);
+            }
+            switch (item.type) {
+                case 1:
+                    if (ico != null) spi.addChild(UiUtil.rox_move(ico, spacing, (h - ico.height) / 2));
+                    spi.addChild(UiUtil.rox_move(txt, spacing + (ico != null ? ico.width + spacing : 0), spacing));
+                    var next = UiUtil.bitmap("res/icon_next.png");
+                    spi.addChild(UiUtil.rox_move(next, width - spacing - next.width, (h - next.height) / 2));
+                case 2:
+                    var w2 = ico != null ? ico.width + spacing + txt.width : txt.width;
+                    var xoff = (width - w2) / 2;
+                    if (ico != null) spi.addChild(UiUtil.rox_move(ico, xoff, (h - ico.height) / 2));
+                    spi.addChild(UiUtil.rox_move(txt, ico != null ? ico.x + ico.width + spacing : xoff, spacing));
+                case 3:
+                    if (ico != null) spi.addChild(UiUtil.rox_move(ico, spacing, (h - ico.height) / 2));
+                    spi.addChild(UiUtil.rox_move(txt, spacing + (ico != null ? ico.width + spacing : 0), spacing));
+                    var swc = UiUtil.switchControl(cast(item.data, Bool));
+                    spi.addChild(UiUtil.rox_move(swc, width - spacing - swc.width, (h - swc.height) / 2));
+            }
+            spi.mouseEnabled = true;
+            spi.addEventListener(MouseEvent.CLICK, function(_) {
+                var result = onClick(item);
+                if (item.type == 3 && result) {
+                    spi.removeChildAt(spi.numChildren - 1); // switch control
+                    item.data = !cast(item.data, Bool);
+                    var swc = UiUtil.switchControl(cast(item.data, Bool));
+                    spi.addChild(UiUtil.rox_move(swc, width - spacing - swc.width, (h - swc.height) / 2));
+                }
+            });
+            sp.addChild(UiUtil.rox_move(spi, 0, yoff));
+            yoff += h;
+        }
+        GfxUtil.rox_fillRoundRect(sp.graphics, 0xFFF7F7F7, 0, 0, width, yoff, 15 * d2rscale);
+        GfxUtil.rox_drawRoundRect(sp.graphics, 2, 0xFFCACACA, 0, 0, width, yoff, 15 * d2rscale);
+
+        return sp;
+    }
+
     public static inline function rox_pixelWidth(sp: Sprite) : Float { // TODO: need more elegant method
         return cast(sp.getChildAt(0), Bitmap).bitmapData.width;
     }
@@ -288,11 +357,11 @@ class UiUtil {
         return v < min ? min : v > max ? max : v;
     }
 
-    public static function delay(task: Void -> Void, ?timeInMs: Int = 0) {
-        Timer.delay(task, timeInMs);
+    public static function delay(task: Void -> Void, ?timeInSec: Float = 0) {
+        Timer.delay(task, Std.int(timeInSec * 1000));
     }
 
-    public static function message(text: String, ?timeInSec: Int = 2) {
+    public static function message(text: String, ?timeInSec: Float = 2.0) {
         var label = UiUtil.staticText(text, 0xFFFFFF, 24);
         var box = new Sprite();
         GfxUtil.rox_fillRoundRect(box.graphics, 0xBB333333, 0, 0, label.width + 20, label.height + 16);
@@ -300,7 +369,16 @@ class UiUtil {
         var stage = Lib.current.stage;
         var ratio = stage.stageWidth / 640;
         stage.addChild(UiUtil.rox_move(box, (stage.stageWidth - box.width) / 2, stage.stageHeight - box.height - 100 * ratio));
-        delay(function() { stage.removeChild(box); }, timeInSec * 1000);
+        delay(function() { stage.removeChild(box); }, timeInSec);
     }
 
 }
+
+typedef ListItem = {
+    id: String,
+    icon: String,
+    name: String,
+    type: Int, // 1: list_item; 2: button; 3: switch
+    data: Dynamic,
+}
+

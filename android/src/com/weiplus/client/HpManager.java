@@ -1,5 +1,8 @@
 package com.weiplus.client;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,10 +21,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Bitmap.Config;
+import android.graphics.Matrix;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.harryphoto.api.AuthAPI;
+import com.harryphoto.api.BitmapHelper;
 import com.harryphoto.api.HpAccessToken;
 import com.harryphoto.api.HpException;
 import com.harryphoto.api.HpListener;
@@ -143,7 +153,30 @@ public class HpManager {
             final String type, final String filePath, 
             final String lat, final String lon, final HaxeObject callback) {
         StatusAPI api = new StatusAPI(accessToken);
-//        api.post(text, imgPath, type, filePath, lat, lon, new HaxeCallback("statuses_create", callback));
+        String smallpath = null;
+        if (!TextUtils.isEmpty(imgPath)) {
+            int[] info = BitmapHelper.bitmapInfo(imgPath);
+            if (info[0] > 480) {
+                Bitmap bmp = BitmapFactory.decodeFile(imgPath);
+                float ratio = 480 / (float) bmp.getWidth();
+                Bitmap newbmp = Bitmap.createBitmap(480, (int) (bmp.getHeight() * ratio), Config.ARGB_8888);
+                Canvas cv = new Canvas(newbmp);
+                Matrix mat = new Matrix();
+                mat.setScale(ratio, ratio);
+                cv.drawBitmap(bmp, mat, null);
+                cv.save(Canvas.ALL_SAVE_FLAG);
+                int idx = imgPath.lastIndexOf('.');
+                smallpath = imgPath.substring(0, idx) + "_small.jpg";
+                try {
+                    FileOutputStream fos = new FileOutputStream(smallpath);
+                    newbmp.compress(Bitmap.CompressFormat.JPEG, 80, fos);
+                     fos.close();
+                } catch (IOException e) {
+                    Log.w("HpManager", "Error creating bitmap file " + smallpath + ", ex=" + e.getMessage());
+                }
+            }
+        }
+        final String smallImgPath = smallpath == null ? imgPath : smallpath; 
         api.post(text, imgPath, type, filePath, lat, lon, new HpListener() {
 
             @Override
@@ -154,12 +187,12 @@ public class HpManager {
                         JSONObject st = json.getJSONArray("statuses").getJSONObject(0);
                         long statusId = st.getLong("id");
                         String imgUrl = st.getJSONArray("attachments").getJSONObject(0).getString("thumbUrl");
-                        imgMapping.put(imgPath, imgUrl);
+                        imgMapping.put(smallImgPath, imgUrl);
                         String link = LINK.replace("${ID}", "" + statusId);
                         List<String> list = bindTypes != null ? Arrays.asList(bindTypes) : null;
                         for (Binding b: bindings.values()) {
                             if (b.isSessionValid() && (list == null || list.contains(b.getType().name()))) {
-                                b.postStatus(text, link, imgPath, lat, lon, new ToastCallback(MainActivity.getInstance(), b.getType() + "同步"));
+                                b.postStatus(text, link, smallImgPath, lat, lon, new ToastCallback(MainActivity.getInstance(), b.getType() + "同步"));
                             }
                         }
                         Utility.haxeOk(callback, "statuses_create", response);
@@ -244,6 +277,7 @@ public class HpManager {
         for (Binding.Type t: types) {
             createBinding(t, new String[] { "", "" } ).logout();
         }
+        bindings.clear();
     }
     
     public static void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {

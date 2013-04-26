@@ -46,11 +46,20 @@ class MyUtils {
     public static function logout() {
 #if android
         HpManager.logout();
+        HpApi.instance.update({ accessToken: "", uid: "", refreshToken: "" });
 #end
 #if cpp
         FileUtil.rmdir(TimelineScreen.CACHE_DIR, true);
 #end
-
+        var cacheNames = [
+        "com_weiplus_client_PublicScreen.json",
+        "com_weiplus_client_SelectedScreen.json",
+        "com_weiplus_client_HomeScreen.json",
+        "com_weiplus_client_UserScreen.json"
+        ];
+        for (n in cacheNames) {
+            ResKeeper.remove("cache:" + n);
+        }
     }
 
     public static function timeStr(date: Date) : String {

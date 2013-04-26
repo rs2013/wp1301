@@ -29,35 +29,20 @@ class LoginScreen extends BaseScreen {
         content.addChild(btnClose.rox_move(screenWidth - 10, 10));
 
         var binds = [
-                [ "icon_sina", "SINA_WEIBO" ],
-                [ "icon_tencent", "TENCENT_WEIBO" ],
-                [ "icon_renren", "RENREN_WEIBO" ] ];
+        { icon: "res/icon_sina.png", id: "SINA_WEIBO", name: "新浪微博账号登陆", type: 1, data: null },
+        { icon: "res/icon_tencent.png", id: "TENCENT_WEIBO", name: "腾讯微博账号登陆", type: 1, data: null },
+        { icon: "res/icon_renren.png", id: "RENREN_WEIBO", name: "人人网账号登陆", type: 1, data: null },
+        ];
         var spacing = 18 * d2rScale;
-        h += spacing;
-        var btnh = 90 * d2rScale;
-        var btnw = 600 * d2rScale;
-        var btnr = 15 * d2rScale;
-        for (i in 0...binds.length) {
-            var icon = binds[i][0], type = binds[i][1];
-            var binding = Binding.valueOf(type);
-            var btn = UiUtil.button(UiUtil.TOP_LEFT, "res/" + icon + ".png", binding.name() + "账号登录", 0, 36, null, onLogin);
-            btn.name = binding.id();
-            content.addChild(btn.rox_move((screenWidth - btn.width) / 2, h + btnh * i + (btnh - btn.height) / 2));
-        }
-        var x = (screenWidth - btnw) / 2;
-        content.graphics.rox_fillRoundRect(0xFFF7F7F7, x, h, btnw, btnh * 3, btnr);
-        content.graphics.rox_drawRoundRect(2, 0xFFCACACA, x, h, btnw, btnh * 3, btnr);
-        content.graphics.rox_line(2, 0xFFCACACA, x + 2, h + btnh - 2, x + btnw - 2, h + btnh - 2);
-        content.graphics.rox_line(2, 0xFFFFFFFF, x + 2, h + btnh, x + btnw - 2, h + btnh);
-        content.graphics.rox_line(2, 0xFFCACACA, x + 2, h + 2 * btnh - 2, x + btnw - 2, h + 2 * btnh - 2);
-        content.graphics.rox_line(2, 0xFFFFFFFF, x + 2, h + 2 * btnh, x + btnw - 2, h + 2 * btnh);
+        var list = UiUtil.list(binds, screenWidth - 2 * spacing, onLogin);
+        content.addChild(list.rox_move(spacing, h + spacing));
 
         return content;
     }
 
-    private function onLogin(e: Dynamic) {
+    private function onLogin(item: ListItem) : Bool {
 #if android
-        var name = e.target.name;
+        var name = item.id;
         trace("onLogin, name=" + name);
         var type = Binding.valueOf(name);
         addChild(waitingAnim("登录中"));
@@ -65,6 +50,7 @@ class LoginScreen extends BaseScreen {
 #else
         finish(RoxScreen.OK);
 #end
+        return true;
     }
 
     private function waitingAnim(label: String) : Sprite {

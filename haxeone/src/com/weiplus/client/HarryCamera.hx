@@ -171,7 +171,7 @@ class HarryCamera extends MakerScreen {
         var s = HaxeStub.getResult(112);
         var json: Dynamic = haxe.Json.parse(s);
         trace(">>HarryCamera active, result=" + s + ",parsed=" + json);
-        if (untyped json.resultCode != "ok") { // canceled
+        if (json.resultCode != "ok") { // canceled
             finish(RoxScreen.CANCELED);
             return;
         }

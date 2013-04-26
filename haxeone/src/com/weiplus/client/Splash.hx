@@ -22,7 +22,7 @@ class Splash extends BaseScreen {
         hasTitleBar = false;
         hasBack = false;
         super.onCreate();
-        Timer.delay(doLoad, 1000);
+        UiUtil.delay(doLoad, 1);
 #if android
 //        HpManager.logout();
         loginOk = HpManager.login();

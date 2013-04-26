@@ -35,7 +35,7 @@ class HpApi {
         return instance;
     }
 
-    private function update(json: Dynamic) {
+    public function update(json: Dynamic) {
         this.accessToken = json.accessToken;
         this.uid = json.uid;
         this.refreshToken = json.refreshToken;

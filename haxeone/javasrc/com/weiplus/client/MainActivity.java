@@ -18,6 +18,8 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.List;
 
+import com.umeng.analytics.MobclickAgent;
+
 public class MainActivity extends org.haxe.nme.GameActivity implements SurfaceHolder.Callback, Camera.PreviewCallback {
 
     private SurfaceHolder holder;
@@ -148,7 +150,21 @@ public class MainActivity extends org.haxe.nme.GameActivity implements SurfaceHo
     public static org.haxe.nme.GameActivity getInstance() {
         return org.haxe.nme.GameActivity.getInstance();
     }
-    
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i("MainActivity", "onResume");
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i("MainActivity", "onPause");
+        MobclickAgent.onPause(this);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i("MainActivity", "onActivityResult: code=" + requestCode + ",result=" + resultCode + ",data=" + data);

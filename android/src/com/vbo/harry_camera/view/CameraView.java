@@ -30,6 +30,8 @@ import com.vbo.harry_camera.utils.PictureUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -289,9 +291,24 @@ public class CameraView extends SurfaceView {
             }
         }
         parameters.setPictureFormat(PixelFormat.JPEG);
-        mPictureSize = parameters.getPictureSize();
         mPreviewSize = parameters.getPreviewSize();
+        mPictureSize = parameters.getPictureSize();
+        Log.d(TAG, "mPreviewSize = " + mPreviewSize.width + "," + mPreviewSize.height);
+        Log.d(TAG, "mPictureSize = " + mPictureSize.width + "," + mPictureSize.height);
+        Size bestPreSize = CameraUtil.getBestPreviewSize(parameters, cameraOrientation);
+        Size bestPicSize = CameraUtil.getBestPictureSize(parameters, cameraOrientation);
+        if (bestPreSize != null) {
+            parameters.setPreviewSize(bestPreSize.width, bestPreSize.height);
+            mPreviewSize = bestPreSize;
+        }
 
+        if (bestPicSize != null) {
+            parameters.setPictureSize(bestPicSize.width, bestPicSize.height);
+            mPictureSize = bestPicSize;
+        }
+
+        Log.d(TAG, "after mPreviewSize = " + mPreviewSize.width + "," + mPreviewSize.height);
+        Log.d(TAG, "after mPictureSize = " + mPictureSize.width + "," + mPictureSize.height);
         parameters.setFocusMode(Parameters.FOCUS_MODE_AUTO);
         List<String> supportedMode = parameters.getSupportedFocusModes();
         if (supportedMode.contains(Parameters.FOCUS_MODE_AUTO)) {

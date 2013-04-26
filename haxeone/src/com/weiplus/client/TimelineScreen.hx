@@ -6,6 +6,7 @@ import com.roxstudio.haxe.ui.UiUtil;
 import sys.FileSystem;
 import sys.io.File;
 #end
+import com.roxstudio.haxe.ui.UiUtil;
 import StringTools;
 import com.weiplus.client.model.PageModel;
 import com.roxstudio.haxe.ui.RoxScreen;
@@ -66,8 +67,10 @@ class TimelineScreen extends BaseScreen {
     var storedStatuses: Array<Dynamic>;
     var page: PageModel;
     var compactMode = false;
+    private var starttm: Float;
 
     override public function onCreate() {
+        starttm = haxe.Timer.stamp();
         title = UiUtil.bitmap("res/icon_logo.png");
         super.onCreate();
         btnCol = btnSingleCol = UiUtil.button("res/icon_single_column.png", null, "res/btn_common.9.png", onButton);
@@ -90,15 +93,18 @@ class TimelineScreen extends BaseScreen {
 
     override public function onNewRequest(data: Dynamic) {
         super.onNewRequest(data);
+        UiUtil.delay(function() {
 #if cpp
-        restore();
+            restore();
 #end
-        if (storedStatuses == null || storedStatuses.length == 0) {
-            addChild(MyUtils.getLoadingAnim("载入中").rox_move(screenWidth / 2, screenHeight / 2));
-            refresh(false);
-        } else {
-            updateList(storedStatuses, false);
-        }
+            if (storedStatuses == null || storedStatuses.length == 0) {
+                addChild(MyUtils.getLoadingAnim("载入中").rox_move(screenWidth / 2, screenHeight / 2));
+                refresh(false);
+            } else {
+                updateList(storedStatuses, false);
+            }
+        }, 0.4);
+        trace("TimelineScreen started: time=" + (haxe.Timer.stamp() - starttm));
     }
 
     override public function createContent(height: Float) : Sprite {
@@ -356,7 +362,7 @@ class TimelineScreen extends BaseScreen {
                 UiUtil.delay(function() {
                     main.rox_removeByName("topRefresher");
                     main.rox_removeByName("bottomRefresher");
-                }, tm * 1000);
+                }, tm);
             case RoxGestureEvent.GESTURE_PINCH:
 //                trace("pinch:numCol=" + numCol + ",extra=" + e.extra);
                 if (numCol > 1 && e.extra > 1) {

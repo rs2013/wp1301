@@ -26,9 +26,9 @@ class Main {
     }
 
     static public function main() {
-        trace("before init");
+//        trace("before init");
         RoxApp.init();
-        trace("init ok");
+//        trace("init ok");
         var m = new RoxScreenManager();
 //        m.startScreen(Type.getClassName(com.weiplus.client.HomeScreen));
 //        m.startScreen(Type.getClassName(CameraScreen));
@@ -38,8 +38,9 @@ class Main {
 //        m.startScreen(Type.getClassName(SimpleMaker));
 //        m.startScreen(Type.getClassName(SelectedScreen));
         m.startRootScreen(Type.getClassName(Splash));
+//        m.startRootScreen(Type.getClassName(SettingScreen));
 
-        trace("screen started");
+//        trace("screen started");
         var st = new Status();
         var data = st.appData = new AppData();
         data.type = "test";
@@ -49,11 +50,15 @@ class Main {
 //        m.startScreen(Type.getClassName(TestPlayScreen), st);
         RoxApp.stage.addChild(m);
 
-        var fps = new FPS();
-        fps.x = 400;
-        fps.y = 10;
-        fps.mouseEnabled = false;
-        RoxApp.stage.addChild(fps);
+//        var fps = new FPS();
+//        fps.x = 400;
+//        fps.y = 10;
+//        fps.mouseEnabled = false;
+//        RoxApp.stage.addChild(fps);
+    }
+
+    public static inline function fontName() {
+        return #if android '/system/fonts/DroidSansFallback.ttf' #else 'Microsoft YaHei' #end;
     }
 
 }

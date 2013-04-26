@@ -66,16 +66,38 @@ class HaxeStub
 	
 	private static var _startInputDialog_func:Dynamic;
 
-	public static function startInputDialog(arg0:String, arg1:String, arg2: String, arg3:Dynamic /*org.haxe.nme.HaxeObject*/):Void
+	public static function startInputDialog(arg0:String, arg1:String, arg2:String, arg3:Dynamic /*org.haxe.nme.HaxeObject*/):Void
 	{
 		if (_startInputDialog_func == null)
 			_startInputDialog_func = nme.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startInputDialog", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/haxe/nme/HaxeObject;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);
-        a.push(arg2);
-        a.push(arg3);
+		a.push(arg2);
+		a.push(arg3);
 		_startInputDialog_func(a);
+	}
+	
+	
+	private static var _startUmengFb_func:Dynamic;
+
+	public static function startUmengFb():Void
+	{
+		if (_startUmengFb_func == null)
+			_startUmengFb_func = nme.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startUmengFb", "()V", true);
+		var a = new Array<Dynamic>();
+		_startUmengFb_func(a);
+	}
+	
+	
+	private static var _startUmengXp_func:Dynamic;
+
+	public static function startUmengXp():Void
+	{
+		if (_startUmengXp_func == null)
+			_startUmengXp_func = nme.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startUmengXp", "()V", true);
+		var a = new Array<Dynamic>();
+		_startUmengXp_func(a);
 	}
 	
 	

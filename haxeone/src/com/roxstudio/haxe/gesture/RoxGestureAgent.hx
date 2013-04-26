@@ -95,7 +95,7 @@ class RoxGestureAgent {
         if (!initialized) {
             initialized = true;
             var stage = Lib.current.stage;
-            moveToleSqr = new Point(stage.stageWidth, stage.stageHeight).length * 0.005;
+            moveToleSqr = new Point(stage.stageWidth, stage.stageHeight).length * 0.008;
             moveToleSqr *= moveToleSqr;
             if (Multitouch.supportsTouchEvents) Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
         }

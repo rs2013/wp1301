@@ -65,8 +65,10 @@ class PlayScreen extends BaseScreen {
     private var startTime: Float;
     private var elapsedTime: Float = 0;
     private var timer: Timer;
+    private var starttm: Float;
 
     override public function onCreate() {
+        starttm = haxe.Timer.stamp();
         designWidth = DESIGN_WIDTH;
         d2rScale = screenWidth / designWidth;
         designHeight = screenHeight / d2rScale;
@@ -118,6 +120,7 @@ class PlayScreen extends BaseScreen {
         mask.addChild(loading);
         mask.name = "loadingMask";
         frontLayer.addChild(mask);
+        trace("PlayScreen started, time=" + (haxe.Timer.stamp() - starttm));
     }
 
     override public function onShown() {
@@ -241,14 +244,15 @@ class PlayScreen extends BaseScreen {
         var idx: Array<Float> = [];
         for (i in 0...20) idx.push(i * 18 * GameUtil.D2R);
         GameUtil.shuffle(idx);
+        var interval = 0.03;
         for (i in 0...idx.length) {
             var sp = UiUtil.bitmap(arr[Std.random(3)], UiUtil.CENTER);
             sp.rox_scale(0.2).rox_move(wd2, hd2);
             sp.rotation = Std.random(360);
 //            frontLayer.addChild(sp);
-            UiUtil.delay(function() { frontLayer.addChild(sp); }, i * 30);
-            Actuate.tween(sp, 5, { x: wd2 + r * Math.cos(idx[i]), y: hd2 + r * Math.sin(idx[i]), scaleX: 1, scaleY: 1, alpha: 0 }).delay(i * 0.03);
-            Actuate.tween(sp, 2.5, { rotation: sp.rotation + 360 }).repeat().ease(Linear.easeNone).delay(i * 0.03);
+            UiUtil.delay(function() { frontLayer.addChild(sp); }, i * interval);
+            Actuate.tween(sp, 5, { x: wd2 + r * Math.cos(idx[i]), y: hd2 + r * Math.sin(idx[i]), scaleX: 1, scaleY: 1, alpha: 0 }).delay(i * interval);
+            Actuate.tween(sp, 2.5, { rotation: sp.rotation + 360 }).repeat().ease(Linear.easeNone).delay(i * interval);
         }
     }
 

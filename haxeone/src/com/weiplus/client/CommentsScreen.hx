@@ -210,7 +210,7 @@ class CommentsScreen extends BaseScreen {
                 UiUtil.delay(function() {
                     main.rox_removeByName("topRefresher");
                     main.rox_removeByName("bottomRefresher");
-                }, 1000);
+                }, 1);
         }
     }
 

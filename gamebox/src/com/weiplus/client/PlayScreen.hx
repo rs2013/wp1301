@@ -91,6 +91,7 @@ class PlayScreen extends BaseScreen {
         frontLayer = new Sprite();
         addChild(frontLayer.rox_move(0, 0));
         victory = false;
+        elapsedTime = 0;
         if (status != null) onNewRequest(status);
     }
 
@@ -162,7 +163,6 @@ class PlayScreen extends BaseScreen {
         frontLayer.addChild(timertf.rox_move((screenWidth - timertf.width * d2rScale) / 2, 22));
         timer = new Timer(1000);
         timer.run = function() {
-//            trace("已使�?" + timestr(getElapsedTime()));
             cast(timertf.childAt(1), TextField).text = timestr(getElapsedTime());
         }
     }
@@ -235,14 +235,15 @@ class PlayScreen extends BaseScreen {
         var idx: Array<Float> = [];
         for (i in 0...20) idx.push(i * 18 * GameUtil.D2R);
         GameUtil.shuffle(idx);
+        var interval = 0.03;
         for (i in 0...idx.length) {
             var sp = UiUtil.bitmap(arr[Std.random(3)], UiUtil.CENTER);
             sp.rox_scale(0.2).rox_move(wd2, hd2);
             sp.rotation = Std.random(360);
 //            frontLayer.addChild(sp);
-            UiUtil.delay(function() { frontLayer.addChild(sp); }, i * 30);
-            Actuate.tween(sp, 5, { x: wd2 + r * Math.cos(idx[i]), y: hd2 + r * Math.sin(idx[i]), scaleX: 1, scaleY: 1, alpha: 0 }).delay(i * 0.03);
-            Actuate.tween(sp, 2.5, { rotation: sp.rotation + 360 }).repeat().ease(Linear.easeNone).delay(i * 0.03);
+            UiUtil.delay(function() { frontLayer.addChild(sp); }, i * interval);
+            Actuate.tween(sp, 5, { x: wd2 + r * Math.cos(idx[i]), y: hd2 + r * Math.sin(idx[i]), scaleX: 1, scaleY: 1, alpha: 0 }).delay(i * interval);
+            Actuate.tween(sp, 2.5, { rotation: sp.rotation + 360 }).repeat().ease(Linear.easeNone).delay(i * interval);
         }
     }
 

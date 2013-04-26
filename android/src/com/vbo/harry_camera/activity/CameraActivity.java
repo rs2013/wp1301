@@ -23,6 +23,7 @@ import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
 import com.weiplus.client.BuildConfig;
@@ -204,18 +205,19 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
     private void initView(){
         mMainView = (FrameLayout) findViewById(R.id.main_view);
         // TODO For more devices
-        mCameraViewPadding = CameraUtil.makesurePreviewPadding(this, true);
-        mMainView.setPadding(mCameraViewPadding[0], mCameraViewPadding[1], mCameraViewPadding[2], mCameraViewPadding[3]);
-        if (BuildConfig.DEBUG)
-            Log.d(TAG, "paddings = [" + mCameraViewPadding[0] + "," + mCameraViewPadding[1]
-                    + "," + mCameraViewPadding[2]+ "," + mCameraViewPadding[3] + "]");
+        //mCameraViewPadding = CameraUtil.makesurePreviewPadding(this, true);
+        //mMainView.setPadding(mCameraViewPadding[0], mCameraViewPadding[1], mCameraViewPadding[2], mCameraViewPadding[3]);
+//        if (BuildConfig.DEBUG)
+//            Log.d(TAG, "paddings = [" + mCameraViewPadding[0] + "," + mCameraViewPadding[1]
+//                    + "," + mCameraViewPadding[2]+ "," + mCameraViewPadding[3] + "]");
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+                FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         mCameraView = new CameraView(this);
         mFittingImageView = new ImageView(this);
         mMainView.addView(mCameraView, 0, lp);
         mMainView.addView(mFittingImageView, 0, lp);
         mFittingImageView.setVisibility(View.GONE);
+        mFittingImageView.setScaleType(ScaleType.CENTER_CROP);
         mCategorysView = (GridView) findViewById(R.id.categorys);
         mCategoryTitleView = (TextView) findViewById(R.id.category_title);
         mFittingView = (ImageView) findViewById(R.id.fitting_view);
@@ -454,7 +456,7 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
 
                         @Override
                         public void onPicTaked(byte[] data, Camera camera) {
-                            mPicTaked = PictureUtil.scalePic(PictureUtil.rotatePic(data), mCameraView.getWidth());
+                            mPicTaked = /*PictureUtil.scalePic(*/PictureUtil.rotatePic(data)/*, mCameraView.getWidth())*/;
                             mViewState = STATE_PIC_TAKED;
                             mHandler.sendEmptyMessage(UPDATE_STATE);
                         }
@@ -462,10 +464,12 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
                 } else if (mViewState == STATE_PIC_TAKED) {
                     if (BuildConfig.DEBUG)
                         Log.d(TAG, "pic take");
+                    mRingMatrix.set(mFittingView.getImageMatrix());
                     mPicSavedFile = PictureUtil.savePic(
-                            CameraActivity.this, mRingSelectedBitmap, mRingMatrix, mPicTaked, mCameraView.getWidth(),
+                            CameraActivity.this, mRingSelectedBitmap, mRingMatrix, mPicTaked, 
+                            /*mCameraView.getWidth() - mCameraViewPadding[0] - mCameraViewPadding[2],
                             mCameraView.getHeight() - mCameraViewPadding[1] - mCameraViewPadding[3]
-                                    - ((int) getResources().getDimension(R.dimen.bottom_bar_height)));
+                                    - ((int) getResources().getDimension(R.dimen.bottom_bar_height))*/mFittingImageView.getWidth(), mFittingImageView.getHeight());
                     mViewState = STATE_PIC_SAVED;
                     if (mNeedFinish) {
                         Intent result = new Intent();
@@ -563,7 +567,7 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
         if (mFittingMatrixInit) 
             return matrix;
         matrix.postTranslate((sDisplayMetrics.widthPixels - mFittingImageWidth) / 2,
-                (sDisplayMetrics.heightPixels - mCameraViewPadding[1] - mCameraViewPadding[3] 
+                (sDisplayMetrics.heightPixels/* - mCameraViewPadding[1] - mCameraViewPadding[3] */
                         - getResources().getDimension(R.dimen.bottom_bar_height) - mFittingImageHeight) / 2);
         return matrix;
     }

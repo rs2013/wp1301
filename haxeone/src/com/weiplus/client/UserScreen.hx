@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import nme.text.TextField;
 import nme.events.MouseEvent;
 import com.weiplus.client.MyUtils;
 import com.roxstudio.haxe.game.ResKeeper;
@@ -41,9 +42,7 @@ class UserScreen extends TimelineScreen {
     override public function onCreate() {
         super.onCreate();
         btnSetting = UiUtil.button("res/icon_settings.png", null, "res/btn_common.9.png", function(_) {
-            MyUtils.logout();
-            startScreen(Type.getClassName(PublicScreen), CLEAR);
-            UiUtil.message("你已经登出");
+            startScreen(Type.getClassName(SettingScreen));
         });
         removeTitleButton(btnCol);
     }
@@ -60,60 +59,29 @@ class UserScreen extends TimelineScreen {
         var uid: String = data != null ? cast data : HpApi.instance.uid;
         user.id = uid;
         if (uid == HpApi.instance.uid) {
-#if cpp
-            restore();
-#end
-            if (storedStatuses != null && storedStatuses.length > 0) {
-                updateList(storedStatuses, false);
-            } else {
-                addChild(MyUtils.getLoadingAnim("载入中").rox_move(screenWidth / 2, screenHeight / 2));
-                refresh(false);
-            }
             addTitleButton(btnSetting, UiUtil.RIGHT);
         } else {
-            addChild(MyUtils.getLoadingAnim("载入中").rox_move(screenWidth / 2, screenHeight / 2));
-            refresh(false);
             removeTitleButton(btnSetting);
         }
+//#if cpp
+//            restore();
+//#end
+//            if (storedStatuses != null && storedStatuses.length > 0) {
+//                updateList(storedStatuses, false);
+//            } else {
+//                addChild(MyUtils.getLoadingAnim("载入中").rox_move(screenWidth / 2, screenHeight / 2));
+//                refresh(false);
+//            }
+//            addTitleButton(btnSetting, UiUtil.RIGHT);
+//        } else {
+            addChild(MyUtils.getLoadingAnim("载入中").rox_move(screenWidth / 2, screenHeight / 2));
+            refresh(false);
+//        }
         if (data != null || MyUtils.isEmpty(HpApi.instance.uid)) {
             UiUtil.rox_removeByName(this, "buttonPanel");
             viewh = screenHeight - titleBar.height;
         }
 
-        HpApi.instance.get("/users/show/" + user.id, { }, function(code: Int, json: Dynamic) {
-            if (code == 200) {
-                var u = json.users[0];
-                user.id = u.id;
-                user.name = u.nickname;
-                user.profileImage = u.avatar;
-                user.createdAt = Date.fromTime(u.ctime);
-                user.lastVisitAt = Date.fromTime(u.vtime);
-                user.postCount = 0;
-                user.friendCount = 0;
-                user.followerCount = 0;
-                var stats: Array<Dynamic> = u.stats;
-                if (stats != null && stats.length > 0) {
-                    for (stat in stats) {
-                        var cnt = stat.count;
-                        switch (stat.type) {
-                            case "FRIENDS": user.friendCount = cnt;
-                            case "FOLLOWERS": user.followerCount = cnt;
-                            case "STATUSES": user.postCount = cnt;
-                        }
-                    }
-                }
-
-                titleBar.rox_remove(title);
-                var txt = UiUtil.staticText(user.name, 0xFFFFFF, 36);
-                title = new Sprite();
-                title.addChild(txt);
-                titleBar.addChild(title.rox_move((titleBar.width / d2rScale - title.width) / 2, (titleBar.height / d2rScale - title.height) / 2));
-
-                main.removeChild(headPanel);
-                main.addChild(getHeadPanel());
-
-            }
-        });
     }
 
 //    override private function updateList(statuses: Array<Dynamic>, append: Bool) {
@@ -139,35 +107,20 @@ class UserScreen extends TimelineScreen {
                 sp.graphics.rox_drawRegionRound(img, spacing, spacing, 60, 60);
                 sp.graphics.rox_drawRoundRect(3, 0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
             });
-//            var img: BitmapData = ResKeeper.get(user.profileImage);
-//            if (img != null && img.width > 0) {
-//                sp.graphics.rox_drawRegionRound(img, spacing, spacing, 60, 60);
-//                sp.graphics.rox_drawRoundRect(3, 0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
-//            } else {
-//                sp.graphics.rox_fillRoundRect(0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
-//                var ldr = new RoxURLLoader(user.profileImage, RoxURLLoader.IMAGE);
-//                ldr.addEventListener(Event.COMPLETE, function(_) {
-//                    var img: BitmapData = if (ldr.status == RoxURLLoader.OK && (cast(ldr.data, BitmapData).width > 0)) {
-//                        ResKeeper.add(user.profileImage, ldr.data);
-//                        cast ldr.data;
-//                    } else {
-//                        ResKeeper.getAssetImage("res/no_avatar.png");
-//                    }
-//                    sp.graphics.rox_drawRegionRound(img, spacing, spacing, 60, 60);
-//                    sp.graphics.rox_drawRoundRect(3, 0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
-//                });
-//            }
-//
-//        } else {
-//            sp.graphics.rox_fillRoundRect(0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
         }
         sp.graphics.rox_drawRegionRound(ResKeeper.getAssetImage("res/no_avatar.png"), spacing, spacing, 60, 60);
         sp.graphics.rox_drawRoundRect(3, 0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
         if (HpApi.instance.uid != user.id) {
-            var btn: RoxFlowPane = UiUtil.button(UiUtil.TOP_LEFT, null, "关注", 0xFFFFFF, 24, "res/btn_common.9.png", function(_) {
-                HpApi.instance.get("/friendships/create/" + user.id, {}, function(code: Int, _) {
+            var cmd = (user.friendship & 1) != 0 ? "delete" : "create";
+            var txt = cmd == "create" ? "添加关注" : "取消关注";
+            var btn: RoxFlowPane = UiUtil.button(UiUtil.TOP_LEFT, null, txt, 0xFFFFFF, 24, "res/btn_common.9.png", function(e: Dynamic) {
+                HpApi.instance.get("/friendships/" + cmd + "/" + user.id, {}, function(code: Int, _) {
+                    var txt = cmd == "create" ? "添加关注" : "取消关注";
                     if (code == 200) {
-                        UiUtil.message("关注成功");
+                        UiUtil.message("已成功" + txt);
+                        cmd = cmd == "create" ? "delete" : "create";
+                        cast(e.target.childAt(0), TextField).text = cmd == "create" ? "添加关注" : "取消关注";
+                        refresh(false);
                     } else {
                         UiUtil.message("错误,code=" + code);
                     }
@@ -202,42 +155,45 @@ class UserScreen extends TimelineScreen {
         return sp;
     }
 
-//    override private function getHeadPanel() : Sprite {
-//        var shape = new Shape();
-//        shape.graphics.rox_fillRoundRect(0xFFEEEEEE, 0, 0, 32, 32);
-//        var bgbmd = new BitmapData(32, 32, true, 0);
-//        bgbmd.draw(shape);
-//        var spacing = screenWidth * TimelineScreen.SPACING_RATIO;
-//        var bg = new RoxNinePatch(new RoxNinePatchData(new Rectangle(6, 6, 20, 20), new Rectangle(12, 12, 8, 8), bgbmd));
-//        var panel = new RoxFlowPane(screenWidth - 2 * spacing, 100,
-//                [ UiUtil.bitmap("res/no_avatar.png"), UiUtil.staticText("Leody", 0, 30) ], bg, [ 100 ]);
-//        var sp = new Sprite();
-//        sp.graphics.rox_fillRect(0x01FFFFFF, 0, 0, screenWidth, panel.height + spacing);
-//        var pshadow = UiUtil.ninePatch("res/shadow6.9.png");
-//        pshadow.setDimension(panel.width + 3, panel.height + 6);
-//        panel.rox_move(spacing, spacing);
-//        pshadow.rox_move(panel.x - 2, panel.y);
-//        sp.addChild(pshadow);
-//        sp.addChild(panel);
-//        return sp;
-//    }
-//
     override private function refresh(append: Bool) {
         if (refreshing) return;
         this.append = append && page != null;
 
-//#if android
-//        HpManager.getUserTimeline("", nextPage, 20, 0, this);
-//#else
-        var param = { sinceId: 0, rows: 20 };
-        if (this.append) untyped param.maxId = Std.int(page.oldestId - 1);
-        HpApi.instance.get("/statuses/user_timeline/" + user.id, param, onComplete);
-//        var ldr = new RoxURLLoader("http://s-56378.gotocdn.com/harryphoto/statuses/user_timeline/" + uid + ".json?" +
-//            "sinceId=0&rows=20&refreshToken=&format=json&" +
-//            (this.append ? "maxId=" + Std.int(page.oldestId - 1) + "&" : "")  +
-//            "accessToken=" + accessToken, RoxURLLoader.TEXT);
-//        trace("refreshUrl="+ldr.url);
-//        ldr.addEventListener(Event.COMPLETE, onComplete);
+        HpApi.instance.get("/users/show/" + user.id, { }, function(code: Int, json: Dynamic) {
+            if (code == 200) {
+                var u = json.users[0];
+                user.id = u.id;
+                user.name = u.nickname;
+                user.profileImage = u.avatar;
+                user.createdAt = Date.fromTime(u.ctime);
+                user.lastVisitAt = Date.fromTime(u.vtime);
+                user.postCount = 0;
+                user.friendCount = 0;
+                user.followerCount = 0;
+                user.friendship = u.friendship;
+                var stats: Array<Dynamic> = u.stats;
+                if (stats != null && stats.length > 0) {
+                    for (stat in stats) {
+                        var cnt = stat.count;
+                        switch (stat.type) {
+                            case "FRIENDS": user.friendCount = cnt;
+                            case "FOLLOWERS": user.followerCount = cnt;
+                            case "STATUSES": user.postCount = cnt;
+                        }
+                    }
+                }
+
+                titleBar.rox_remove(title);
+                var txt = UiUtil.staticText(user.name, 0xFFFFFF, 36);
+                title = new Sprite();
+                title.addChild(txt);
+                titleBar.addChild(title.rox_move((titleBar.width / d2rScale - title.width) / 2, (titleBar.height / d2rScale - title.height) / 2));
+
+                var param = { sinceId: 0, rows: 20 };
+                if (this.append) Reflect.setField(param, "maxId", Std.int(page.oldestId - 1));
+                HpApi.instance.get("/statuses/user_timeline/" + user.id, param, onComplete);
+            }
+        });
         refreshing = true;
 //#end
     }

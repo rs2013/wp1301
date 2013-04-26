@@ -15,6 +15,7 @@ class RoxScreenManager extends Sprite {
 
     private var screenPool: Hash<RoxScreen>;
     private var stack: List<StackItem>;
+    private var starttm: Float;
 
     public function new() {
         super();
@@ -53,16 +54,18 @@ class RoxScreenManager extends Sprite {
 
 //        trace(">>startScreen(" + source + "," + screenClassName + "," + finishToScreen + ")<<");
 //        trace(">>>>stack=" + stack);
+        starttm = haxe.Timer.stamp();
         if (source != null && stack.first().className != source.className)
             throw "startScreen: Illegal stack state or bad source screen '" + source + "'";
         var srcbmp: Bitmap = source != null ? snap(source) : null;
+        trace("StartScreen.afterSnap, time=" + (haxe.Timer.stamp() - starttm));
         if (finishToScreen != null) {
             finishScreen(source, finishToScreen, RoxScreen.CANCELED, null, RoxAnimate.NO_ANIMATE);
             source = null;
         } else {
             hide(source, false);
         }
-
+        trace("StartScreen.afterFinish, time=" + (haxe.Timer.stamp() - starttm));
         ResKeeper.currentBundle = screenClassName;
         var dest = screenPool.get(screenClassName); // check for reusable screen
         if (dest == null) {
@@ -74,9 +77,12 @@ class RoxScreenManager extends Sprite {
         if (animate == null) animate = RoxAnimate.SLIDE_LEFT;
         stack.push({ className: screenClassName, screen: dest, requestCode: requestCode, animate: animate });
         dest.onNewRequest(requestData);
+        trace("StartScreen.afterNewRequest, time=" + (haxe.Timer.stamp() - starttm));
 
         show(dest);
+        trace("StartScreen.afterShow, time=" + (haxe.Timer.stamp() - starttm));
         if (srcbmp != null && animate.type != RoxAnimate.NONE) startAnimate(srcbmp, snap(dest), animate);
+        trace("StartScreen.afterAnimate, time=" + (haxe.Timer.stamp() - starttm));
 //        trace(">>End startScreen: stack=" + stack);
     }
 
@@ -155,7 +161,7 @@ class RoxScreenManager extends Sprite {
                 dest.scaleX = dest.scaleY = r.width / sw;
                 dest.x = r.x;
                 dest.y = r.y;
-                dest.alpha = 0;
+                dest.alpha = 0.3;
                 Actuate.tween(dest, anim.interval, { x: 0, y: 0, scaleX: 1, scaleY: 1, alpha: 1 })
                         .onComplete(animDone, [ srcbmp, dest ]);
             case RoxAnimate.ZOOM_OUT: // shrink

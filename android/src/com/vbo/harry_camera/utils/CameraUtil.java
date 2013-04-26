@@ -13,6 +13,8 @@ import com.vbo.harry_camera.HarryCameraApp;
 import com.weiplus.client.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class CameraUtil {
@@ -21,7 +23,9 @@ public class CameraUtil {
     private static List<MyCameraInfo> sInfos = new ArrayList<MyCameraInfo>();
     private static boolean sHasCamera;
     private static int sCurrentCameraId = -1;
-    public static List<Size> sSupportedPreviewSizes;
+    //public static List<Size> sSupportedPreviewSizes;
+    private static Size sBestPreviewSize;
+    private static Size sBestPicture;
 
     public static boolean hasFrontCamera(Context context) {
         return hasCamera(context, CameraInfo.CAMERA_FACING_FRONT);
@@ -64,7 +68,6 @@ public class CameraUtil {
                 camera = null;
                 sInfos.add(new MyCameraInfo(info, parameters));
             }
-            
             return sHasCamera = true;
         } else {
             return sHasCamera = false;
@@ -145,13 +148,18 @@ public class CameraUtil {
                 ? sInfos.get(getBackCameraId()).mParameters 
                         : sInfos.get(getFrontCameraId()).mParameters;
         int cameraOrientation = getCurrentCameraOrientation();
-        List<Size> sizes =  parameters.getSupportedPreviewSizes();
-        for (Size size : sizes) {
-            if (BuildConfig.DEBUG)
-                Log.d(TAG, "size = [" + size.width + "," + size.height + "]");
-            previewWidth = size.width;
-            previewHeight = size.height;
-            break;
+//        List<Size> sizes =  parameters.getSupportedPreviewSizes();
+//        for (Size size : sizes) {
+//            if (BuildConfig.DEBUG)
+//                Log.d(TAG, "size = [" + size.width + "," + size.height + "]");
+//            previewWidth = size.width;
+//            previewHeight = size.height;
+//            break;
+//        }
+        Size bestPreviewSize = getBestPreviewSize(parameters, cameraOrientation);
+        if (bestPreviewSize != null) {
+            previewWidth = bestPreviewSize.width;
+            previewHeight = bestPreviewSize.height;
         }
         float paddinghorizontal = 0f;
         float paddingvertical = 0f;
@@ -177,5 +185,45 @@ public class CameraUtil {
         //return paddings;
         // TODO
         return new int[]{0,50,0,(int) bottomHeight + 50};
+    }
+
+    public static Size getBestPreviewSize(Camera.Parameters parameters, int cameraOrientation) {
+        List<Size> sizes = parameters.getSupportedPreviewSizes();
+        Collections.sort(sizes, new Comparator<Size>() {
+            @Override
+            public int compare(Size lhs, Size rhs) {
+                int result = lhs.width - rhs.width; 
+                if (result == 0) result = lhs.height - rhs.height;
+                return result;
+            }
+
+        });
+        for (Size size : sizes) {
+            Log.d(TAG, "preview size = " + size.width + "," + size.height);
+            if (cameraOrientation % 180 == 0 ? size.width >= 720 : size.height >= 720){
+                return size;
+            }
+        }
+        return null;
+    }
+
+    public static Size getBestPictureSize(Camera.Parameters parameters,int cameraOrientation ) {
+        List<Size> sizes = parameters.getSupportedPictureSizes();
+        Collections.sort(sizes, new Comparator<Size>() {
+            @Override
+            public int compare(Size lhs, Size rhs) {
+                int result = lhs.width - rhs.width; 
+                if (result == 0) result = lhs.height - rhs.height;
+                return result;
+            }
+
+        });
+        for (Size size : sizes) {
+            Log.d(TAG, "pic size = " + size.width + "," + size.height);
+            if (cameraOrientation % 180 == 0 ? size.width >= 720 : size.height >= 720){
+                return size;
+            }
+        }
+        return null;
     }
 }

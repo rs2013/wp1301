@@ -73,7 +73,7 @@ public class PictureUtil {
         }
         try {
             FileOutputStream fos = new FileOutputStream(pictureFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fos);
             fos.flush();
             fos.close();
         } catch (FileNotFoundException e) {
@@ -185,6 +185,8 @@ public class PictureUtil {
             Bitmap finger, int fingerWidth, int fingerHeight) {
         if (finger == null || ring == null)
             return null;
+        Log.d(TAG, "finger : " + finger.getWidth() + "," + finger.getHeight()
+                + "\n fingerWidth = " + fingerWidth + " fingerHeight = " + fingerHeight);
         Bitmap bitmapRing = ring;
         /*RectF point = new RectF();
         ringMatrix.mapRect(point);
@@ -195,11 +197,15 @@ public class PictureUtil {
             Log.d(TAG, "fingerWidth = "  + fingerWidth + " fingerHeight = " + fingerHeight
                     + " finger : [" + finger.getWidth() + ", " + finger.getHeight() + "]"
                     + " ring : [" + ring.getWidth() + ", " + ring.getHeight() + "]");*/
+        float hratio = finger.getWidth() / (float) fingerWidth, vratio = finger.getHeight() / (float) fingerHeight;
+        float ratio = Math.min(hratio, vratio);
+        float bmpw = fingerWidth * ratio, bmph = fingerHeight * ratio;
+        float offx = (bmpw - finger.getWidth()) / 2, offy = (bmph - finger.getHeight()) / 2;
         Bitmap newBitmap = Bitmap.createBitmap(
-                finger.getWidth(), finger.getHeight(),
+                (int) bmpw, (int) bmph,
                 Config.ARGB_8888);
         Canvas cv = new Canvas(newBitmap);
-        cv.drawBitmap(finger, 0 , 0, null);
+        cv.drawBitmap(finger, offx , offy, null);
         /*float tranX = point.left * finger.getWidth() / fingerWidth -  point.left;
         float tranY = point.top * finger.getHeight() / fingerHeight -  point.top;
         ringMatrix.postTranslate(tranX, tranY);
@@ -210,6 +216,22 @@ public class PictureUtil {
         if (BuildConfig.DEBUG)
             Log.d(TAG, "point2 = [" + point2.left + ", " + point2.top + ", "
                     + point2.right + ", " + point2.bottom + "]");*/
+        ringMatrix.postScale(ratio, ratio);
+//        float[] matrixValues = new float[9];
+//        ringMatrix.getValues(matrixValues);
+//        for (int i = 0; i < 3; ++i) {
+//            String temp = new String();
+//            for (int j = 0; j < 3; ++j) {
+//                temp += matrixValues[3 * i + j] + "\t";
+//            }
+//            Log.d(TAG, temp);
+//        }
+//        ringMatrix.postTranslate(matrixValues[2] * ratio,
+//                matrixValues[5] * ratio);
+//        ringMatrix.getValues(matrixValues);
+//        for (int i = 0; i < 9; i++) {
+//            Log.d(TAG, "matrixValues[" + i + "] = " + matrixValues[i]);
+//        }
         cv.drawBitmap(bitmapRing, ringMatrix, null);
         cv.save(Canvas.ALL_SAVE_FLAG);
         return savePic(newBitmap);
@@ -359,11 +381,15 @@ public class PictureUtil {
 
     public static File saveIcon(Context context, Bitmap bitmap) {
 
-        File pictureFile = new File("/Android/data/" + context.getPackageName() + "/files/" + System.currentTimeMillis() + ".jpg");
+        File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/Android/data/" + context.getPackageName() + "/files");
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+        File pictureFile = new File(dir.getPath() + "/" + System.currentTimeMillis() + ".jpg");
 
         try {
             FileOutputStream fos = new FileOutputStream(pictureFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fos);
             fos.flush();
             fos.close();
         } catch (FileNotFoundException e) {

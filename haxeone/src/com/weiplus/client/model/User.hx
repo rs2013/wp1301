@@ -12,6 +12,7 @@ class User {
     public var followerCount: Int;
     public var postCount: Int;
     public var friendCount: Int;
+    public var friendship: Int;
 
     public function new() {
     }

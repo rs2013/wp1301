@@ -34,6 +34,18 @@ class HpManager
 	}
 	
 	
+	private static var _restoreBindings_func:Dynamic;
+
+	public static function restoreBindings(arg0:Dynamic /*org.json.JSONArray*/):Void
+	{
+		if (_restoreBindings_func == null)
+			_restoreBindings_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "restoreBindings", "(Lorg/json/JSONArray;)V", true);
+		var a = new Array<Dynamic>();
+		a.push(arg0);
+		_restoreBindings_func(a);
+	}
+	
+	
 	private static var _loginOld_func:Dynamic;
 
 	public static function loginOld():Void

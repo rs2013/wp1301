@@ -155,7 +155,7 @@ class RoxScreenManager extends Sprite {
                 dest.scaleX = dest.scaleY = r.width / sw;
                 dest.x = r.x;
                 dest.y = r.y;
-                dest.alpha = 0;
+                dest.alpha = 0.3;
                 Actuate.tween(dest, anim.interval, { x: 0, y: 0, scaleX: 1, scaleY: 1, alpha: 1 })
                         .onComplete(animDone, [ srcbmp, dest ]);
             case RoxAnimate.ZOOM_OUT: // shrink

@@ -3,7 +3,6 @@
   <component name="HaxeModuleSettingsStorage">
     <option name="buildConfig" value="2" />
     <option name="flexSdkName" value="flex_sdk_4.6" />
-    <option name="nmeTarget" value="Windows" />
     <option name="nmmlPath" value="$MODULE_DIR$/weiplus.nmml" />
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
@@ -19,6 +18,7 @@
     <orderEntry type="library" name="nme 3,4,4" level="application" />
     <orderEntry type="library" name="spritesheet 1,11" level="application" />
     <orderEntry type="library" name="format 1,25" level="application" />
+    <orderEntry type="library" name="actuate 1,61" level="application" />
   </component>
 </module>
 
