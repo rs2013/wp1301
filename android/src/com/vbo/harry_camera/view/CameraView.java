@@ -295,7 +295,9 @@ public class CameraView extends SurfaceView {
         mPictureSize = parameters.getPictureSize();
         Log.d(TAG, "mPreviewSize = " + mPreviewSize.width + "," + mPreviewSize.height);
         Log.d(TAG, "mPictureSize = " + mPictureSize.width + "," + mPictureSize.height);
-        Size bestPreSize = CameraUtil.getBestPreviewSize(parameters, cameraOrientation);
+//        Size bestPreSize = CameraUtil.getBestPreviewSize(parameters, cameraOrientation);
+        boolean lands = cameraOrientation % 180 == 0;
+        Size bestPreSize = getOptimalPreviewSize(parameters.getSupportedPreviewSizes(), lands ? width : height, lands ? height : width);
         Size bestPicSize = CameraUtil.getBestPictureSize(parameters, cameraOrientation);
         if (bestPreSize != null) {
             parameters.setPreviewSize(bestPreSize.width, bestPreSize.height);
@@ -346,4 +348,38 @@ public class CameraView extends SurfaceView {
             mCamera.autoFocus(callback);
         }
     }
+    
+    private Size getOptimalPreviewSize(List<Size> sizes, int w, int h) {
+        final double ASPECT_TOLERANCE = 0.1;
+        double targetRatio = (double) w / h;
+        if (sizes == null) return null;
+
+        Size optimalSize = null;
+        double minDiff = Double.MAX_VALUE;
+
+        int targetHeight = h;
+
+        // Try to find an size match aspect ratio and size
+        for (Size size : sizes) {
+            double ratio = (double) size.width / size.height;
+            if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
+            if (Math.abs(size.height - targetHeight) < minDiff) {
+                optimalSize = size;
+                minDiff = Math.abs(size.height - targetHeight);
+            }
+        }
+
+        // Cannot find the one match the aspect ratio, ignore the requirement
+        if (optimalSize == null) {
+            minDiff = Double.MAX_VALUE;
+            for (Size size : sizes) {
+                if (Math.abs(size.height - targetHeight) < minDiff) {
+                    optimalSize = size;
+                    minDiff = Math.abs(size.height - targetHeight);
+                }
+            }
+        }
+        return optimalSize;
+    }
+
 }
