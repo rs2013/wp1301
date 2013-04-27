@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import com.roxstudio.haxe.ui.RoxAnimate;
 import com.roxstudio.haxe.ui.RoxNinePatch;
 import com.roxstudio.haxe.ui.RoxNinePatchData;
 import com.roxstudio.haxe.game.ResKeeper;
@@ -113,7 +114,7 @@ class MakerList extends BaseScreen {
             case "icon_swap_maker":
                 startScreen(Type.getClassName(com.weiplus.apps.swappuzzle.Maker));
             case "icon_harry_camera":
-                startScreen(Type.getClassName(com.weiplus.client.HarryCamera));
+                startScreen(Type.getClassName(com.weiplus.client.HarryCamera), RoxAnimate.NO_ANIMATE);
         }
     }
 

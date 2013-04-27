@@ -15,6 +15,7 @@ class RoxScreenManager extends Sprite {
 
     private var screenPool: Hash<RoxScreen>;
     private var stack: List<StackItem>;
+
     private var starttm: Float;
 
     public function new() {
@@ -57,13 +58,9 @@ class RoxScreenManager extends Sprite {
         starttm = haxe.Timer.stamp();
         if (source != null && stack.first().className != source.className)
             throw "startScreen: Illegal stack state or bad source screen '" + source + "'";
-        var srcbmp: Bitmap = source != null ? snap(source) : null;
         trace("StartScreen.afterSnap, time=" + (haxe.Timer.stamp() - starttm));
         if (finishToScreen != null) {
-            finishScreen(source, finishToScreen, RoxScreen.CANCELED, null, RoxAnimate.NO_ANIMATE);
-            source = null;
-        } else {
-            hide(source, false);
+            finishScreen(source, finishToScreen, RoxScreen.CANCELED, null, RoxAnimate.NO_ANIMATE, true);
         }
         trace("StartScreen.afterFinish, time=" + (haxe.Timer.stamp() - starttm));
         ResKeeper.currentBundle = screenClassName;
@@ -79,9 +76,7 @@ class RoxScreenManager extends Sprite {
         dest.onNewRequest(requestData);
         trace("StartScreen.afterNewRequest, time=" + (haxe.Timer.stamp() - starttm));
 
-        show(dest);
-        trace("StartScreen.afterShow, time=" + (haxe.Timer.stamp() - starttm));
-        if (srcbmp != null && animate.type != RoxAnimate.NONE) startAnimate(srcbmp, snap(dest), animate);
+        startAnimate(source, dest, animate, false);
         trace("StartScreen.afterAnimate, time=" + (haxe.Timer.stamp() - starttm));
 //        trace(">>End startScreen: stack=" + stack);
     }
@@ -89,18 +84,16 @@ class RoxScreenManager extends Sprite {
     public function finishScreen(screen: RoxScreen,
                                  finishToScreen: FinishToScreen,
                                  resultCode: Int, resultData: Dynamic,
-                                 animate: RoxAnimate) {
+                                 animate: RoxAnimate, ?isBeforeStart = false) {
 
 //        trace("<<finishScreen(" + screen + "," + finishToScreen + ")>>");
 //        trace("<<stack=" + stack);
         var top: StackItem = stack.pop();
         if (top == null || top.className != screen.className)
             throw "finishScreen: Illegal stack state or bad source screen '" + top + "'";
-        hide(screen, true);
         if (stack.isEmpty()) return;
 
         if (animate == null) animate = top.animate.getReverse();
-        var srcbmp: Bitmap = animate.type != RoxAnimate.NONE ? snap(screen) : null;
         var requestCode = top.requestCode;
 
         if (finishToScreen == null) finishToScreen = PARENT;
@@ -123,11 +116,10 @@ class RoxScreenManager extends Sprite {
             stack.pop();
         }
 
-        if (top != null) {
-            var topscreen: RoxScreen = top.screen;
-            show(topscreen);
-            if (animate.type != RoxAnimate.NONE) startAnimate(srcbmp, snap(topscreen), animate);
-            topscreen.onScreenResult(requestCode, resultCode, resultData);
+        if (!isBeforeStart) {
+            var topscreen: RoxScreen = top != null ? top.screen : null;
+            startAnimate(screen, topscreen, animate, true);
+            if (topscreen != null) topscreen.onScreenResult(requestCode, resultCode, resultData);
         }
 //        trace("<<End FinishScreen: stack=" + stack);
     }
@@ -138,10 +130,15 @@ class RoxScreenManager extends Sprite {
         return new Bitmap(bmd);
     }
 
-    private function startAnimate(srcbmp: Bitmap, dest: Bitmap, anim: RoxAnimate) {
+    private function startAnimate(source: RoxScreen, dest: RoxScreen, anim: RoxAnimate, finish: Bool) {
+        show(dest);
+        var animDone = function() { hide(source, finish); }
+        if (source == null || dest == null || anim.type == RoxAnimate.NONE) {
+            animDone();
+            return;
+        }
+
         var sw = RoxApp.screenWidth, sh = RoxApp.screenHeight;
-        addChild(srcbmp);
-        addChild(dest);
         switch (anim.type) {
             case RoxAnimate.SLIDE:
                 switch (cast(anim.arg, String)) {
@@ -154,30 +151,23 @@ class RoxScreenManager extends Sprite {
                     case "left":
                         dest.x = sw;
                 }
-                Actuate.tween(srcbmp, anim.interval, { x: -dest.x, y: -dest.y });
-                Actuate.tween(dest, anim.interval, { x: 0, y: 0 }).onComplete(animDone, [ srcbmp, dest ]);
+                Actuate.tween(source, anim.interval, { x: -dest.x, y: -dest.y });
+                Actuate.tween(dest, anim.interval, { x: 0, y: 0 }).onComplete(animDone);
             case RoxAnimate.ZOOM_IN: // popup
                 var r: Rectangle = cast(anim.arg);
                 dest.scaleX = dest.scaleY = r.width / sw;
                 dest.x = r.x;
                 dest.y = r.y;
                 dest.alpha = 0.3;
-                Actuate.tween(dest, anim.interval, { x: 0, y: 0, scaleX: 1, scaleY: 1, alpha: 1 })
-                        .onComplete(animDone, [ srcbmp, dest ]);
+                Actuate.tween(dest, anim.interval, { x: 0, y: 0, scaleX: 1, scaleY: 1, alpha: 1 }).onComplete(animDone);
             case RoxAnimate.ZOOM_OUT: // shrink
                 var num = this.numChildren;
-                this.swapChildrenAt(num - 2, num - 1); // make sure srcbmp is on top
+                this.swapChildrenAt(num - 2, num - 1); // make sure source is on top
                 var r: Rectangle = cast(anim.arg);
                 var scale = r.width / sw;
-                Actuate.tween(srcbmp, anim.interval, { x: r.x, y: r.y, scaleX: scale, scaleY: scale, alpha: 0.01 })
-                        .onComplete(animDone, [ srcbmp, dest ]);
+                Actuate.tween(source, anim.interval, { x: r.x, y: r.y, scaleX: scale, scaleY: scale, alpha: 0.01 }).onComplete(animDone);
 
         }
-    }
-
-    private inline function animDone(srcbmp: Bitmap, dest: Bitmap) {
-        removeChild(srcbmp);
-        removeChild(dest);
     }
 
     private function hide(screen: RoxScreen, finish: Bool) {
