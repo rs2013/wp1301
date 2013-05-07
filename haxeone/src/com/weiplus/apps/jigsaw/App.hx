@@ -115,7 +115,7 @@ class App extends PlayScreen {
         }
         board.rox_scale(sc);
 
-        var btnView = UiUtil.button(UiUtil.TOP_LEFT, null, "预览", 0xFFFFFF, 36, "res/btn_dark.9.png", onView);
+        var btnView = UiUtil.button(UiUtil.TOP_LEFT, null, "预览", 0xFFFFFF, buttonFontSize, "res/btn_dark.9.png", onView);
         addTitleButton(btnView, UiUtil.RIGHT);
     }
 

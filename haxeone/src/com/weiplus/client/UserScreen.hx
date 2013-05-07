@@ -184,7 +184,7 @@ class UserScreen extends TimelineScreen {
                 }
 
                 titleBar.rox_remove(title);
-                var txt = UiUtil.staticText(user.name, 0xFFFFFF, 36);
+                var txt = UiUtil.staticText(user.name, 0xFFFFFF, buttonFontSize * 1.2);
                 title = new Sprite();
                 title.addChild(txt);
                 titleBar.addChild(title.rox_move((titleBar.width / d2rScale - title.width) / 2, (titleBar.height / d2rScale - title.height) / 2));

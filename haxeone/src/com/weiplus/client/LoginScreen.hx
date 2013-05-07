@@ -1,6 +1,6 @@
 package com.weiplus.client;
 
-import com.roxstudio.haxe.ui.UiUtil;
+import com.weiplus.client.MyUtils;
 import com.roxstudio.haxe.ui.RoxScreen;
 import nme.display.Sprite;
 import nme.geom.Rectangle;
@@ -34,7 +34,7 @@ class LoginScreen extends BaseScreen {
         { icon: "res/icon_renren.png", id: "RENREN_WEIBO", name: "人人网账号登陆", type: 1, data: null },
         ];
         var spacing = 18 * d2rScale;
-        var list = UiUtil.list(binds, screenWidth - 2 * spacing, onLogin);
+        var list = MyUtils.list(binds, screenWidth - 2 * spacing, onLogin);
         content.addChild(list.rox_move(spacing, h + spacing));
 
         return content;

@@ -1,5 +1,8 @@
 package com.weiplus.client;
 
+import com.eclecticdesignstudio.motion.easing.Linear;
+import com.eclecticdesignstudio.motion.Actuate;
+import com.weiplus.client.MyUtils;
 import com.roxstudio.haxe.ui.RoxScreen;
 import com.roxstudio.haxe.ui.RoxAnimate;
 import nme.geom.Rectangle;
@@ -7,8 +10,6 @@ import com.roxstudio.haxe.ui.RoxFlowPane;
 import com.roxstudio.haxe.gesture.RoxGestureAgent;
 import com.roxstudio.haxe.gesture.RoxGestureEvent;
 import nme.geom.Point;
-import com.weiplus.client.model.Routine;
-import com.roxstudio.haxe.ui.UiUtil;
 import nme.events.MouseEvent;
 import com.roxstudio.haxe.net.RoxURLLoader;
 import com.roxstudio.haxe.game.ResKeeper;
@@ -16,10 +17,10 @@ import nme.display.BitmapData;
 import nme.events.Event;
 import com.roxstudio.haxe.net.RoxURLLoader;
 import com.roxstudio.haxe.game.GameUtil;
+import com.weiplus.client.model.Routine;
 import com.weiplus.client.model.User;
 import com.weiplus.client.model.PageModel;
 import com.weiplus.client.model.Comment;
-import com.roxstudio.haxe.ui.UiUtil;
 import nme.display.Sprite;
 
 using com.roxstudio.haxe.game.GfxUtil;
@@ -27,9 +28,12 @@ using com.roxstudio.haxe.ui.UiUtil;
 
 class RoutineScreen extends BaseScreen {
 
+    private static inline var ALBUM_DIR = "/sdcard/DCIM/Camera";
+
     private static inline var REFRESH_HEIGHT = 100;
     private static inline var TRIGGER_HEIGHT = 60;
     private static inline var SPACING_RATIO = 1 / 40;
+    private static inline var FADE_TM = 0.2;
 
     private var append: Bool;
     private var refreshing: Bool = false;
@@ -39,7 +43,14 @@ class RoutineScreen extends BaseScreen {
     private var main: Sprite;
     private var mainh: Float;
     private var viewh: Float;
-//    private var uid: String;
+
+    var animating: Bool = false;
+    private var popupbg: Sprite;
+    private var popup1: Sprite;
+    private var popup2: Sprite;
+    private var makerId: String;
+    private var requestCode = -1;
+    private var snapPath: String;
 
     public function new() {
         super();
@@ -54,8 +65,10 @@ class RoutineScreen extends BaseScreen {
     override public function onCreate() {
         super.onCreate();
         var btnpanel = buttonPanel();
+        btnpanel.name = "buttonPanel";
         addChild(btnpanel.rox_move(0, screenHeight));
         viewh = screenHeight - btnpanel.height - titleBar.height;
+        this.addEventListener(Event.ACTIVATE, onActive);
     }
 
     override public function createContent(h: Float) : Sprite {
@@ -218,19 +231,148 @@ class RoutineScreen extends BaseScreen {
     }
 
     private function onButton(e: Event) {
+        if (animating) return;
         switch (e.target.name) {
             case "icon_home":
                 finish(SCREEN(Type.getClassName(HomeScreen)), RoxScreen.CANCELED);
             case "icon_selected":
                 startScreen(Type.getClassName(SelectedScreen), PARENT);
             case "icon_maker":
-                var btnRect = new Rectangle(screenWidth * 0.4, screenHeight - 100, screenWidth * 0.2, 100);
-                startScreen(Type.getClassName(MakerList), new RoxAnimate(RoxAnimate.ZOOM_IN, btnRect), this.className);
+                createPopups();
+                if (!contains(popupbg)) {
+                    addChild(popupbg);
+                    doPop(1);
+                }
             case "icon_message":
-                // do nothing
             case "icon_account":
                 startScreen(Type.getClassName(UserScreen), PARENT);
         }
+    }
+
+    private function doPop(action: Int) {
+        if (animating) return;
+        animating = true;
+        var pin: Sprite = switch (action) { case 1: popup1; case 2: popup2; case 3: popup1; case 4: null; }
+        var pout: Sprite = switch (action) { case 1: null; case 2: popup1; case 3: popup2; case 4: popupbg.contains(popup1) ? popup1 : popup2; }
+        trace("pin=" + pin+",pout=" + pout);
+        if (pin != null) {
+            popupbg.addChild(pin);
+            pin.alpha = 0.01;
+            Actuate.tween(pin, FADE_TM, { alpha: 1 } ).ease(Linear.easeNone);
+        }
+        if (pout != null) {
+            pout.alpha = 1;
+            Actuate.tween(pout, FADE_TM, { alpha: 0.01 } ).ease(Linear.easeNone);
+        }
+        UiUtil.delay(function() { popupbg.rox_remove(pout); animating = false; }, FADE_TM);
+    }
+
+    private function createPopups() {
+        if (popupbg != null) return;
+        popupbg = new Sprite();
+        popupbg.graphics.rox_fillRect(0x77000000, 0, 0, screenWidth, screenHeight);
+        var fadeout = function(_) {
+            doPop(4);
+            UiUtil.delay(function() { this.rox_remove(popupbg); }, FADE_TM);
+        }
+        var items: Array<ListItem> = [];
+        items.push({ id: "", icon: null, name: "用照片创建小游戏", type: 1, data: null });
+        items.push({ id: "jigsaw", icon: "res/icon_jigsaw_maker.png", name: "奇幻拼图", type: 3, data: null });
+        items.push({ id: "swappuzzle", icon: "res/icon_swap_maker.png", name: "方块挑战", type: 3, data: null });
+        items.push({ id: "slidepuzzle", icon: "res/icon_slide_maker.png", name: "移形换位", type: 3, data: null });
+        items.push({ id: "", icon: null, name: "拍摄神奇魔法照片", type: 1, data: null });
+        items.push({ id: "camera", icon: "res/icon_camera.png", name: "魔法相机", type: 2, data: null });
+        popup1 = MyUtils.bubbleList(items, function(i: ListItem) {
+            trace(i);
+            switch (i.id) {
+                case "camera":
+                    startScreen(Type.getClassName(com.weiplus.client.HarryCamera), RoxAnimate.NO_ANIMATE);
+                    fadeout(null);
+                default:
+                    makerId = i.id;
+                    doPop(2);
+            }
+            return true;
+        });
+
+        items = [];
+        items.push({ id: "", icon: null, name: "用照片创建小游戏", type: 1, data: null });
+        items.push({ id: "local_album", icon: "res/icon_local_album.png", name: "从相册选择", type: 2, data: null });
+        items.push({ id: "sys_camera", icon: "res/icon_sys_camera.png", name: "系统相机拍摄", type: 2, data: null });
+        items.push({ id: "harry_camera", icon: "res/icon_harry_camera.png", name: "魔法相机拍摄", type: 2, data: null });
+        items.push({ id: "back", icon: "res/icon_back.png", name: "", type: 4, data: null });
+        popup2 = MyUtils.bubbleList(items, function(i: ListItem) {
+            switch (i.id) {
+                case "local_album":
+                    onLocal(null);
+                    fadeout(null);
+                case "sys_camera":
+                    onCamera(null);
+                    fadeout(null);
+                case "harry_camera":
+                    onHarry(null);
+                    fadeout(null);
+                case "back":
+                    makerId = null;
+                    doPop(3);
+            }
+            return true;
+        });
+        var btnPanel = getChildByName("buttonPanel");
+        popup1.rox_move((screenWidth - popup1.width) / 2, screenHeight - popup1.height - btnPanel.height - 5);
+        popup2.rox_move((screenWidth - popup2.width) / 2, screenHeight - popup2.height - btnPanel.height - 5);
+        popupbg.mouseEnabled = true;
+        popupbg.addEventListener(MouseEvent.CLICK, fadeout);
+    }
+
+    private function onActive(_) {
+        if (requestCode < 0) return;
+#if android
+        var s = HaxeStub.getResult(requestCode);
+        var json: Dynamic = haxe.Json.parse(s);
+        if (untyped json.resultCode != "ok") return;
+        var path = requestCode == 1 ? snapPath : untyped json.intentDataPath;
+        var bmd = ResKeeper.loadLocalImage(path);
+#else
+        var bmd = ResKeeper.loadAssetImage("res/8.jpg");
+#end
+        requestCode = -1;
+        startScreen("com.weiplus.apps." + makerId + ".Maker", bmd);
+    }
+
+    private function onHarry(_) {
+        trace("onHarryCamera");
+        requestCode = 3;
+#if android
+        HaxeStub.startHarryCamera(requestCode);
+#else
+        onActive(null);
+#end
+    }
+
+    private function onCamera(_) {
+        trace("oncamera");
+        requestCode = 1;
+#if android
+        if (!sys.FileSystem.exists(ALBUM_DIR)) com.roxstudio.haxe.io.FileUtil.mkdirs(ALBUM_DIR);
+        var name = "harryphoto_" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
+        snapPath = ALBUM_DIR + "/" + name;
+        HaxeStub.startImageCapture(requestCode, snapPath);
+#else
+        onActive(null);
+#end
+    }
+
+    private function onLocal(_) {
+        trace("onlocal");
+//        if (!FileSystem.exists(ALBUM_DIR)) FileUtil.mkdirs(ALBUM_DIR);
+//        var name = "" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
+        requestCode = 2;
+#if android
+        HaxeStub.startGetContent(requestCode, "image/*");
+#else
+        onActive(null);
+#end
     }
 
 }

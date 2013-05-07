@@ -16,7 +16,7 @@ class RoxScreenManager extends Sprite {
     private var screenPool: Hash<RoxScreen>;
     private var stack: List<StackItem>;
 
-    private var starttm: Float;
+//    private var starttm: Float;
 
     public function new() {
         super();
@@ -54,15 +54,14 @@ class RoxScreenManager extends Sprite {
                                 animate: RoxAnimate) {
 
 //        trace(">>startScreen(" + source + "," + screenClassName + "," + finishToScreen + ")<<");
-//        trace(">>>>stack=" + stack);
-        starttm = haxe.Timer.stamp();
+//        starttm = haxe.Timer.stamp();
         if (source != null && stack.first().className != source.className)
             throw "startScreen: Illegal stack state or bad source screen '" + source + "'";
-        trace("StartScreen.afterSnap, time=" + (haxe.Timer.stamp() - starttm));
+//        trace("StartScreen.afterSnap, time=" + (haxe.Timer.stamp() - starttm));
         if (finishToScreen != null) {
             finishScreen(source, finishToScreen, RoxScreen.CANCELED, null, RoxAnimate.NO_ANIMATE, true);
         }
-        trace("StartScreen.afterFinish, time=" + (haxe.Timer.stamp() - starttm));
+//        trace("StartScreen.afterFinish, time=" + (haxe.Timer.stamp() - starttm));
         ResKeeper.currentBundle = screenClassName;
         var dest = screenPool.get(screenClassName); // check for reusable screen
         if (dest == null) {
@@ -74,11 +73,10 @@ class RoxScreenManager extends Sprite {
         if (animate == null) animate = RoxAnimate.SLIDE_LEFT;
         stack.push({ className: screenClassName, screen: dest, requestCode: requestCode, animate: animate });
         dest.onNewRequest(requestData);
-        trace("StartScreen.afterNewRequest, time=" + (haxe.Timer.stamp() - starttm));
+//        trace("StartScreen.afterNewRequest, time=" + (haxe.Timer.stamp() - starttm));
 
         startAnimate(source, dest, animate, false);
-        trace("StartScreen.afterAnimate, time=" + (haxe.Timer.stamp() - starttm));
-//        trace(">>End startScreen: stack=" + stack);
+//        trace("StartScreen.afterAnimate, time=" + (haxe.Timer.stamp() - starttm));
     }
 
     public function finishScreen(screen: RoxScreen,
@@ -87,7 +85,6 @@ class RoxScreenManager extends Sprite {
                                  animate: RoxAnimate, ?isBeforeStart = false) {
 
 //        trace("<<finishScreen(" + screen + "," + finishToScreen + ")>>");
-//        trace("<<stack=" + stack);
         var top: StackItem = stack.pop();
         if (top == null || top.className != screen.className)
             throw "finishScreen: Illegal stack state or bad source screen '" + top + "'";
@@ -121,15 +118,14 @@ class RoxScreenManager extends Sprite {
             startAnimate(screen, topscreen, animate, true);
             if (topscreen != null) topscreen.onScreenResult(requestCode, resultCode, resultData);
         }
-//        trace("<<End FinishScreen: stack=" + stack);
     }
 
-    private inline function snap(s: RoxScreen) : Bitmap {
-        var bmd = new BitmapData(Std.int(s.screenWidth), Std.int(s.screenHeight));
-        bmd.draw(s);
-        return new Bitmap(bmd);
-    }
-
+//    private inline function snap(s: RoxScreen) : Bitmap {
+//        var bmd = new BitmapData(Std.int(s.screenWidth), Std.int(s.screenHeight));
+//        bmd.draw(s);
+//        return new Bitmap(bmd);
+//    }
+//
     private function startAnimate(source: RoxScreen, dest: RoxScreen, anim: RoxAnimate, finish: Bool) {
         show(dest);
         var animDone = function() { hide(source, finish); }

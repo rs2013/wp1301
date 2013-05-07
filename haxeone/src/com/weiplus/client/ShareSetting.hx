@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import com.weiplus.client.MyUtils;
 import nme.display.Shape;
 import nme.display.Sprite;
 
@@ -27,7 +28,7 @@ class ShareSetting extends BaseScreen {
         { id: "TENCENT_WEIBO", icon: "res/icon_tencent.png", name: "腾讯微博", type: 3, data: on("TENCENT_WEIBO") },
         { id: "RENREN_WEIBO", icon: "res/icon_renren.png", name: "人人网", type: 3, data: on("RENREN_WEIBO") },
         ];
-        var list = UiUtil.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
+        var list = MyUtils.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
 #if android
             var type = i.id;
             if (HpManager.isBindingSessionValid(type)) {

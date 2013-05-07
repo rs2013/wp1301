@@ -72,6 +72,7 @@ class PlayScreen extends BaseScreen {
         designWidth = DESIGN_WIDTH;
         d2rScale = screenWidth / designWidth;
         designHeight = screenHeight / d2rScale;
+        buttonFontSize = Std.int(32 * d2rScale);
         titleBar = UiUtil.bitmap("res/bg_play_top.png");
         titleBtnOffsetL = BTN_SPACING;
         titleBtnOffsetR = titleBar.width - BTN_SPACING;
@@ -88,7 +89,7 @@ class PlayScreen extends BaseScreen {
         frontLayer = new Sprite();
         addChild(frontLayer.rox_move(0, TOP_HEIGHT * d2rScale));
         addChild(titleBar);
-        var btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回", 0xFFFFFF, 36, "res/btn_dark.9.png", function(_) { finish(RoxScreen.OK); } );
+        var btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回", 0xFFFFFF, buttonFontSize, "res/btn_dark.9.png", function(_) { finish(RoxScreen.OK); } );
         addTitleButton(btnBack, UiUtil.LEFT);
 
         addEventListener(Event.DEACTIVATE, onDeactive);
@@ -226,9 +227,10 @@ class PlayScreen extends BaseScreen {
 #if android
             HaxeStub.startInputDialog("发表感受", txt, "发布", this);
 #else
-                onApiCallback(null, "ok", txt);
+                onApiCallback("startInputDialog", "ok", txt);
 #end
             });
+            onApiCallback("autoComment", "ok", "完成游戏，用时" + timestr2(getElapsedTime()));
         }
         frontLayer.addChild(tip.rox_move(0, -tip.height));
         frontLayer.addChild(head.rox_move(spacing - dist, spacing));
@@ -259,7 +261,7 @@ class PlayScreen extends BaseScreen {
     private function onApiCallback(apiName: String, result: String, str: String) {
         if (result == "ok" && str.length > 0) {
             HpApi.instance.get("/comments/create/" + status.id, { text: str }, function(code: Int, data: Dynamic) {
-                if (code == 200) {
+                if (code == 200 && apiName != "autoComment") {
                     UiUtil.message("评论已经添加");
                 }
             });

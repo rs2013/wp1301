@@ -53,7 +53,7 @@ class MakerList extends BaseScreen {
         for (i in 0...makers.length >> 1) {
             var bgbmd = ResKeeper.getAssetImage("res/" + makers[i << 1] + ".png");
             var bg = new RoxNinePatch(new RoxNinePatchData(new Rectangle(0, 0, bgbmd.width, bgbmd.height), bgbmd));
-            var label = UiUtil.staticText(makers[(i << 1) + 1], 0xFFFFFF, 36);
+            var label = UiUtil.staticText(makers[(i << 1) + 1], 0xFFFFFF, buttonFontSize * 1.2);
 
             var btn = new RoxFlowPane(bgbmd.width * d2rScale, bgbmd.height * d2rScale, [ label ], bg, onButton);
             btn.name = makers[i << 1];

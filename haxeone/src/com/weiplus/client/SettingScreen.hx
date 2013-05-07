@@ -1,6 +1,6 @@
 package com.weiplus.client;
 
-import com.roxstudio.haxe.ui.UiUtil;
+import com.weiplus.client.MyUtils;
 import nme.display.Shape;
 import nme.display.Sprite;
 
@@ -21,7 +21,7 @@ class SettingScreen extends BaseScreen {
         var yoff = spacing;
         var arr: Array<ListItem> = [];
         arr.push({ id: "share", icon: null, name: "分享设置", type: 1, data: null });
-        var list = UiUtil.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
+        var list = MyUtils.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
             startScreen(Type.getClassName(ShareSetting));
             return true;
         });
@@ -31,7 +31,7 @@ class SettingScreen extends BaseScreen {
         arr = [];
         arr.push({ id: "umeng_xp", icon: null, name: "推荐应用", type: 1, data: null });
         arr.push({ id: "umeng_fb", icon: null, name: "意见反馈", type: 1, data: null });
-        list = UiUtil.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
+        list = MyUtils.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
 #if android
             switch (i.id) {
                 case "umeng_xp": HaxeStub.startUmengXp();
@@ -45,7 +45,7 @@ class SettingScreen extends BaseScreen {
 
         arr = [];
         arr.push({ id: "logoff", icon: null, name: "注销登录", type: 2, data: null });
-        var list = UiUtil.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
+        var list = MyUtils.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
             MyUtils.logout();
             startScreen(Type.getClassName(PublicScreen), CLEAR);
             UiUtil.message("你已经登出");

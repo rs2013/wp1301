@@ -22,10 +22,10 @@ class SimpleMaker extends MakerScreen {
 
     private var requestCode = -1;
     private var viewHeight: Float;
-    private var btnHarry: RoxFlowPane;
-    private var btnCamera: RoxFlowPane;
-    private var btnLocal: RoxFlowPane;
-    private var btnReset: RoxFlowPane;
+//    private var btnHarry: RoxFlowPane;
+//    private var btnCamera: RoxFlowPane;
+//    private var btnLocal: RoxFlowPane;
+//    private var btnReset: RoxFlowPane;
     private var btnSimple: RoxFlowPane;
     private var btnNormal: RoxFlowPane;
     private var btnHard: RoxFlowPane;
@@ -38,13 +38,14 @@ class SimpleMaker extends MakerScreen {
     override public function createContent(height: Float) : Sprite {
         content = super.createContent(height);
         viewHeight = height;
-        btnHarry = UiUtil.button(UiUtil.CENTER, null, "魔法相机", 0xFFFFFF, 50, "res/btn_common.9.png", onHarry);
-        btnCamera = UiUtil.button(UiUtil.CENTER, null, "系统相机", 0xFFFFFF, 50, "res/btn_common.9.png", onCamera);
-        btnLocal = UiUtil.button(UiUtil.CENTER, null, "本地图库", 0xFFFFFF, 50, "res/btn_common.9.png", onLocal);
-        btnReset = UiUtil.button(UiUtil.TOP_LEFT, null, "重新选择", 0xFFFFFF, 36, "res/btn_common.9.png", setSelectUI);
-        btnSimple = UiUtil.button(UiUtil.CENTER, null, "简单", 0xFFFFFF, 36, function(_) { setLevel(0); });
-        btnNormal = UiUtil.button(UiUtil.CENTER, null, "中等", 0xFFFFFF, 36, function(_) { setLevel(1); });
-        btnHard = UiUtil.button(UiUtil.CENTER, null, "困难", 0xFFFFFF, 36, function(_) { setLevel(2); });
+        addTitleButton(btnNextStep, UiUtil.RIGHT);
+//        btnHarry = UiUtil.button(UiUtil.CENTER, null, "魔法相机", 0xFFFFFF, 50, "res/btn_common.9.png", onHarry);
+//        btnCamera = UiUtil.button(UiUtil.CENTER, null, "系统相机", 0xFFFFFF, 50, "res/btn_common.9.png", onCamera);
+//        btnLocal = UiUtil.button(UiUtil.CENTER, null, "本地图库", 0xFFFFFF, 50, "res/btn_common.9.png", onLocal);
+//        btnReset = UiUtil.button(UiUtil.TOP_LEFT, null, "重新选择", 0xFFFFFF, buttonFontSize, "res/btn_common.9.png", setSelectUI);
+        btnSimple = UiUtil.button(UiUtil.CENTER, null, "简单", 0xFFFFFF, buttonFontSize, function(_) { setLevel(0); });
+        btnNormal = UiUtil.button(UiUtil.CENTER, null, "中等", 0xFFFFFF, buttonFontSize, function(_) { setLevel(1); });
+        btnHard = UiUtil.button(UiUtil.CENTER, null, "困难", 0xFFFFFF, buttonFontSize, function(_) { setLevel(2); });
         levelBg = UiUtil.bitmap("res/bg_maker_bottom_selected.png");
         var levelPaneH = levelBg.height;
         levelPane = new Sprite();
@@ -56,35 +57,34 @@ class SimpleMaker extends MakerScreen {
         levelPane.rox_scale(d2rScale);
         levelPane.rox_move(0, height - levelPaneH * d2rScale);
 
-        preview = new Sprite();
-
-        setSelectUI(null);
 
 //        this.addEventListener(Event.DEACTIVATE, onDeactive);
-        this.addEventListener(Event.ACTIVATE, onActive);
+//        this.addEventListener(Event.ACTIVATE, onActive);
+        content.addChild(levelPane);
+        preview = new Sprite();
+        content.addChild(preview);
         return content;
     }
 
-    private function setSelectUI(_) {
-        removeTitleButton(btnReset);
-        removeTitleButton(btnNextStep);
-        content.rox_remove(preview);
-        content.rox_remove(levelPane);
-
-        content.addChild(btnHarry.rox_move(screenWidth / 2, viewHeight / 2 - 180));
-        content.addChild(btnCamera.rox_move(screenWidth / 2, viewHeight / 2));
-        content.addChild(btnLocal.rox_move(screenWidth / 2, viewHeight / 2 + 180));
-    }
-
-    private function setImageUI() {
-        content.rox_remove(btnHarry);
-        content.rox_remove(btnCamera);
-        content.rox_remove(btnLocal);
-        addTitleButton(btnNextStep, UiUtil.RIGHT);
-        addTitleButton(btnReset, UiUtil.RIGHT);
-        content.addChild(levelPane);
+//    private function setSelectUI(_) {
+//        removeTitleButton(btnReset);
+//        removeTitleButton(btnNextStep);
+//        content.rox_remove(preview);
+//        content.rox_remove(levelPane);
+//
+//        content.addChild(btnHarry.rox_move(screenWidth / 2, viewHeight / 2 - 180));
+//        content.addChild(btnCamera.rox_move(screenWidth / 2, viewHeight / 2));
+//        content.addChild(btnLocal.rox_move(screenWidth / 2, viewHeight / 2 + 180));
+//    }
+//
+    override public function onNewRequest(inData: Dynamic) {
+        var bmd: BitmapData = cast inData;
+        var stdbmd = new BitmapData(SIDELEN, SIDELEN, true, 0);
+        untyped data.image = stdbmd;
+        var sc: Float = GameUtil.max(SIDELEN / bmd.width, SIDELEN / bmd.height);
+        var xoff = (SIDELEN - sc * bmd.width) / 2, yoff = (SIDELEN - sc * bmd.height) / 2;
+        stdbmd.draw(bmd, new Matrix(sc, 0, 0, sc, xoff, yoff), true);
         setLevel(0);
-        content.addChild(preview);
     }
 
     private function setLevel(level: Int) {
@@ -127,13 +127,13 @@ class SimpleMaker extends MakerScreen {
         var bmd = ResKeeper.loadAssetImage("res/8.jpg");
 #end
         requestCode = -1;
-        var stdbmd = new BitmapData(SIDELEN, SIDELEN, true, 0);
-        untyped data.image = stdbmd;
-        var xscale = SIDELEN / bmd.width, yscale = SIDELEN / bmd.height;
-        var sc: Float = GameUtil.max(xscale, yscale);
-        var xoff = (SIDELEN - sc * bmd.width) / 2, yoff = (SIDELEN - sc * bmd.height) / 2;
-        stdbmd.draw(bmd, new Matrix(sc, 0, 0, sc, xoff, yoff), true);
-        setImageUI();
+//        var stdbmd = new BitmapData(SIDELEN, SIDELEN, true, 0);
+//        untyped data.image = stdbmd;
+//        var xscale = SIDELEN / bmd.width, yscale = SIDELEN / bmd.height;
+//        var sc: Float = GameUtil.max(xscale, yscale);
+//        var xoff = (SIDELEN - sc * bmd.width) / 2, yoff = (SIDELEN - sc * bmd.height) / 2;
+//        stdbmd.draw(bmd, new Matrix(sc, 0, 0, sc, xoff, yoff), true);
+//        setImageUI();
     }
 
 //    private function onDeactive(_) {

@@ -120,10 +120,10 @@ class Postit extends Sprite {
             var commentbtn = UiUtil.button(UiUtil.TOP_LEFT, "res/icon_comment.png",
                     "评论(" + status.commentCount + ")", 0, fontsize + 2, "res/btn_grey.9.png", onButton);
             commentbtn.name = "comment_" + status.id;
-            var morebtn = UiUtil.button(UiUtil.TOP_LEFT, "res/icon_more.png",
-                    null, "res/btn_grey.9.png", onButton);
-            morebtn.name = "more_" + status.id;
-            infoLabel = new RoxFlowPane([ praisebtn, commentbtn, morebtn ], new RoxNinePatch(layout));
+//            var morebtn = UiUtil.button(UiUtil.TOP_LEFT, "res/icon_more.png",
+//                    null, "res/btn_grey.9.png", onButton);
+//            morebtn.name = "more_" + status.id;
+            infoLabel = new RoxFlowPane([ praisebtn, commentbtn/*, morebtn*/ ], new RoxNinePatch(layout));
             addChild(infoLabel.rox_move(0, h));
             h += infoLabel.height;
         }

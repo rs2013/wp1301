@@ -40,10 +40,10 @@ class PostScreen extends BaseScreen {
 
     override public function onCreate() {
         title = new Sprite();
-        title.addChild(UiUtil.staticText("发布", 0xFFFFFF, 36));
+        title.addChild(UiUtil.staticText("发布", 0xFFFFFF, buttonFontSize * 1.2));
         super.onCreate();
         graphics.rox_fillRect(0xFF2C2C2C, 0, 0, screenWidth, screenHeight);
-        var btn = UiUtil.button(UiUtil.TOP_LEFT, null, "发布", 0xFFFFFF, 36, "res/btn_red.9.png", doPost);
+        var btn = UiUtil.button(UiUtil.TOP_LEFT, null, "发布", 0xFFFFFF, buttonFontSize, "res/btn_red.9.png", doPost);
         addTitleButton(btn, UiUtil.RIGHT);
     }
 
@@ -158,9 +158,9 @@ class PostScreen extends BaseScreen {
         switch (apiName) {
             case "statuses_create":
                 if (resultCode != "ok") return;
-                var makerList: MakerList = cast manager.findScreen(Type.getClassName(MakerList));
-                var toScreen = makerList.parentScreen;
-                finish(SCREEN(toScreen != null ? toScreen : Type.getClassName(SelectedScreen)), RoxScreen.OK);
+//                var makerList: MakerList = cast manager.findScreen(Type.getClassName(MakerList));
+//                var toScreen = makerList.parentScreen;
+                finish(SCREEN(MyUtils.makerParentScreen != null ? MyUtils.makerParentScreen : Type.getClassName(HomeScreen)), RoxScreen.OK);
             case "startAuth":
                 if (resultCode == "ok" && str == "ok") {
                     resetSharePanel();
