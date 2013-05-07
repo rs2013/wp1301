@@ -105,7 +105,7 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
 
     private static final int AUTO_FOCUS_INTERVAL = 1000 * 2;
     public static DisplayMetrics sDisplayMetrics;
-    public ArrayList<ImageDownloadTask> mTasks = new ArrayList<DataHelper.ImageDownloadTask>();
+//    public ArrayList<ImageDownloadTask> mTasks = new ArrayList<DataHelper.ImageDownloadTask>();
 
     private Handler mHandler = new Handler(){
 
@@ -362,18 +362,19 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
             final Good item = mItems.get(position);
             if (item.mIconBitmap == null) {
                 if (item.mIconPathLocal == null) {
-                DataHelper.ImageDownloadTask task = new DataHelper.ImageDownloadTask(){
-
-                    @Override
-                    protected void onPostExecute(Bitmap result) {
-                        super.onPostExecute(result);
-                        item.mIconBitmap = result;
-                            item.mIconPathLocal = PictureUtil.saveIcon(CameraActivity.this, result);
-                        holder.mImage.setImageBitmap(item.mIconBitmap);
-                    }
-                };
-                task.execute(item.mIconPath);
-            } else {
+                    DataHelper.ImageDownloadTask task = new DataHelper.ImageDownloadTask(){
+    
+                        @Override
+                        protected void onPostExecute(Bitmap result) {
+                            super.onPostExecute(result);
+                            item.mIconBitmap = result;
+//                            item.mIconPathLocal = PictureUtil.saveIcon(CameraActivity.this, result);
+                            item.mIconPathLocal = new File(PictureUtil.getARPathForUrl(item.mIconPath));
+                            holder.mImage.setImageBitmap(item.mIconBitmap);
+                        }
+                    };
+                    task.execute(item.mIconPath);
+                } else {
                     item.mIconBitmap = PictureUtil.decodePicToBitmap(item.mIconPathLocal.getPath(), PictureUtil.PIC_SIZE_SMALL);
                     holder.mImage.setImageBitmap(item.mIconBitmap);
                 }
@@ -395,7 +396,8 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
                             protected void onPostExecute(Bitmap result) {
                                 super.onPostExecute(result);
                                 item.mImageBitmap = result;
-                                    item.mImagePathLocal = PictureUtil.saveIcon(CameraActivity.this, result);
+//                              item.mImagePathLocal = PictureUtil.saveIcon(CameraActivity.this, result);
+                                item.mImagePathLocal = new File(PictureUtil.getARPathForUrl(item.mIconPath));
                                 mFittingImageWidth = result.getWidth();
                                 mFittingImageHeight = result.getHeight();
                                 mFittingView.setImageBitmap(item.mImageBitmap);
@@ -408,7 +410,7 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
                                     Log.d(TAG, "mFittingImageWidth = " + mFittingImageWidth + " mFittingImageHeight = " + mFittingImageHeight);
                             }
                         };
-                        mTasks.add(task);
+//                        mTasks.add(task);
                         task.execute(item.mImagePath);
                     } else {
                             item.mImageBitmap = PictureUtil.decodePicToBitmap(item.mImagePathLocal.getPath(), PictureUtil.PIC_SIZE_SMALL);

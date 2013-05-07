@@ -19,9 +19,15 @@ import com.weiplus.client.MainActivity;
 
 public class RenrenWeibo extends Binding {
 
-    private static final String appId = "220963";
-    private static final String apiSecret = "60b5910c51e348d79c1cd2bceb9092e2";
-    private static final String apiKey = "7df935bc67c843adb1fd9a3dba61551a";
+//    private static final String appId = "220963";
+//    private static final String apiSecret = "60b5910c51e348d79c1cd2bceb9092e2";
+//    private static final String apiKey = "7df935bc67c843adb1fd9a3dba61551a";
+//    应用ID：230591
+//    API Key：ccfdcd149d2a48c699c96d5330acfe3c
+//    Secret Key：12b5efc8449b47a4949b8eae2abc7814 
+    private static final String appId = "230591";
+    private static final String apiSecret = "12b5efc8449b47a4949b8eae2abc7814";
+    private static final String apiKey = "ccfdcd149d2a48c699c96d5330acfe3c";
 
     private Renren renren;
     private HpListener listener;

@@ -33,8 +33,13 @@ public class SinaWeibo extends Binding implements WeiboAuthListener {
     public static final String KEY_EXPIRES = "expires_in";
     public static final String KEY_REFRESHTOKEN = "refresh_token";
     
-    private static final String app_key = "2392272878";// 替换为开发者的appkey，例如"1646212860";
-    private static final String redirecturl = "http://hi.baidu.com/new/rockswang";
+//    private static final String app_key = "2392272878";// 替换为开发者的appkey，例如"1646212860";
+//    private static final String redirecturl = "http://hi.baidu.com/new/rockswang";
+//    App Key：282276235
+//    App Secret：657e328b03cd9f32c9b82b61d29fb1a0
+//    RedirectURL: http://www.appmagics.com
+    private static final String app_key = "282276235";// 替换为开发者的appkey，例如"1646212860";
+    private static final String redirecturl = "http://www.appmagics.com";
     private Oauth2AccessToken accessToken;
     private HpListener listener;
     public SsoHandler ssoHandler;

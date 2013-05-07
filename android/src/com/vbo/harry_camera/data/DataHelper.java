@@ -25,11 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -416,34 +412,46 @@ public class DataHelper {
         protected Bitmap doInBackground(String... params) {
             if (BuildConfig.DEBUG)
                 Log.d(TAG, "doInBackground:" + params[0]);
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpGet httpGet = new HttpGet(params[0]);
+            
             InputStream is = null;
             ByteArrayOutputStream baos = null;
             try {  
-                HttpResponse httpResponse = httpClient.execute(httpGet);
-                printHttpResponse(httpResponse);  
-                HttpEntity httpEntity = httpResponse.getEntity();
-                long length = httpEntity.getContentLength();
+                String path = PictureUtil.getARPathForUrl(params[0]);
+                long length;
+                File cache;
+                if ((cache = new File(path)).exists()) {
+                    length = cache.length();
+                    is = new BufferedInputStream(new FileInputStream(cache));
+                } else {
+                    HttpClient httpClient = new DefaultHttpClient();
+                    HttpGet httpGet = new HttpGet(params[0]);
+                    HttpResponse httpResponse = httpClient.execute(httpGet);
+//                    printHttpResponse(httpResponse);  
+                    HttpEntity httpEntity = httpResponse.getEntity();
+                    length = httpEntity.getContentLength();
+                    if (BuildConfig.DEBUG) Log.d(TAG, "content length=" + length);
+                    is = httpEntity.getContent();
+                }
+                baos = new ByteArrayOutputStream();
+                byte[] buf = new byte[10000];  
+                int read = -1;
+                int count = 0;
+                while ((read = is.read(buf)) > 0) {
+                    baos.write(buf, 0, read);
+                    count += read;
+                    publishProgress((int ) (count * 1.0f / length));
+                }
                 if (BuildConfig.DEBUG)
-                    Log.d(TAG, "content length=" + length);
-                is = httpEntity.getContent();
-                if (is != null) {
-                    baos = new ByteArrayOutputStream();
-                    byte[] buf = new byte[128];  
-                    int read = -1;
-                    int count = 0;
-                    while ((read = is.read(buf)) != -1) {
-                        baos.write(buf, 0, read);
-                        count += read;
-                        publishProgress((int ) (count * 1.0f / length));
-                    }
-                    if (BuildConfig.DEBUG)
-                        Log.d(TAG, "count=" + count + " length=" + length);
-                    byte[] data = baos.toByteArray();  
-                    Bitmap bit = BitmapFactory.decodeByteArray(data, 0, data.length);  
-                    return bit;  
-                }  
+                    Log.d(TAG, "count=" + count + " length=" + length);
+                byte[] data = baos.toByteArray();  
+                Bitmap bit = BitmapFactory.decodeByteArray(data, 0, data.length);  
+                if (!cache.exists()) {
+                    new File(PictureUtil.getARPathForUrl(null)).mkdirs();
+                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(cache));
+                    bos.write(data);
+                    bos.close();
+                }
+                return bit;  
             } catch (ClientProtocolException e) {  
                 e.printStackTrace();
             } catch (IOException e) {

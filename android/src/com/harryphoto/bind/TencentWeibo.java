@@ -23,9 +23,16 @@ public class TencentWeibo extends Binding {
 
     private static String PREFERENCES_NAME = "com_harryphoto_bind_TencentWeibo";
     
-    private static final String appKey = "801281378"; // "801323295";
-    private static final String appSecret = "eda1cb33187242501117d7d8b53d8f24"; // "6583db36c3f4b745c555f92e2249614c";
-    private static final String redirecturl = "http://www.baidu.com"; // "http://blog.csdn.net/rocks_lee";
+//    private static final String appKey = "801281378"; // "801323295";
+//    private static final String appSecret = "eda1cb33187242501117d7d8b53d8f24"; // "6583db36c3f4b745c555f92e2249614c";
+//    private static final String redirecturl = "http://www.baidu.com"; // "http://blog.csdn.net/rocks_lee";
+//    App Key：801345195
+//    App Secret：e625c709d89bdd187a7862fa2b0f6fa5
+//    RedirectURL: http://www.appmagics.com
+    private static final String appKey = "801345195"; // "801323295";
+    private static final String appSecret = "e625c709d89bdd187a7862fa2b0f6fa5"; // "6583db36c3f4b745c555f92e2249614c";
+    private static final String redirecturl = "http://www.appmagics.com"; // "http://blog.csdn.net/rocks_lee";
+    
     private OAuthV2 oAuth;
     private HpListener listener;
     

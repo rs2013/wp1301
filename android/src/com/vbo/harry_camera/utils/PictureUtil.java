@@ -383,14 +383,13 @@ public class PictureUtil {
 
         File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/Android/data/" + context.getPackageName() + "/files");
         if (!dir.exists()) {
-            dir.mkdir();
+            dir.mkdirs();
         }
-        File pictureFile = new File(dir.getPath() + "/" + System.currentTimeMillis() + ".jpg");
+        File pictureFile = new File(dir.getPath() + "/" + System.currentTimeMillis() + ".png");
 
         try {
             FileOutputStream fos = new FileOutputStream(pictureFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fos);
-            fos.flush();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.close();
         } catch (FileNotFoundException e) {
             Log.w(TAG, "File not found: " + e.getMessage());
@@ -398,5 +397,15 @@ public class PictureUtil {
             Log.w(TAG, "Error accessing file: " + e.getMessage());
         }
         return pictureFile;
+    }
+    
+    public static String getARPathForUrl(String url) {
+        String dir = Environment.getExternalStorageDirectory().getPath() + "/.harryphoto/ar";
+        if (url == null) {
+            return dir;
+        } else {
+            int idx = url.lastIndexOf('/');
+            return dir + "/" + url.substring(idx + 1) + ".png";
+        }
     }
 }
