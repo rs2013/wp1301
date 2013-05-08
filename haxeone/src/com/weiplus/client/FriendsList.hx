@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import nme.text.TextField;
 import com.roxstudio.haxe.ui.UiUtil;
 import com.weiplus.client.model.Friendship;
 import com.weiplus.client.model.User;
@@ -36,17 +37,30 @@ class FriendsList extends BaseScreen {
     private var user: User;
     private var type: String;
     private var isOwner: Bool;
+    var agent: RoxGestureAgent;
 
     public function new() {
         super();
     }
 
+    override public function onCreate() {
+        title = new Sprite();
+        title.addChild(UiUtil.staticText("好友列表", 0xFFFFFF, buttonFontSize * 1.2));
+        super.onCreate();
+    }
+
     override public function onNewRequest(data: Dynamic) {
         user = data.user;
         type = data.type;
+        cast(title.getChildAt(0), TextField).text = type == "friends" ? "我的关注" : "我的粉丝";
         isOwner = HpApi.instance.uid == user.id;
         addChild(MyUtils.getLoadingAnim("载入中").rox_move(screenWidth / 2, screenHeight / 2));
         refresh(false);
+    }
+
+    override public function onTitleClicked() {
+        super.onTitleClicked();
+        agent.startTween(main, 1, { y: 0 });
     }
 
     override public function createContent(h: Float) : Sprite {
@@ -57,7 +71,7 @@ class FriendsList extends BaseScreen {
 
         viewh = h;
 
-        var agent = new RoxGestureAgent(content);
+        agent = new RoxGestureAgent(content);
         agent.swipeTimeout = 0;
         content.addEventListener(RoxGestureEvent.GESTURE_PAN, onGesture);
         content.addEventListener(RoxGestureEvent.GESTURE_SWIPE, onGesture);

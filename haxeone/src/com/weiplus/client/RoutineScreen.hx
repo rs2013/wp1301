@@ -51,6 +51,7 @@ class RoutineScreen extends BaseScreen {
     private var makerId: String;
     private var requestCode = -1;
     private var snapPath: String;
+    var agent: RoxGestureAgent;
 
     public function new() {
         super();
@@ -63,6 +64,8 @@ class RoutineScreen extends BaseScreen {
     }
 
     override public function onCreate() {
+        title = new Sprite();
+        title.addChild(UiUtil.staticText("消息", 0xFFFFFF, buttonFontSize * 1.2));
         super.onCreate();
         var btnpanel = buttonPanel();
         btnpanel.name = "buttonPanel";
@@ -77,11 +80,16 @@ class RoutineScreen extends BaseScreen {
         main = new Sprite();
         content.addChild(main);
 
-        var agent = new RoxGestureAgent(content);
+        agent = new RoxGestureAgent(content);
         agent.swipeTimeout = 0;
         content.addEventListener(RoxGestureEvent.GESTURE_PAN, onGesture);
         content.addEventListener(RoxGestureEvent.GESTURE_SWIPE, onGesture);
         return content;
+    }
+
+    override public function onTitleClicked() {
+        super.onTitleClicked();
+        agent.startTween(main, 1, { y: 0 });
     }
 
     private function buttonPanel() : Sprite {

@@ -35,15 +35,27 @@ class CommentsScreen extends BaseScreen {
     private var mainh: Float;
     private var viewh: Float;
     private var statusId: String;
+    var agent: RoxGestureAgent;
 
     public function new() {
         super();
+    }
+
+    override public function onCreate() {
+        title = new Sprite();
+        title.addChild(UiUtil.staticText("评论列表", 0xFFFFFF, buttonFontSize * 1.2));
+        super.onCreate();
     }
 
     override public function onNewRequest(data: Dynamic) {
         statusId = cast data; // status id
         addChild(MyUtils.getLoadingAnim("载入中").rox_move(screenWidth / 2, screenHeight / 2));
         refresh(false);
+    }
+
+    override public function onTitleClicked() {
+        super.onTitleClicked();
+        agent.startTween(main, 1, { y: 0 });
     }
 
     override public function createContent(h: Float) : Sprite {

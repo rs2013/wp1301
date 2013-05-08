@@ -1,6 +1,7 @@
 package com.weiplus.client;
 
 //import com.weiplus.client.TestMakerScreen;
+import nme.events.Event;
 import com.weiplus.client.model.AppData;
 import com.weiplus.client.model.Status;
 import com.roxstudio.haxe.ui.RoxApp;
@@ -49,6 +50,12 @@ class Main {
 //        data.url = "assets://res/data/data.zip";
 //        m.startScreen(Type.getClassName(TestPlayScreen), st);
         RoxApp.stage.addChild(m);
+//        RoxApp.stage.addEventListener(Event.ADDED_TO_STAGE, function(e: Dynamic) {
+//            trace(">>>>(" + e.target + ",name=" + e.target.name + ") added to stage.");
+//        });
+//        RoxApp.stage.addEventListener(Event.ADDED, function(e: Dynamic) {
+//            trace("----(" + e.target + ",name=" + e.target.name + ") added.");
+//        });
 
 //        var fps = new FPS();
 //        fps.x = 400;

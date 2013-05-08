@@ -87,7 +87,7 @@ class TimelineScreen extends BaseScreen {
 
     override public function onCreate() {
 //        starttm = haxe.Timer.stamp();
-        title = UiUtil.bitmap("res/icon_logo.png");
+        if (title == null) title = UiUtil.bitmap("res/icon_logo.png");
         super.onCreate();
         btnCol = btnSingleCol = UiUtil.button("res/icon_single_column.png", null, "res/btn_common.9.png", onButton);
         addTitleButton(btnCol, UiUtil.RIGHT);
@@ -393,6 +393,11 @@ class TimelineScreen extends BaseScreen {
                     update(2);
                 }
         }
+    }
+
+    override public function onTitleClicked() {
+        super.onTitleClicked();
+        agent.startTween(main, 1, { y: 0 });
     }
 
     private function onButton(e: Event) {

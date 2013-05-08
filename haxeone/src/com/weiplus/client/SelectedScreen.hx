@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import nme.display.Sprite;
 import com.weiplus.client.model.PageModel;
 import nme.events.Event;
 import com.roxstudio.haxe.net.RoxURLLoader;
@@ -17,6 +18,12 @@ class SelectedScreen extends TimelineScreen {
         super();
         this.disposeAtFinish = false;
         this.screenTabIndex = 1;
+    }
+
+    override public function onCreate() {
+        title = new Sprite();
+        title.addChild(UiUtil.staticText("精选", 0xFFFFFF, buttonFontSize * 1.2));
+        super.onCreate();
     }
 
     override private function refresh(append: Bool) {
