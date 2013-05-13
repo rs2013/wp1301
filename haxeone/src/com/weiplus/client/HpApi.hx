@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import nme.errors.Error;
 import haxe.Json;
 import nme.events.Event;
 import com.roxstudio.haxe.net.RoxURLLoader;
@@ -77,28 +78,26 @@ class HpApi {
         var url = makeUrl(uri);
         var qry = encodeParam(params);
         trace("HpApi.get: url=" + (url + "?" + qry));
-        var ldr = new RoxURLLoader(url + "?" + qry, RoxURLLoader.TEXT);
-        ldr.addEventListener(Event.COMPLETE, function(e: Dynamic) {
-            var status: Int = e.target.status;
+        var ldr = new RoxURLLoader(url + "?" + qry, RoxURLLoader.TEXT, function(isOk: Bool, response: Dynamic) {
             var code: Int = -1, data: Dynamic = null;
-            if (status == RoxURLLoader.OK) {
-                var jsonStr: String = e.target.data;
+            if (isOk) {
+                var jsonStr: String = cast response;
                 try {
                     var json = Json.parse(jsonStr);
                     code = json.code;
                     data = json;
                 } catch (e: Dynamic) {
                     code = -2;
-                    data = "Invalid return data format.";
+                    data = "Invalid response data.";
                 }
             } else {
                 code = -1; // network error
-                data = "Network error.";
+                data = response.toString();
             }
             var datastr: String = "" + data;
             trace("get.onComplete: code=" + code + ",data=" + (datastr.length > 80 ? datastr.substr(0, 80) + "..." : datastr));
             onComplete(code, data);
-        });
+        }).start();
     }
 
 //    private function complete()

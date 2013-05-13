@@ -2,7 +2,6 @@ package com.weiplus.client;
 
 import com.weiplus.client.model.PageModel;
 import nme.events.Event;
-import com.roxstudio.haxe.net.RoxURLLoader;
 import haxe.Json;
 
 using com.roxstudio.haxe.ui.UiUtil;
@@ -28,20 +27,10 @@ class HomeScreen extends TimelineScreen {
         if (refreshing) return;
         this.append = append && page != null;
 
-//#if android
-//        HpManager.getHomeTimeline(nextPage, 20, 0, this);
-//#else
-        var param = { sinceId: 0, rows: 20 };
+        var param = { sinceId: 0, rows: 10 };
         if (this.append) untyped param.maxId = Std.int(page.oldestId - 1);
         HpApi.instance.get("/statuses/home_timeline/" + HpApi.instance.uid, param, onComplete);
-//        var ldr = new RoxURLLoader("http://s-56378.gotocdn.com/harryphoto/statuses/home_timeline/" + uid + ".json?" +
-//            "sinceId=0&rows=20&refreshToken=&format=json&" +
-//            (this.append ? "maxId=" + Std.int(page.oldestId - 1) + "&" : "")  +
-//            "accessToken=" + accessToken, RoxURLLoader.TEXT);
-//        trace("refreshUrl="+ldr.url);
-//        ldr.addEventListener(Event.COMPLETE, onComplete);
         refreshing = true;
-//#end
     }
 
     private function onComplete(code: Int, data: Dynamic) {

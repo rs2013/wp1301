@@ -1,5 +1,7 @@
 package com.roxstudio.haxe.game;
 
+import org.bytearray.gif.decoder.GIFDecoder;
+import com.roxstudio.haxe.io.IOUtil;
 import nme.media.Sound;
 import nme.text.Font;
 import com.roxstudio.haxe.game.GameUtil;
@@ -212,11 +214,20 @@ class ResKeeper {
         return data;
     }
 
-    public static inline function loadLocalImage(path: String) : BitmapData {
-        return if (FileSystem.exists(path)) {
-            var bb = File.getBytes(path);
-            bb != null ? BitmapData.loadFromHaxeBytes(bb) : null;
-        } else null;
+    public static function loadLocalImage(path: String) : BitmapData {
+        if (FileSystem.exists(path)) {
+            var bytes = File.getBytes(path);
+            if (bytes == null) return null;
+            var ba = IOUtil.rox_toByteArray(bytes);
+            if (ba[0] == 'G'.code && ba[1] == 'I'.code && ba[2] == 'F'.code) {
+                var gifdec = new GIFDecoder();
+                gifdec.read(ba);
+                return gifdec.getFrameCount() > 0 ? gifdec.getImage().bitmapData : null;
+            } else {
+                return BitmapData.loadFromBytes(ba);
+            }
+        }
+        return null;
     }
 
     public static inline function loadLocalText(path: String) : String {

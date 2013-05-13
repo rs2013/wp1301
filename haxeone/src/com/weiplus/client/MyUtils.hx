@@ -1,5 +1,12 @@
 package com.weiplus.client;
 
+import com.roxstudio.haxe.ui.RoxScreen;
+import com.roxstudio.haxe.ui.RoxAnimate;
+import com.roxstudio.haxe.utils.SimpleJob;
+import com.roxstudio.haxe.utils.Job;
+import com.roxstudio.haxe.game.GameUtil;
+import com.roxstudio.haxe.io.IOUtil;
+import nme.utils.ByteArray;
 import nme.events.Event;
 import nme.display.Shape;
 import com.roxstudio.haxe.ui.UiUtil;
@@ -21,6 +28,12 @@ using com.roxstudio.haxe.ui.UiUtil;
 
 class MyUtils {
 
+    public static inline var IMAGE_CACHE_DIR =
+#if android
+        "/sdcard/.harryphoto/image_cache";
+#else
+        "image_cache";
+#end
     public static inline var LOADING_ANIM_NAME = "MyUtils.loadingAnim";
     public static var makerParentScreen;
 
@@ -49,6 +62,22 @@ class MyUtils {
         return prog;
     }
 
+#if cpp
+    public static function asyncOperation<T>(data: T, asyncOp: T -> Void, ?syncOp: T -> Void, waitingLabel: String) {
+        var mask = new Sprite();
+        mask.graphics.rox_fillRect(0x77000000, 0, 0, RoxApp.screenWidth, RoxApp.screenHeight);
+        var loading = MyUtils.getLoadingAnim(waitingLabel);
+        loading.rox_move(RoxApp.screenWidth / 2, RoxApp.screenHeight / 2);
+        mask.addChild(loading);
+        mask.name = "loadingMask";
+        RoxApp.stage.addChild(mask);
+        GameUtil.worker.addJob(new SimpleJob<T>(data, asyncOp, function(data: T) {
+            if (syncOp != null) syncOp(data);
+            RoxApp.stage.removeChild(mask);
+        }));
+    }
+#end
+
     public static function logout() {
 #if android
         HpManager.logout();
@@ -66,6 +95,12 @@ class MyUtils {
         for (n in cacheNames) {
             ResKeeper.remove("cache:" + n);
         }
+    }
+
+    public static function clearImageCache() {
+#if cpp
+        FileUtil.rmdir(IMAGE_CACHE_DIR, true);
+#end
     }
 
     public static function timeStr(date: Date) : String {
@@ -86,6 +121,34 @@ class MyUtils {
 
     public inline static function isEmpty(s: String) {
         return s == null || s == "";
+    }
+
+    public static function asyncImage(url: String, onComplete: BitmapData -> Void, ?bundleId: String) {
+#if cpp
+        var img: BitmapData = ResKeeper.get(url);
+        if (img != null) {
+            UiUtil.delay(function() { onComplete(img); });
+            return;
+        }
+        var path = IMAGE_CACHE_DIR + "/" + StringTools.urlEncode(url);
+        if (sys.FileSystem.exists(path)) {
+            GameUtil.worker.addJob(new com.roxstudio.haxe.utils.SimpleJob<Array<BitmapData>>([], function(d: Array<BitmapData>) {
+                d[0] = ResKeeper.loadLocalImage(path);
+                ResKeeper.add(url, d[0], bundleId);
+            }, function(d: Array<BitmapData>) {
+                onComplete(d[0]);
+            }));
+            return;
+        }
+        UiUtil.asyncImage(url, onComplete, function(ba: ByteArray) {
+            GameUtil.worker.addJob(new com.roxstudio.haxe.utils.SimpleJob<{}>(null, function(_) {
+                FileUtil.mkdirs(IMAGE_CACHE_DIR);
+                sys.io.File.saveBytes(path, IOUtil.rox_toBytes(ba));
+            }, function(_) {}));
+        });
+#else
+        UiUtil.asyncImage(url, onComplete, bundleId);
+#end
     }
 
     public static function list(items: Array<ListItem>, width: Float, onClick: ListItem -> Bool) : Sprite {

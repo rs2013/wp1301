@@ -31,13 +31,20 @@ class SettingScreen extends BaseScreen {
         arr = [];
         arr.push({ id: "umeng_xp", icon: null, name: "推荐应用", type: 1, data: null });
         arr.push({ id: "umeng_fb", icon: null, name: "意见反馈", type: 1, data: null });
+        arr.push({ id: "clear_image_cache", icon: null, name: "清除图片缓存", type: 1, data: null });
+        arr.push({ id: "about", icon: null, name: "关于哈利波图", type: 1, data: null });
         list = MyUtils.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
-#if android
             switch (i.id) {
+#if android
                 case "umeng_xp": HaxeStub.startUmengXp();
                 case "umeng_fb": HaxeStub.startUmengFb();
-            }
 #end
+                case "clear_image_cache":
+                    MyUtils.clearImageCache();
+                    UiUtil.message("图片缓存已清除");
+                case "about":
+                    UiUtil.message("迈吉客科技（上海）有限公司");
+            }
             return true;
         });
         content.addChild(list.rox_move(spacing, yoff));

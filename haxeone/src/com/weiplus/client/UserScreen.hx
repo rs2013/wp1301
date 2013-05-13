@@ -102,7 +102,7 @@ class UserScreen extends TimelineScreen {
         sp.graphics.rox_line(2, 0xFF000000, 532, 0, 532, 100);
         sp.graphics.rox_line(2, 0xFFe2e2e2, 0, 100, designWidth, 100);
         if (!MyUtils.isEmpty(user.profileImage)) {
-            UiUtil.asyncImage(user.profileImage, function(img: BitmapData) {
+            MyUtils.asyncImage(user.profileImage, function(img: BitmapData) {
                 if (img == null || img.width == 0) img = ResKeeper.getAssetImage("res/no_avatar.png");
                 sp.graphics.rox_drawRegionRound(img, spacing, spacing, 60, 60);
                 sp.graphics.rox_drawRoundRect(3, 0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
@@ -189,7 +189,7 @@ class UserScreen extends TimelineScreen {
                 title.addChild(txt);
                 titleBar.addChild(title.rox_move((titleBar.width / d2rScale - title.width) / 2, (titleBar.height / d2rScale - title.height) / 2));
 
-                var param = { sinceId: 0, rows: 20 };
+                var param = { sinceId: 0, rows: 10 };
                 if (this.append) Reflect.setField(param, "maxId", Std.int(page.oldestId - 1));
                 HpApi.instance.get("/statuses/user_timeline/" + user.id, param, onComplete);
             }

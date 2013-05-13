@@ -1,6 +1,5 @@
 package com.weiplus.client;
 
-import com.roxstudio.haxe.ui.UiUtil;
 import com.roxstudio.haxe.ui.RoxScreen;
 import nme.geom.Point;
 import com.roxstudio.haxe.ui.RoxAnimate;
@@ -8,7 +7,6 @@ import nme.geom.Rectangle;
 import nme.display.Sprite;
 import com.weiplus.client.model.PageModel;
 import nme.events.Event;
-import com.roxstudio.haxe.net.RoxURLLoader;
 import haxe.Json;
 
 using com.roxstudio.haxe.ui.UiUtil;
@@ -59,25 +57,13 @@ class PublicScreen extends TimelineScreen {
     override private function refresh(append: Bool) {
         if (refreshing) return;
         this.append = append && page != null;
-//#if android
-//        HpManager.getPublicTimeline(nextPage, 10, 0, this);
-//#else
-        var param = { sinceId: 0, rows: 20 };
+        var param = { sinceId: 0, rows: 10 };
         if (this.append) untyped param.maxId = Std.int(page.oldestId - 1);
         HpApi.instance.get("/statuses/public_timeline", param, onComplete);
-//        var ldr = new RoxURLLoader("http://s-56378.gotocdn.com/harryphoto/statuses/public_timeline.json?" +
-//            "sinceId=0&rows=20&refreshToken=&format=json&" +
-//            (this.append ? "maxId=" + Std.int(page.oldestId - 1) + "&" : "")  +
-//            "accessToken=", RoxURLLoader.TEXT);
-//        ldr.addEventListener(Event.COMPLETE, onComplete);
         refreshing = true;
-//#end
     }
 
     private function onComplete(code: Int, data: Dynamic) {
-//#if android
-//        sys.io.File.saveContent("/sdcard/.harryphoto/publicscreen.json", jsonStr);
-//#end
         refreshing = false;
         if (code != 200) return;
         var pageInfo = data.statuses;

@@ -40,12 +40,8 @@ class Unzipper extends EventDispatcher {
 //            trace("unzipper.start: entry=(name=" + name +",len=" + e.fileSize+",data="+e.data.length+",datasize="+e.dataSize + ")");
             var data: Dynamic = switch (FileUtil.fileExt(name, true)) {
                 case "***": {}; // force type to Dynamic
-                case "png": bytes2image(name, bytes); null;
-                case "jpg": bytes2image(name, bytes); null;
-                case "jpeg": bytes2image(name, bytes); null;
-                case "txt": bytes.readString(0, bytes.length);
-                case "xml": bytes.readString(0, bytes.length);
-                case "json": bytes.readString(0, bytes.length);
+                case "png", "jpg", "jpeg": bytes2image(name, bytes); null;
+                case "txt", "xml", "json": bytes.readString(0, bytes.length);
                 default: bytes.rox_toByteArray();
             }
             if (data != null) files.set(name, data);
@@ -65,12 +61,8 @@ class Unzipper extends EventDispatcher {
 //            trace("unzipper.decompress: entry=(name=" + name +",len=" + e.fileSize+",data="+e.data.length+",datasize="+e.dataSize + ")");
             var data: Dynamic = switch (FileUtil.fileExt(name, true)) {
                 case "***": {}; // force type to Dynamic
-                case "png": BitmapData.loadFromHaxeBytes(bytes);
-                case "jpg": BitmapData.loadFromHaxeBytes(bytes);
-                case "jpeg": BitmapData.loadFromHaxeBytes(bytes);
-                case "txt": bytes.readString(0, bytes.length);
-                case "xml": bytes.readString(0, bytes.length);
-                case "json": bytes.readString(0, bytes.length);
+                case "png", "jpg", "jpeg": BitmapData.loadFromHaxeBytes(bytes);
+                case "txt", "xml", "json": bytes.readString(0, bytes.length);
                 default: bytes.rox_toByteArray();
             }
             if (data != null) files.set(name, data);

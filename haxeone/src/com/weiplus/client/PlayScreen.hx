@@ -65,10 +65,9 @@ class PlayScreen extends BaseScreen {
     private var startTime: Float;
     private var elapsedTime: Float = 0;
     private var timer: Timer;
-    private var starttm: Float;
+    public var image: BitmapData;
 
     override public function onCreate() {
-        starttm = haxe.Timer.stamp();
         designWidth = DESIGN_WIDTH;
         d2rScale = screenWidth / designWidth;
         designHeight = screenHeight / d2rScale;
@@ -99,16 +98,17 @@ class PlayScreen extends BaseScreen {
     override public function onNewRequest(data: Dynamic) {
         this.status = cast(data);
         trace("playscreen: status=" + status);
+        this.userAvatar = ResKeeper.getAssetImage("res/no_avatar.png");
         if (status.makerData != null) { // from maker
-            this.userAvatar = ResKeeper.getAssetImage("res/no_avatar.png");
             onStart(null);
             return;
         }
         var appData = status.appData;
         var appId = appData.type + "_" + appData.id;
-        UiUtil.asyncImage(status.user.profileImage, function(bmd: BitmapData) {
+        MyUtils.asyncImage(status.user.profileImage, function(bmd: BitmapData) {
             this.userAvatar = bmd != null && bmd.width > 0 ? bmd : ResKeeper.getAssetImage("res/no_avatar.png");
         });
+        getSavedData();
         if (checkCache(appId)) {
             loadFromCache(appId);
         } else { // load remotely
@@ -121,7 +121,6 @@ class PlayScreen extends BaseScreen {
         mask.addChild(loading);
         mask.name = "loadingMask";
         frontLayer.addChild(mask);
-        trace("PlayScreen started, time=" + (haxe.Timer.stamp() - starttm));
     }
 
     override public function onShown() {
@@ -217,28 +216,32 @@ class PlayScreen extends BaseScreen {
         var text = UiUtil.staticText("你太有才了！", 0xFFFFFF, 24);
         var textx = 2 * spacing + head.width;
         var dist = textx + text.width;
-        var button: Sprite = null;
+        var button: Sprite = null, buttonPic: Sprite = null;
         if (status.makerData == null && !MyUtils.isEmpty(HpApi.instance.uid)) {
-            button = UiUtil.bitmap("res/btn_game_comment.png");
-            button.rox_scale(d2rScale);
-            button.mouseEnabled = true;
-            button.addEventListener(MouseEvent.CLICK, function(_) {
+            button = UiUtil.button(UiUtil.TOP_LEFT, null, "发表感受", 0xFFFFFF, buttonFontSize * 0.7, "res/btn_dark.9.png", function(_) {
                 var txt = "我用" + timestr2(getElapsedTime()) + "完成了你制作的游戏！";
 #if android
-            HaxeStub.startInputDialog("发表感受", txt, "发布", this);
+                HaxeStub.startInputDialog("发表感受", txt, "发布", this);
 #else
                 onApiCallback("startInputDialog", "ok", txt);
 #end
             });
             onApiCallback("autoComment", "ok", "完成游戏，用时" + timestr2(getElapsedTime()));
+            if (image != null) {
+                buttonPic = UiUtil.button(UiUtil.TOP_LEFT, null, "查看原图", 0xFFFFFF, buttonFontSize * 0.7, "res/btn_dark.9.png", function(_) {
+                    startScreen(Type.getClassName(PictureScreen), image);
+                });
+            }
         }
         frontLayer.addChild(tip.rox_move(0, -tip.height));
         frontLayer.addChild(head.rox_move(spacing - dist, spacing));
         frontLayer.addChild(text.rox_move(textx - dist, (tiph - text.height) / 2));
-        if (button != null) frontLayer.addChild(button.rox_move(screenWidth + spacing, (tiph - button.height) / 2));
+        if (buttonPic != null) frontLayer.addChild(buttonPic.rox_move(screenWidth + spacing, (tiph - buttonPic.height) / 2));
+        if (button != null) frontLayer.addChild(button.rox_move(screenWidth + 2 * spacing + button.width, (tiph - button.height) / 2));
         Actuate.tween(tip, 0.8, { y: 0 }).ease(Elastic.easeOut);
         Actuate.tween(head, 0.8, { x: spacing }).delay(0.2).ease(Elastic.easeOut);
         Actuate.tween(text, 0.8, { x: textx }).delay(0.4).ease(Elastic.easeOut);
+        if (buttonPic != null) Actuate.tween(buttonPic, 0.8, { x: screenWidth - 2 * spacing - 2 * buttonPic.width }).delay(0.4).ease(Elastic.easeOut);
         if (button != null) Actuate.tween(button, 0.8, { x: screenWidth - spacing - button.width }).delay(0.2).ease(Elastic.easeOut);
         var arr = [ "res/img_star.png", "res/img_heart.png", "res/img_flower.png" ];
         var wd2 = screenWidth / 2, hd2 = (screenHeight - titleBar.height * d2rScale) / 2;

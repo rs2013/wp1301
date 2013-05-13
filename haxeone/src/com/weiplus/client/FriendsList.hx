@@ -1,7 +1,6 @@
 package com.weiplus.client;
 
 import nme.text.TextField;
-import com.roxstudio.haxe.ui.UiUtil;
 import com.weiplus.client.model.Friendship;
 import com.weiplus.client.model.User;
 import com.weiplus.client.model.PageModel;
@@ -9,7 +8,6 @@ import com.weiplus.client.model.Comment;
 import com.roxstudio.haxe.ui.RoxFlowPane;
 import com.roxstudio.haxe.gesture.RoxGestureAgent;
 import com.roxstudio.haxe.gesture.RoxGestureEvent;
-import com.roxstudio.haxe.net.RoxURLLoader;
 import com.roxstudio.haxe.game.ResKeeper;
 import com.roxstudio.haxe.game.GameUtil;
 import nme.display.Sprite;
@@ -175,7 +173,7 @@ class FriendsList extends BaseScreen {
 
             var head = new Sprite();
             head.graphics.rox_drawRoundRect(2, 0xFF000000, 0, 0, 60, 60);
-            UiUtil.asyncImage(avatar, function(bmd: BitmapData) {
+            MyUtils.asyncImage(avatar, function(bmd: BitmapData) {
                 if (bmd == null || bmd.width == 0) bmd = ResKeeper.getAssetImage("res/no_avatar.png");
                 head.graphics.rox_drawRegionRound(bmd, 0, 0, 60, 60);
                 head.graphics.rox_drawRoundRect(2, 0xFF000000, 0, 0, 60, 60);

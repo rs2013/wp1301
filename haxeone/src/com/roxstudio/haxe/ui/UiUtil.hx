@@ -131,33 +131,19 @@ class UiUtil {
         return new RoxNinePatch(npd);
     }
 
-    public static function asyncBitmap(url: String, ?width: Float = 0, ?height: Float = 0,
-                                      ?loadingDisplay: DisplayObject, ?errorDisplay: DisplayObject) : DisplayObject {
-        var ldr: RoxURLLoader = cast(ResKeeper.get(url));
-        if (ldr == null || ldr.status != RoxURLLoader.OK) {
-            ldr = new RoxURLLoader(url, RoxURLLoader.IMAGE);
-            ResKeeper.add(url, ldr);
-            return new RoxAsyncBitmap(ldr, width, height, loadingDisplay, errorDisplay);
-        } else {
-            var bmp = new Bitmap(cast ldr.data);
-            if (width != null) bmp.width = width;
-            if (height != null) bmp.height = height;
-            return bmp;
-        }
-    }
-
-    public static function asyncImage(url: String, onComplete: BitmapData -> Void, ?bundleId: String) {
+    public static function asyncImage(url: String, onComplete: BitmapData -> Void,
+                                      ?onRaw: ByteArray -> Void, ?onProgress: Float -> Float -> Void,
+                                      ?bundleId: String) {
         var img = ResKeeper.get(url);
         if (img == null) {
-            var ldr = new RoxURLLoader(url, RoxURLLoader.IMAGE);
-            ldr.addEventListener(Event.COMPLETE, function(_) {
-                if (ldr.status == RoxURLLoader.OK) {
-                    onComplete(cast ldr.data);
-                    ResKeeper.add(url, ldr.data, bundleId);
+            var ldr = new RoxURLLoader(url, RoxURLLoader.IMAGE, function(isOk: Bool, data: Dynamic) {
+                if (isOk) {
+                    onComplete(cast data);
+                    ResKeeper.add(url, data, bundleId);
                 } else {
                     onComplete(null);
                 }
-            });
+            }).onRaw(onRaw).onProgress(onProgress).start();
         } else { // already in cache
             delay(function() { onComplete(cast img); });
         }

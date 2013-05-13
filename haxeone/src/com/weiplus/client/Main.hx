@@ -19,17 +19,15 @@ import nme.Lib;
 //import com.weiplus.client.Postit;
 //import com.weiplus.client.PostitScreen;
 
-//import com.roxstudio.haxe.net.RoxURLLoader;
-
 class Main {
 
     public function new() {
     }
 
     static public function main() {
-//        trace("before init");
+        trace("before init");
         RoxApp.init();
-//        trace("init ok");
+        trace("init ok");
         var m = new RoxScreenManager();
 //        m.startScreen(Type.getClassName(com.weiplus.client.HomeScreen));
 //        m.startScreen(Type.getClassName(CameraScreen));
@@ -38,15 +36,16 @@ class Main {
 //        m.startScreen(Type.getClassName(TestMakerScreen));
 //        m.startScreen(Type.getClassName(SimpleMaker));
 //        m.startScreen(Type.getClassName(SelectedScreen));
-        m.startRootScreen(Type.getClassName(Splash));
 //        m.startRootScreen(Type.getClassName(SettingScreen));
+//        m.startRootScreen(Type.getClassName(TestCurve));
+        m.startRootScreen(Type.getClassName(Splash));
 
 //        trace("screen started");
-        var st = new Status();
-        var data = st.appData = new AppData();
-        data.type = "test";
-        data.id = "1111";
-        data.url = "http://rox.local/res/data/data.zip";
+//        var st = new Status();
+//        var data = st.appData = new AppData();
+//        data.type = "test";
+//        data.id = "1111";
+//        data.url = "http://rox.local/res/data/data.zip";
 //        data.url = "assets://res/data/data.zip";
 //        m.startScreen(Type.getClassName(TestPlayScreen), st);
         RoxApp.stage.addChild(m);

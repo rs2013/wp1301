@@ -32,7 +32,6 @@ class App extends PlayScreen {
     public var rows: Int;
     public var shape: BitmapData;
     public var shapeSideLen: Float;
-    public var image: BitmapData;
     public var sideLen: Float;
     private var board: Sprite;
     private var preview: Sprite;
@@ -42,12 +41,12 @@ class App extends PlayScreen {
 //        trace("jigsaw.onstart: \nsaved=" + saved + "\nstatus=" + status);
         if (status.makerData != null) {
             image = status.makerData.image;
-            sideLen = image.width / status.makerData.size;
+            sideLen = Std.int(image.width / status.makerData.size);
         } else {
             var datastr: String = cast(getFileData("data.json"));
             var data: Dynamic = Json.parse(datastr);
             image = cast(getFileData(data.image));
-            sideLen = Reflect.hasField(data, "size") ? image.width / data.size : data.sideLen;
+            sideLen = Std.int(Reflect.hasField(data, "size") ? image.width / data.size : data.sideLen);
         }
 
         shape = ResKeeper.getAssetImage("res/shape_new.png");

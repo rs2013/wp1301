@@ -338,6 +338,7 @@ class TimelineScreen extends BaseScreen {
 //        trace(">>>t=" + e.target+",e="+e);
         switch (e.type) {
             case RoxGestureEvent.GESTURE_TAP:
+                trace("timeline.onTap,target=" + e.target + ",currentTarget=" + e.currentTarget);
                 for (i in 0...main.numChildren) {
                     var sp = main.getChildAt(i);
                     if (Std.is(sp, Postit)) {

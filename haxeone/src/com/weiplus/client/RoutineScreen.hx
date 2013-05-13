@@ -11,11 +11,9 @@ import com.roxstudio.haxe.gesture.RoxGestureAgent;
 import com.roxstudio.haxe.gesture.RoxGestureEvent;
 import nme.geom.Point;
 import nme.events.MouseEvent;
-import com.roxstudio.haxe.net.RoxURLLoader;
 import com.roxstudio.haxe.game.ResKeeper;
 import nme.display.BitmapData;
 import nme.events.Event;
-import com.roxstudio.haxe.net.RoxURLLoader;
 import com.roxstudio.haxe.game.GameUtil;
 import com.weiplus.client.model.Routine;
 import com.weiplus.client.model.User;
@@ -192,7 +190,7 @@ class RoutineScreen extends BaseScreen {
             sp.graphics.rox_fillRect(0x01FFFFFF, 0, 0, screenWidth, h);
             sp.graphics.rox_line(2, 0xFFEEEEEE, 0, h, screenWidth, h);
             sp.graphics.rox_drawRoundRect(1, 0xFF000000, spacing, spacing, 60, 60);
-            UiUtil.asyncImage(c.follower.profileImage, function(bmd: BitmapData) {
+            MyUtils.asyncImage(c.follower.profileImage, function(bmd: BitmapData) {
                 if (bmd == null || bmd.width == 0) bmd = ResKeeper.getAssetImage("res/no_avatar.png");
                 sp.graphics.rox_drawRegionRound(bmd, spacing, spacing, 60, 60);
                 sp.graphics.rox_drawRoundRect(1, 0xFF000000, spacing, spacing, 60, 60);
