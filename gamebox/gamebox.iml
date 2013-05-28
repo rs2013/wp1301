@@ -13,10 +13,10 @@
     </content>
     <orderEntry type="jdk" jdkName="haXe 2.10" jdkType="haXe SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="actuate 1,43" level="application" />
-    <orderEntry type="library" name="format 1,25" level="application" />
     <orderEntry type="library" name="nme 3,4,4" level="application" />
+    <orderEntry type="library" name="actuate 1,43" level="application" />
     <orderEntry type="library" name="spritesheet 1,11" level="application" />
+    <orderEntry type="library" name="format 1,25" level="application" />
   </component>
 </module>
 
