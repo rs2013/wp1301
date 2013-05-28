@@ -38,8 +38,8 @@ class BaseScreen extends RoxScreen {
         designWidth = DESIGN_WIDTH;
         d2rScale = screenWidth / designWidth;
         designHeight = screenHeight / d2rScale;
-        buttonFontSize = 36 * d2rScale;
-        titleFontSize = 36;
+        buttonFontSize = 32 * d2rScale;
+        titleFontSize = 32;
     }
 
     override public function onCreate() {

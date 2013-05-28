@@ -1,5 +1,7 @@
 package com.weiplus.client;
 
+import Reflect;
+import nme.net.SharedObject;
 import com.roxstudio.haxe.ui.RoxFlowPane;
 import com.weiplus.client.model.PageModel;
 import nme.events.Event;
@@ -15,7 +17,8 @@ class HomeScreen extends TimelineScreen {
     private var btnPlaza: RoxFlowPane;
     private var btnHome: RoxFlowPane;
     private var timelineUrl: String;
-    private var isPublic: Bool = false;
+    private var isPublic: Bool;
+    private var so: SharedObject;
 
     public function new() {
         super();
@@ -23,6 +26,8 @@ class HomeScreen extends TimelineScreen {
         this.screenTabIndex = 0;
         btnPlaza = UiUtil.button(UiUtil.TOP_LEFT, null, "广场", 0xFFFFFF, titleFontSize, "res/btn_common.9.png", doSwitch);
         btnHome = UiUtil.button(UiUtil.TOP_LEFT, null, "个人", 0xFFFFFF, titleFontSize, "res/btn_common.9.png", doSwitch);
+        so = SharedObject.getLocal("harryphoto.HomeScreen");
+        isPublic = Reflect.hasField(so.data, "isPublic") ? so.data.isPublic : true;
     }
 
     override public function onCreate() {
@@ -53,7 +58,10 @@ class HomeScreen extends TimelineScreen {
     }
 
     private function doSwitch(e: Dynamic) {
-        isPublic = !isPublic;
+        if (refreshing) return;
+        if (e != null) isPublic = !isPublic;
+        so.data.isPublic = isPublic;
+        so.flush();
         if (isPublic) {
             timelineUrl = "/statuses/public_timeline";
             removeTitleButton(btnPlaza);

@@ -31,7 +31,7 @@ class SelectedScreen extends TimelineScreen {
 
         var param = { sinceId: 0, rows: 10 };
         if (this.append) untyped param.maxId = Std.int(page.oldestId - 1);
-        HpApi.instance.get("/statuses/public_timeline", param, onComplete);
+        HpApi.instance.get("/statuses/select", param, onComplete);
         refreshing = true;
     }
 

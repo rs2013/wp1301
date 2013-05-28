@@ -37,7 +37,7 @@ class Postit extends Sprite {
     private static inline var MARGIN_RATIO = 1 / 40;
 
     private static inline var FONT_SIZE_RATIO = 24 / 600;
-    private static inline var MIN_FONT_SIZE = 12.0;
+    private static inline var MIN_FONT_SIZE = 14.0;
 
     private var userAvatar: RoxFlowPane;
     private var userLabel: TextField;
@@ -160,6 +160,7 @@ class Postit extends Sprite {
                         var button = new Sprite();
                         button.graphics.rox_fillRect(0x01FFFFFF, 0, 0, w, imh);
                         var agent = new RoxGestureAgent(button);
+                        agent.swipeTimeout = 0;
                         button.addEventListener(RoxGestureEvent.GESTURE_TAP, function(_) {
                             parentScreen().startScreen(Type.getClassName(PictureScreen), image);
                         });

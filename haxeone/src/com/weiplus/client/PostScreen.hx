@@ -204,7 +204,7 @@ class PostScreen extends BaseScreen {
         var valid = true;
 #end
         var ico = icon != null ? new Bitmap(ResKeeper.getAssetImage("res/icon_" + icon + (valid ? "" : "_g") + ".png")).rox_smooth() : null;
-        var txt = icon != null ? UiUtil.staticText(name, valid ? 0xFFFFFF : 0x666666, titleFontSize * 1.2, UiUtil.LEFT, 150) : null;
+        var txt = icon != null ? UiUtil.staticText(name, valid ? 0xFFFFFF : 0x666666, titleFontSize, UiUtil.LEFT, 150) : null;
 
         var sp = new RoxFlowPane(308, 88, UiUtil.TOP_LEFT, icon != null ? [ ico, txt ] : [],
                 bg, UiUtil.VCENTER, [ 10 ], icon != null ? onShareButton : null);

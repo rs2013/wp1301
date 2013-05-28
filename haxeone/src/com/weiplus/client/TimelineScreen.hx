@@ -338,7 +338,7 @@ class TimelineScreen extends BaseScreen {
 
     private function onGesture(e: RoxGestureEvent) {
         if (animating) return;
-//        trace(">>>t=" + e.target+",e="+e);
+//        trace(">>>type=" + e.type + ",target=" + e.target+",current="+e.currentTarget);
         switch (e.type) {
             case RoxGestureEvent.GESTURE_TAP:
                 trace("timeline.onTap,target=" + e.target + ",currentTarget=" + e.currentTarget);

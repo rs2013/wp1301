@@ -1,6 +1,5 @@
 package com.roxstudio.haxe.net;
 
-import com.roxstudio.haxe.ui.UiUtil;
 import nme.events.ErrorEvent;
 import org.bytearray.gif.decoder.GIFDecoder;
 import nme.display.Bitmap;

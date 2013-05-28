@@ -196,7 +196,8 @@ class RoxGestureAgent {
 //        trace("onTouch:e=" + e +",touchId="+id);
         var prim = touch0 == null || touch0.tid == id;
         if (prim || (touch1 != null && touch1.tid == id) || (touch0 != null && touch1 == null && touch0.tid != id)) {
-            if (handleTouch(typeMap.get(e.type), e, prim, id)) e.rox_stopPropagation();
+//            if (handleTouch(typeMap.get(e.type), e, prim, id)) e.rox_stopPropagation();
+            handleTouch(typeMap.get(e.type), e, prim, id);
         }
 //        if (id <= 1) {
 //            if (handleTouch(typeMap.get(e.type), e, id == 0)) e.rox_stopPropagation();

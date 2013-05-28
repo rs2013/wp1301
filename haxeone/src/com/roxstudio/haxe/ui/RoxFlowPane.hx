@@ -43,6 +43,7 @@ class RoxFlowPane extends Sprite {
         var hasListner = listener != null;
         if (hasListner) {
             var agent = new RoxGestureAgent(this);
+            agent.swipeTimeout = 0;
             addEventListener(RoxGestureEvent.GESTURE_TAP, listener);
         }
         mouseEnabled = hasListner;

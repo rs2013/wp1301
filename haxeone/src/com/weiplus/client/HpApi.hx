@@ -9,7 +9,8 @@ import haxe.BaseCode;
 class HpApi {
 
 //    public static inline var BASE_URL = "http://s-56378.gotocdn.com/harryphoto";
-    public static inline var BASE_URL = "http://www.appmagics.com/api";
+//    public static inline var BASE_URL = "http://www.appmagics.com/api";
+    public static inline var BASE_URL = "http://www.appmagics.cn/api";
 
     public static var instance(get_instance, null): HpApi;
 
@@ -26,7 +27,8 @@ class HpApi {
 #if android
             instance = new HpApi(Json.parse(HpManager.getTokenAsJson()));
 #else
-            instance = new HpApi({ accessToken: "5de6dd1b60c6e090042d9fb605136bba", uid: "7", refreshToken: "" });
+//            instance = new HpApi({ accessToken: "5de6dd1b60c6e090042d9fb605136bba", uid: "7", refreshToken: "" });
+            instance = new HpApi({ accessToken: "ad589fd46c1dbea90cfb99c0010e61b4", uid: "3", refreshToken: "" });
 #end
         }
 #if android
