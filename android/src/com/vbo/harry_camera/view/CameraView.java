@@ -311,15 +311,20 @@ public class CameraView extends SurfaceView {
 
         Log.d(TAG, "after mPreviewSize = " + mPreviewSize.width + "," + mPreviewSize.height);
         Log.d(TAG, "after mPictureSize = " + mPictureSize.width + "," + mPictureSize.height);
-        parameters.setFocusMode(Parameters.FOCUS_MODE_AUTO);
+//        parameters.setFocusMode(Parameters.FOCUS_MODE_AUTO);
         List<String> supportedMode = parameters.getSupportedFocusModes();
         if (supportedMode.contains(Parameters.FOCUS_MODE_AUTO)) {
             mIsCanAutoFocus = true;
             parameters.setFocusMode(Parameters.FOCUS_MODE_AUTO);
         }
-        parameters.setFlashMode(Parameters.FLASH_MODE_AUTO);
-        parameters.setJpegQuality(100); // 1-100
+        supportedMode = parameters.getSupportedFlashModes();
+        if (supportedMode.contains(Parameters.FLASH_MODE_AUTO)) {
+            parameters.setFlashMode(Parameters.FLASH_MODE_AUTO);
+        }
+        parameters.setJpegQuality(95); // 1-100
         mCamera.setParameters(parameters);
+        // Front facing camera is inverted be default
+        if (!CameraUtil.isBackCamera) mCamera.setDisplayOrientation(90);
     }
 
     private void setDisplayOrientation(Camera camera, int angle) {

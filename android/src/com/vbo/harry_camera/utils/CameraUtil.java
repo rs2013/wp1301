@@ -26,6 +26,7 @@ public class CameraUtil {
     //public static List<Size> sSupportedPreviewSizes;
     private static Size sBestPreviewSize;
     private static Size sBestPicture;
+    public static boolean isBackCamera = true;
 
     public static boolean hasFrontCamera(Context context) {
         return hasCamera(context, CameraInfo.CAMERA_FACING_FRONT);
@@ -107,9 +108,11 @@ public class CameraUtil {
             Log.d(TAG, "setCurrentMode and isBack = " + isBack
                     + " getBackCameraId() = " + getBackCameraId()
                     + " getFrontCameraId() = " + getFrontCameraId());
-        if (isBack){
+        if (isBack && getBackCameraId() >= 0){
+            isBackCamera = true;
             return sCurrentCameraId = getBackCameraId();
         } else {
+            isBackCamera = false;
             return sCurrentCameraId = getFrontCameraId();
         }
     }

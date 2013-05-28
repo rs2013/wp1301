@@ -210,37 +210,47 @@ public class DataHelper {
     public static void getCategory(CategoryLoadListener listener) {
         //ArrayList<Category> result = new ArrayList<Category>();
         if (sCategorys.isEmpty()) {
-        try {
-            URL url = new URL(CATEGORY_PATH);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(TIME_OUT_FOR_READ_JSON);
-            conn.setRequestMethod("GET");
-            InputStream inStream = conn.getInputStream();
-            byte[] data = readInputSream(inStream);
-            String json = new String(data);
-            JSONObject jsonMain = new JSONObject(json);
-            JSONObject jsonCatelogs = jsonMain.getJSONObject(KEY_CATEGORYS);
-            JSONArray jsonRecords = jsonCatelogs.getJSONArray(KEY_RECORDS);
-            for (int i = 0; i< jsonRecords.length(); i++) {
-                Category oneCategory = new Category();
-                JSONObject jsonOneCategory = jsonRecords.getJSONObject(i);
-                oneCategory.mName = jsonOneCategory.getString(KEY_NAME);
-                oneCategory.mId = jsonOneCategory.getInt(KEY_ID);
-                oneCategory.mIconPath = jsonOneCategory.getString(KEY_ICON_PATH);
+            try {
+                InputStream inStream = null;
+                boolean fromCache = false;
+                try {
+                    URL url = new URL(CATEGORY_PATH);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setReadTimeout(TIME_OUT_FOR_READ_JSON);
+                    conn.setRequestMethod("GET");
+                    inStream = conn.getInputStream();
+                } catch (Exception ex) { // no connection
+                    File cache = new File(PictureUtil.getCachePathForUrl(CATEGORY_PATH));
+                    if (!cache.exists()) throw new Exception("请连接网络");
+                    inStream = new FileInputStream(cache);
+                    fromCache = true;
+                }
+                byte[] data = readInputSream(inStream);
+                if (!fromCache) {
+                    new File(PictureUtil.getCachePathForUrl(null)).mkdirs();
+                    File cache = new File(PictureUtil.getCachePathForUrl(CATEGORY_PATH));
+                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(cache));
+                    bos.write(data);
+                    bos.close();
+                }
+                String json = new String(data, "UTF-8");
+                if (BuildConfig.DEBUG) Log.d(TAG, "json = " + json);
+                JSONObject jsonMain = new JSONObject(json);
+                JSONObject jsonCatelogs = jsonMain.getJSONObject(KEY_CATEGORYS);
+                JSONArray jsonRecords = jsonCatelogs.getJSONArray(KEY_RECORDS);
+                for (int i = 0; i< jsonRecords.length(); i++) {
+                    Category oneCategory = new Category();
+                    JSONObject jsonOneCategory = jsonRecords.getJSONObject(i);
+                    oneCategory.mName = jsonOneCategory.getString(KEY_NAME);
+                    oneCategory.mId = jsonOneCategory.getInt(KEY_ID);
+                    oneCategory.mIconPath = jsonOneCategory.getString(KEY_ICON_PATH);
                     sCategorys.add(oneCategory);
                 }
-                listener.onCategoryLoaded(sCategorys);
-                if (BuildConfig.DEBUG) Log.d(TAG, "json = " + json);
-            } catch (MalformedURLException e) {
-                Log.w(TAG, "getCategory", e);
-            } catch (IOException e) {
-                Log.w(TAG, "getCategory", e);
-            } catch (JSONException e) {
-                Log.w(TAG, "getCategory", e);
+            } catch (Exception e) {
+                Log.w(TAG, "getCategory: error=" + e);
             }
-        } else {
-            listener.onCategoryLoaded(sCategorys);
         }
+        listener.onCategoryLoaded(sCategorys);
         /*try {
             URL url = new URL(CATEGORY_PATH);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -273,9 +283,9 @@ public class DataHelper {
 
     public static byte[] readInputSream(InputStream inStream) throws IOException {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[100000];
         int len = 0;
-        while ((len = inStream.read(buffer)) != -1) {
+        while ((len = inStream.read(buffer)) > 0) {
             outStream.write(buffer, 0, len);
         }
         inStream.close();
@@ -283,17 +293,34 @@ public class DataHelper {
     }
 
     public static void getGoods(int id, String categoryName,GoodLoadListener listener) {
-        //ArrayList<Good> result = new ArrayList<Good>();
-        if (sGoods.isEmpty()) {
-        try {
-                ArrayList<Good> one = new ArrayList<Good>();
-                URL url = new URL(GOODS_PATH + id + ".json");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(TIME_OUT_FOR_READ_JSON);
-                conn.setRequestMethod("GET");
-                InputStream inStream = conn.getInputStream();
+        ArrayList<Good> one = sGoods.get(id);
+        if (one == null) {
+            try {
+                one = new ArrayList<Good>();
+                String sUrl = GOODS_PATH + id + ".json";
+                InputStream inStream = null;
+                boolean fromCache = false;
+                try {
+                    URL url = new URL(sUrl);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setReadTimeout(TIME_OUT_FOR_READ_JSON);
+                    conn.setRequestMethod("GET");
+                    inStream = conn.getInputStream();
+                } catch (Exception e) {
+                    File cache = new File(PictureUtil.getCachePathForUrl(sUrl));
+                    if (!cache.exists()) throw new Exception("请连接网络");
+                    inStream = new FileInputStream(cache);
+                    fromCache = true;
+                }
                 byte[] data = readInputSream(inStream);
-                String json = new String(data);
+                if (!fromCache) {
+                    new File(PictureUtil.getCachePathForUrl(null)).mkdirs();
+                    File cache = new File(PictureUtil.getCachePathForUrl(sUrl));
+                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(cache));
+                    bos.write(data);
+                    bos.close();
+                }
+                String json = new String(data, "UTF-8");
                 JSONObject jsonMain = new JSONObject(json);
                 JSONObject jsonGoods = jsonMain.getJSONObject(KEY_GOODS);
                 JSONArray jsonRecords = jsonGoods.getJSONArray(KEY_RECORDS);
@@ -303,7 +330,8 @@ public class DataHelper {
                     oneGood.mName = jsonOneGood.getString(KEY_NAME);
                     oneGood.mType = jsonOneGood.getString(KEY_TYPE);
                     oneGood.mDescription = jsonOneGood.getString(KEY_DESCRIPTION);
-                    oneGood.mIconPath = jsonOneGood.getString(KEY_ICON_PATH);
+//                        oneGood.mIconPath = jsonOneGood.getString(KEY_ICON_PATH);
+                    oneGood.mIconPath = jsonOneGood.getString(KEY_IMAGE);
                     oneGood.mPrice = jsonOneGood.getString(KEY_PRICE);
                     oneGood.mCid = jsonOneGood.getInt(KEY_CID);
                     oneGood.mImagePath = jsonOneGood.getString(KEY_IMAGE);
@@ -311,91 +339,12 @@ public class DataHelper {
                     one.add(oneGood);
                 }
                 sGoods.put(id, one);
-                listener.onGoodLoaded(one, categoryName);
                 if (BuildConfig.DEBUG) Log.d(TAG, "category and json = " + json);
-            } catch (MalformedURLException e) {
-                Log.w(TAG, "category", e);
-            } catch (IOException e) {
-                Log.w(TAG, "category", e);
-            } catch (JSONException e) {
-                Log.w(TAG, "category", e);
-            }
-        } else {
-            ArrayList<Good> one = sGoods.get(id);
-            if (one == null) {
-                try {
-                    one = new ArrayList<Good>();
-                    URL url = new URL(GOODS_PATH + id + ".json");
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setReadTimeout(TIME_OUT_FOR_READ_JSON);
-                    conn.setRequestMethod("GET");
-                    InputStream inStream = conn.getInputStream();
-                    byte[] data = readInputSream(inStream);
-                    String json = new String(data);
-                    JSONObject jsonMain = new JSONObject(json);
-                    JSONObject jsonGoods = jsonMain.getJSONObject(KEY_GOODS);
-                    JSONArray jsonRecords = jsonGoods.getJSONArray(KEY_RECORDS);
-                    for (int i = 0; i< jsonRecords.length(); i++) {
-                        Good oneGood = new Good();
-                        JSONObject jsonOneGood = jsonRecords.getJSONObject(i);
-                        oneGood.mName = jsonOneGood.getString(KEY_NAME);
-                        oneGood.mType = jsonOneGood.getString(KEY_TYPE);
-                        oneGood.mDescription = jsonOneGood.getString(KEY_DESCRIPTION);
-                        oneGood.mIconPath = jsonOneGood.getString(KEY_ICON_PATH);
-                        oneGood.mPrice = jsonOneGood.getString(KEY_PRICE);
-                        oneGood.mCid = jsonOneGood.getInt(KEY_CID);
-                        oneGood.mImagePath = jsonOneGood.getString(KEY_IMAGE);
-                        oneGood.mId = jsonOneGood.getInt(KEY_ID);
-                        one.add(oneGood);
-                    }
-                    sGoods.put(id, one);
-                    listener.onGoodLoaded(one, categoryName);
-                    if (BuildConfig.DEBUG) Log.d(TAG, "category and json = " + json);
-                } catch (MalformedURLException e) {
-                    Log.w(TAG, "category", e);
-                } catch (IOException e) {
-                    Log.w(TAG, "category", e);
-                } catch (JSONException e) {
-                    Log.w(TAG, "category", e);
-                }
-                
-            } else {
-                listener.onGoodLoaded(one, categoryName);
+            } catch (Exception e) {
+                Log.w(TAG, "Goods: error=" + e);
             }
         }
-        /*try {
-            URL url = new URL(GOODS_PATH + id + ".json");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(TIME_OUT_FOR_READ_JSON);
-            conn.setRequestMethod("GET");
-            InputStream inStream = conn.getInputStream();
-            byte[] data = readInputSream(inStream);
-            String json = new String(data);
-            JSONObject jsonMain = new JSONObject(json);
-            JSONObject jsonGoods = jsonMain.getJSONObject(KEY_GOODS);
-            JSONArray jsonRecords = jsonGoods.getJSONArray(KEY_RECORDS);
-            for (int i = 0; i< jsonRecords.length(); i++) {
-                Good oneGood = new Good();
-                JSONObject jsonOneGood = jsonRecords.getJSONObject(i);
-                oneGood.mName = jsonOneGood.getString(KEY_NAME);
-                oneGood.mType = jsonOneGood.getString(KEY_TYPE);
-                oneGood.mDescription = jsonOneGood.getString(KEY_DESCRIPTION);
-                oneGood.mIconPath = jsonOneGood.getString(KEY_ICON_PATH);
-                oneGood.mPrice = jsonOneGood.getString(KEY_PRICE);
-                oneGood.mCid = jsonOneGood.getInt(KEY_CID);
-                oneGood.mImagePath = jsonOneGood.getString(KEY_IMAGE);
-                oneGood.mId = jsonOneGood.getInt(KEY_ID);
-                result.add(oneGood);
-            }
-            listener.onGoodLoaded(result, categoryName);
-            if (BuildConfig.DEBUG) Log.d(TAG, "category and json = " + json);
-        } catch (MalformedURLException e) {
-            Log.w(TAG, "category", e);
-        } catch (IOException e) {
-            Log.w(TAG, "category", e);
-        } catch (JSONException e) {
-            Log.w(TAG, "category", e);
-        }*/
+        listener.onGoodLoaded(one, categoryName);
     }
 
     public interface CategoryLoadListener{

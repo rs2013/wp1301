@@ -106,7 +106,8 @@ public class PictureUtil {
         }
         Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
         Matrix matrix = new Matrix();
-        matrix.postRotate(90); 
+        matrix.postRotate(CameraUtil.isBackCamera ? 90 : 270); 
+        if (!CameraUtil.isBackCamera) matrix.postScale(-1, 1);
         Bitmap bitmapRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
                 bitmap.getHeight(), matrix, true);
         bitmap.recycle();
@@ -406,6 +407,16 @@ public class PictureUtil {
         } else {
             int idx = url.lastIndexOf('/');
             return dir + "/" + url.substring(idx + 1) + ".png";
+        }
+    }
+    
+    public static String getCachePathForUrl(String url) {
+        String dir = Environment.getExternalStorageDirectory().getPath() + "/.harryphoto/ar_dir";
+        if (url == null) {
+            return dir;
+        } else {
+            int idx = url.lastIndexOf('/');
+            return dir + "/" + url.substring(idx + 1);
         }
     }
 }

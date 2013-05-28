@@ -4,31 +4,35 @@
     android:layout_gravity="center_horizontal"
     android:layout_alignParentBottom="true"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/bottom_bar_height" >
-    <LinearLayout 
+    android:layout_height="70dp" >
+
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_centerHorizontal="true">
+        android:layout_height="70dp"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal" >
+
         <ImageView
-            android:layout_marginRight="20dp"
+            android:id="@+id/bottom_button"
+            android:layout_width="182dp"
+            android:layout_height="66dp"
             android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1.08"
             android:contentDescription="@string/contentDescription_bottom_bar_buttom"
             android:padding="2dp"
-            android:scaleType="centerCrop"
-            android:layout_width="@dimen/bottom_bar_height"
-            android:layout_height="match_parent"
-            android:id="@+id/bottom_button"/>
+            android:scaleType="center" />
+
         <ImageView
-            android:layout_marginRight="20dp"
+            android:id="@+id/bottom_button2"
+            android:layout_width="96dp"
+            android:layout_height="66dp"
             android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:contentDescription="@string/contentDescription_bottom_bar_buttom"
             android:padding="2dp"
-            android:scaleType="centerCrop"
-            android:visibility="gone"
-            android:layout_width="@dimen/bottom_bar_height"
-            android:layout_height="match_parent"
-            android:id="@+id/bottom_button2"/>
+            android:scaleType="center"
+            android:visibility="gone" />
     </LinearLayout>
 
 </RelativeLayout>

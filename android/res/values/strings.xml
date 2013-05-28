@@ -81,7 +81,7 @@
 
     <string name="no_camera">Sorry, your device has no camera, can\'t run this app!</string>
     <!-- Camera Activity -->
-    <string name="category_title">Select a category</string>
+    <string name="category_title">魔贴分类</string>
     
     <string name="umeng_example_home_btn_analytics">Analytics</string>
     <string name="umeng_example_home_btn_xp">XP</string>

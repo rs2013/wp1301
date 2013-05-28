@@ -257,7 +257,7 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
 
         @Override
         public int getCount() {
-            return mCategorys.size() + 1;
+            return mCategorys.size();
         }
 
         @Override
@@ -282,45 +282,33 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            if (position == mCategorys.size()) {
-                holder.mImage.setImageResource(R.drawable.add);
-                convertView.setOnClickListener(new View.OnClickListener() {
+            final Category category = mCategorys.get(position);
+            holder.mText.setText(category.mName);
+            convertView.setOnClickListener(new View.OnClickListener() {
 
-                    @Override
-                    public void onClick(View v) {
-                        // TODO
-                        if (BuildConfig.DEBUG) Log.d(TAG, "add");
-                    }
-                });
-            } else {
-                final Category category = mCategorys.get(position);
-                holder.mText.setText(category.mName);
-                convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new Thread(new Runnable() {
 
-                    @Override
-                    public void onClick(View v) {
-                        new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            DataHelper.getGoods(category.mId, category.mName, new GoodLoadListener() {
 
-                            @Override
-                            public void run() {
-                                DataHelper.getGoods(category.mId, category.mName, new GoodLoadListener() {
-
-                                    @Override
-                                    public void onGoodLoaded(ArrayList<Good> goods, String categoryName) {
-                                        mViewState = STATE_CATEGORY_SELECTED;
-                                        mFittingSelectItems = goods;
-                                        mImageFittingAdapter = new ImageFittingAdapter(mFittingSelectItems);
-                                        Message msg = new Message();
-                                        mSelectedCategoryName = categoryName;
-                                        msg.what = UPDATE_STATE;
-                                        mHandler.sendMessage(msg);
-                                    }
-                                });
-                            }
-                        }).start();
-                    }
-                });
-            }
+                                @Override
+                                public void onGoodLoaded(ArrayList<Good> goods, String categoryName) {
+                                    mViewState = STATE_CATEGORY_SELECTED;
+                                    mFittingSelectItems = goods;
+                                    mImageFittingAdapter = new ImageFittingAdapter(mFittingSelectItems);
+                                    Message msg = new Message();
+                                    mSelectedCategoryName = categoryName;
+                                    msg.what = UPDATE_STATE;
+                                    mHandler.sendMessage(msg);
+                                }
+                            });
+                        }
+                    }).start();
+                }
+            });
             return convertView;
         }
     }
@@ -458,7 +446,8 @@ public class CameraActivity extends Activity implements View.OnClickListener, Vi
 
                         @Override
                         public void onPicTaked(byte[] data, Camera camera) {
-                            mPicTaked = /*PictureUtil.scalePic(*/PictureUtil.rotatePic(data)/*, mCameraView.getWidth())*/;
+//                            mPicTaked = PictureUtil.scalePic(PictureUtil.rotatePic(data), mCameraView.getWidth());
+                            mPicTaked = PictureUtil.rotatePic(data);
                             mViewState = STATE_PIC_TAKED;
                             mHandler.sendEmptyMessage(UPDATE_STATE);
                         }
