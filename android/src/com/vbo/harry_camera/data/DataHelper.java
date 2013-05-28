@@ -50,9 +50,11 @@ public class DataHelper {
 
     // For Json
     private static final String CATEGORY_PATH =
-            "http://www.appmagics.com/api/ar/catalogs/list.json";
+//            "http://www.appmagics.com/api/ar/catalogs/list.json";
+            "http://www.appmagics.cn/api/ar/catalogs/list.json";
     private static final String GOODS_PATH =
-            "http://www.appmagics.com/api/ar/goods/by_catalog/";
+//            "http://www.appmagics.com/api/ar/goods/by_catalog/";
+            "http://www.appmagics.cn/api/ar/goods/by_catalog/";
     private static final int TIME_OUT_FOR_READ_JSON = 5 * 1000;
 
     // Json keys

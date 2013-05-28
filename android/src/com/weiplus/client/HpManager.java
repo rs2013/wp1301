@@ -44,7 +44,8 @@ import com.harryphoto.bind.Binding.Type;
 public class HpManager {
     
     private static String PREFERENCES_NAME = "com_harryphoto_api_HpAPI";
-    private static String LINK = "http://www.appmagics.com/w/statuses/show/${ID}";
+//    private static String LINK = "http://www.appmagics.com/w/statuses/show/${ID}";
+    private static String LINK = "http://www.appmagics.cn/w/statuses/show/${ID}";
     
     private static HpAccessToken accessToken;
     
