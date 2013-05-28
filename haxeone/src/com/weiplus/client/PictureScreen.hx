@@ -25,9 +25,9 @@ class PictureScreen extends BaseScreen {
 
     override public function onCreate() {
         title = new Sprite();
-        title.addChild(UiUtil.staticText("查看原图", 0xFFFFFF, buttonFontSize * 1.2));
+        title.addChild(UiUtil.staticText("查看原图", 0xFFFFFF, titleFontSize * 1.2));
         super.onCreate();
-        var btnSave = UiUtil.button(UiUtil.TOP_LEFT, null, "保存", 0xFFFFFF, buttonFontSize, "res/btn_common.9.png", function(_) {
+        var btnSave = UiUtil.button(UiUtil.TOP_LEFT, null, "保存", 0xFFFFFF, titleFontSize, "res/btn_common.9.png", function(_) {
 #if cpp
             MyUtils.asyncOperation({}, function(_) {
                 FileUtil.mkdirs(IMAGE_SAVE_DIR);

@@ -63,7 +63,8 @@ class RoutineScreen extends BaseScreen {
 
     override public function onCreate() {
         title = new Sprite();
-        title.addChild(UiUtil.staticText("消息", 0xFFFFFF, buttonFontSize * 1.2));
+        title.addChild(UiUtil.staticText("消息", 0xFFFFFF, titleFontSize * 1.2));
+        hasBack = false;
         super.onCreate();
         var btnpanel = buttonPanel();
         btnpanel.name = "buttonPanel";
@@ -174,7 +175,7 @@ class RoutineScreen extends BaseScreen {
         main.rox_removeAll();
 
         if (routines.length == 0) {
-            var label = UiUtil.staticText("暂时没有动态", 0, 24);
+            var label = UiUtil.staticText("暂时没有动态", 0, buttonFontSize);
             main.addChild(label.rox_move((screenWidth - label.width) / 2, spacing * 2));
             return;
         }
@@ -182,9 +183,9 @@ class RoutineScreen extends BaseScreen {
         var yoff: Float = 0;
         for (c in routines) {
             var sp = new Sprite();
-            var text = UiUtil.staticText(c.getMessage(), 0, 20, true, screenWidth - 60 - 3 * spacing);
+            var text = UiUtil.staticText(c.getMessage(), 0, buttonFontSize * 0.8, true, screenWidth - 60 - 3 * spacing);
             sp.addChild(text.rox_move(60 + 2 * spacing, spacing));
-            var time = UiUtil.staticText(MyUtils.timeStr(c.createdAt), 0, 20);
+            var time = UiUtil.staticText(MyUtils.timeStr(c.createdAt), 0, buttonFontSize * 0.8);
             sp.addChild(time.rox_move(60 + 2 * spacing, text.height + 2 * spacing));
             var h = GameUtil.max(60 + 2 * spacing, time.height + text.height + 3 * spacing);
             sp.graphics.rox_fillRect(0x01FFFFFF, 0, 0, screenWidth, h);

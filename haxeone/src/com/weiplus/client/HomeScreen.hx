@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import com.roxstudio.haxe.ui.RoxFlowPane;
 import com.weiplus.client.model.PageModel;
 import nme.events.Event;
 import haxe.Json;
@@ -11,16 +12,23 @@ class HomeScreen extends TimelineScreen {
 
     private var append: Bool;
     private var refreshing: Bool = false;
+    private var btnPlaza: RoxFlowPane;
+    private var btnHome: RoxFlowPane;
+    private var timelineUrl: String;
+    private var isPublic: Bool = false;
 
     public function new() {
         super();
         this.disposeAtFinish = false;
         this.screenTabIndex = 0;
+        btnPlaza = UiUtil.button(UiUtil.TOP_LEFT, null, "广场", 0xFFFFFF, titleFontSize, "res/btn_common.9.png", doSwitch);
+        btnHome = UiUtil.button(UiUtil.TOP_LEFT, null, "个人", 0xFFFFFF, titleFontSize, "res/btn_common.9.png", doSwitch);
     }
 
     override public function onCreate() {
         hasBack = false;
         super.onCreate();
+        doSwitch(null);
     }
 
     override private function refresh(append: Bool) {
@@ -29,7 +37,7 @@ class HomeScreen extends TimelineScreen {
 
         var param = { sinceId: 0, rows: 10 };
         if (this.append) untyped param.maxId = Std.int(page.oldestId - 1);
-        HpApi.instance.get("/statuses/home_timeline/" + HpApi.instance.uid, param, onComplete);
+        HpApi.instance.get(timelineUrl, param, onComplete);
         refreshing = true;
     }
 
@@ -42,6 +50,21 @@ class HomeScreen extends TimelineScreen {
         page.totalPages = pageInfo.totalPages;
         page.totalRows = pageInfo.totalRows;
         updateList(pageInfo.records, append);
+    }
+
+    private function doSwitch(e: Dynamic) {
+        isPublic = !isPublic;
+        if (isPublic) {
+            timelineUrl = "/statuses/public_timeline";
+            removeTitleButton(btnPlaza);
+            addTitleButton(btnHome, UiUtil.LEFT);
+        } else {
+            timelineUrl = "/statuses/home_timeline/" + HpApi.instance.uid;
+            removeTitleButton(btnHome);
+            addTitleButton(btnPlaza, UiUtil.LEFT);
+        }
+        page = null;
+        if (e != null) refresh(false);
     }
 
 }

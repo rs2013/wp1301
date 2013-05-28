@@ -16,19 +16,21 @@ class Refresher extends Sprite {
     private var top: Bool;
     private var arrow: Sprite;
     private var updated = false;
+    private var buttonFontSize: Float;
 
     public function new(name: String, top: Bool) {
         super();
         this.name = name;
         this.top = top;
         var d2rScale = RoxApp.screenWidth / 640;
+        buttonFontSize = 36 * d2rScale;
         arrow = UiUtil.bitmap("res/refresh_arrow.png", UiUtil.CENTER);
         arrow.rox_scale(d2rScale);
         arrow.rotation = top ? 180 : 0;
         var spacing = 40 * d2rScale;
         var arrowwrap = new Sprite();
         arrowwrap.addChild(arrow);
-        var label = UiUtil.staticText(top ? "下拉可以刷新" : "上拉可以刷新", 0, 20);
+        var label = UiUtil.staticText(top ? "下拉可以刷新" : "上拉可以刷新", 0, buttonFontSize * 0.8);
         var w = arrowwrap.width + spacing + label.width;
         graphics.rox_fillRect(0x01FFFFFF, 0, 0, RoxApp.screenWidth, 80);
         addChild(arrowwrap.rox_move((this.width - w) / 2 + arrow.width / 2, (80 - arrowwrap.height) / 2 + arrow.height / 2));
@@ -39,7 +41,7 @@ class Refresher extends Sprite {
         if (updated) return;
         updated = true;
         var oldLabel = getChildAt(numChildren - 1);
-        var label = UiUtil.staticText("松开立即刷新", 0, 20);
+        var label = UiUtil.staticText("松开立即刷新", 0, buttonFontSize * 0.8);
         removeChild(oldLabel);
         addChild(label.rox_move(oldLabel.x, oldLabel.y));
         Actuate.tween(arrow, 0.2, { rotation: this.top ? 0 : 180}).ease(Linear.easeNone);

@@ -29,25 +29,17 @@ class RoxURLLoader {
     public var type(default, null): Int;
     public var started(default, null): Bool = false;
 
-    private var oncomplete: Bool -> Dynamic -> Void; // isSuccessful, data(String/ByteArray/BitmapData)
-    private var onraw: ByteArray -> Void;
-    private var onprogress: Float -> Float -> Void;
-
     public function new(url: String, type: Int = BINARY, onComplete: Bool -> Dynamic -> Void) {
         this.url = url;
         this.type = type;
-        this.oncomplete = onComplete;
+        this.onComplete = onComplete;
     }
 
-    public inline function onRaw(inCallback: ByteArray -> Void) : RoxURLLoader {
-        onraw = inCallback;
-        return this;
-    }
+    public dynamic function onComplete(isOk: Bool, data: Dynamic) : Void {}
 
-    public inline function onProgress(inCallback: Float -> Float -> Void) : RoxURLLoader {
-        onprogress = inCallback;
-        return this;
-    }
+    public dynamic function onRaw(rawData: ByteArray) : Void {}
+
+    public dynamic function onProgress(bytesLoaded: Float, bytesTotal: Float) : Void {}
 
     public function start() {
         if (started) return;
@@ -56,28 +48,28 @@ class RoxURLLoader {
             var loader = new URLLoader();
             loader.dataFormat = URLLoaderDataFormat.BINARY;
             loader.addEventListener(Event.COMPLETE, onDone);
-            if (onprogress != null) {
+            if (onProgress != null) {
                 loader.addEventListener(ProgressEvent.PROGRESS, function(e: ProgressEvent) {
-                    onprogress(e.bytesLoaded, e.bytesTotal);
+                    onProgress(e.bytesLoaded, e.bytesTotal);
                 });
             }
             loader.addEventListener(IOErrorEvent.IO_ERROR, function(e: Event) {
-                oncomplete(false, new Error(IOErrorEvent.IO_ERROR));
+                onComplete(false, new Error(IOErrorEvent.IO_ERROR));
             });
 #if !html5
             loader.addEventListener(nme.events.SecurityErrorEvent.SECURITY_ERROR, function(e: Event) {
-                oncomplete(false, new Error(nme.events.SecurityErrorEvent.SECURITY_ERROR));
+                onComplete(false, new Error(nme.events.SecurityErrorEvent.SECURITY_ERROR));
             });
 #end
             loader.load(new URLRequest(url));
         } catch (e: Dynamic) {
-            haxe.Timer.delay(function() { oncomplete(false, e); }, 0);
+            haxe.Timer.delay(function() { onComplete(false, e); }, 0);
         }
     }
 
-    private inline function onDone(e: Dynamic) {
+    private function onDone(e: Dynamic) {
         var ba: ByteArray = cast e.target.data;
-        if (onraw != null) onraw(ba);
+        if (onRaw != null) onRaw(ba);
         switch (type) {
             case IMAGE:
                 var iscpp = #if cpp true #else false #end;
@@ -85,12 +77,12 @@ class RoxURLLoader {
                     var gifdec = new GIFDecoder();
                     gifdec.read(ba);
                     var bmd = gifdec.getFrameCount() > 0 ? gifdec.getImage().bitmapData : new BitmapData(0, 0);
-                    oncomplete(true, bmd);
+                    onComplete(true, bmd);
                 } else { // not a gif image or it's on flash target
                     var ldr = new Loader();
                     var imageDone = function(_) {
                         var bmd = cast(ldr.content, Bitmap).bitmapData;
-                        oncomplete(true, bmd);
+                        onComplete(true, bmd);
                     }
                     ldr.loadBytes(ba);
                     if (ldr.content != null) {
@@ -101,9 +93,9 @@ class RoxURLLoader {
                     }
                 }
             case TEXT:
-                oncomplete(true, ba.toString());
+                onComplete(true, ba.toString());
             case BINARY:
-                oncomplete(true, ba);
+                onComplete(true, ba);
         }
     }
 

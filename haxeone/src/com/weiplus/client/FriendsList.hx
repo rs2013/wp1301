@@ -43,14 +43,14 @@ class FriendsList extends BaseScreen {
 
     override public function onCreate() {
         title = new Sprite();
-        title.addChild(UiUtil.staticText("好友列表", 0xFFFFFF, buttonFontSize * 1.2));
+        title.addChild(UiUtil.staticText("好友列表", 0xFFFFFF, titleFontSize * 1.2));
         super.onCreate();
     }
 
     override public function onNewRequest(data: Dynamic) {
         user = data.user;
         type = data.type;
-        cast(title.getChildAt(0), TextField).text = type == "friends" ? "我的关注" : "我的粉丝";
+        cast(title.getChildAt(0), TextField).text = type == "friends" ? "关注列表" : "粉丝列表";
         isOwner = HpApi.instance.uid == user.id;
         addChild(MyUtils.getLoadingAnim("载入中").rox_move(screenWidth / 2, screenHeight / 2));
         refresh(false);
@@ -134,7 +134,7 @@ class FriendsList extends BaseScreen {
 
         if (list.length == 0) {
             var name = isOwner ? "您" : user.name;
-            var label = UiUtil.staticText(name + (type == "friends" ? "尚未关注任何人" : "目前还没有粉丝"), 0, 24);
+            var label = UiUtil.staticText(name + (type == "friends" ? "尚未关注任何人" : "目前还没有粉丝"), 0, buttonFontSize);
             main.addChild(label.rox_move((screenWidth - label.width) / 2, spacing * 2));
             return;
         }
@@ -149,11 +149,11 @@ class FriendsList extends BaseScreen {
                 avatar = c.avatar;
                 name = c.name;
             }
-            var text = UiUtil.staticText(name, 0, 22);
+            var text = UiUtil.staticText(name, 0, buttonFontSize * 0.8);
             sp.addChild(text.rox_move(60 + 2 * spacing, (h - text.height) / 2));
             if (isOwner) {
                 var label = (type == "friends" || c.bilateral) ? "取消关注" : "添加关注";
-                var btn = UiUtil.button(UiUtil.TOP_LEFT, null, label, 0, 20, "res/btn_grey.9.png", function(_) {
+                var btn = UiUtil.button(UiUtil.TOP_LEFT, null, label, 0, buttonFontSize * 0.6, "res/btn_grey.9.png", function(_) {
                     var cmd = type == "friends" || c.bilateral ? "delete" : "create";
                     trace("update friendship: cmd=" + cmd + ",fid=" + fid + ",fname=" + (type == "friends" ? c.friendName : c.name));
                     HpApi.instance.get("/friendships/" + cmd + "/" + fid, {}, function(code: Int, data: Dynamic) {

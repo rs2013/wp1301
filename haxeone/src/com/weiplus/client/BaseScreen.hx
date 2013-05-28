@@ -23,7 +23,8 @@ class BaseScreen extends RoxScreen {
     public var designHeight: Float;
     public var hasTitleBar: Bool = true;
     public var titleBar: Sprite;
-    public var buttonFontSize: Float = 32;
+    public var buttonFontSize: Float = 36;
+    public var titleFontSize: Float = 36;
     public var d2rScale: Float;
     public var content: Sprite;
     public var title: Sprite;
@@ -37,7 +38,8 @@ class BaseScreen extends RoxScreen {
         designWidth = DESIGN_WIDTH;
         d2rScale = screenWidth / designWidth;
         designHeight = screenHeight / d2rScale;
-        buttonFontSize = Std.int(36 * d2rScale);
+        buttonFontSize = 36 * d2rScale;
+        titleFontSize = 36;
     }
 
     override public function onCreate() {
@@ -59,7 +61,7 @@ class BaseScreen extends RoxScreen {
                 titleBar.addChild(title.rox_anchor(UiUtil.CENTER).rox_move(titleBar.width / 2, titleBar.height / 2));
             }
             titleBar.rox_scale(d2rScale);
-            btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回", 0xFFFFFF, buttonFontSize, "res/btn_back.9.png", function(e) { finish(RoxScreen.CANCELED); } );
+            btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回", 0xFFFFFF, titleFontSize, "res/btn_back.9.png", function(e) { finish(RoxScreen.CANCELED); } );
             if (hasBack) {
                 addTitleButton(btnBack, UiUtil.LEFT);
             }

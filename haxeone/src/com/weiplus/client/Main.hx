@@ -38,6 +38,7 @@ class Main {
 //        m.startScreen(Type.getClassName(SelectedScreen));
 //        m.startRootScreen(Type.getClassName(SettingScreen));
 //        m.startRootScreen(Type.getClassName(TestCurve));
+//        m.startRootScreen(Type.getClassName(com.roxstudio.haxe.hxquery.Test));
         m.startRootScreen(Type.getClassName(Splash));
 
 //        trace("screen started");

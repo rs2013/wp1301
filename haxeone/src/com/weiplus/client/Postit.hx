@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import com.roxstudio.haxe.game.GameUtil;
 import com.roxstudio.haxe.gesture.RoxGestureEvent;
 import com.roxstudio.haxe.gesture.RoxGestureAgent;
 import nme.events.MouseEvent;
@@ -36,7 +37,7 @@ class Postit extends Sprite {
     private static inline var MARGIN_RATIO = 1 / 40;
 
     private static inline var FONT_SIZE_RATIO = 24 / 600;
-    private static inline var MIN_FONT_SIZE = 16.0;
+    private static inline var MIN_FONT_SIZE = 12.0;
 
     private var userAvatar: RoxFlowPane;
     private var userLabel: TextField;
@@ -88,11 +89,12 @@ class Postit extends Sprite {
             h += 2 + margin;
 
             var head: Sprite = new Sprite();
-            head.graphics.rox_fillRect(0xFFFFFFFF, 0, 0, 60, 60);
+            var headSize = UiUtil.rangeValue(width * 0.12, 30, 60);
+            head.graphics.rox_fillRect(0xFFFFFFFF, 0, 0, headSize, headSize);
             MyUtils.asyncImage(status.user.profileImage, function(img: BitmapData) {
                 if (img == null || img.width == 0) img = ResKeeper.getAssetImage("res/no_avatar.png");
                 head.graphics.clear();
-                head.graphics.rox_drawRegion(img, 0, 0, 60, 60);
+                head.graphics.rox_drawRegion(img, 0, 0, headSize, headSize);
             });
             var avbg = UiUtil.ninePatch("res/avatar_bg.9.png");
             userAvatar = new RoxFlowPane([ head ], avbg, function(_) {
@@ -101,7 +103,7 @@ class Postit extends Sprite {
             userLabel = UiUtil.staticText(status.user.name, 0xFF0000, fontsize + 4, w - userAvatar.width - 2 * margin);
             var clock = UiUtil.bitmap("res/icon_time.png");
             var time = UiUtil.staticText(MyUtils.timeStr(status.createdAt), 0, fontsize);
-            var compact = new RoxNinePatchData(new Rectangle(0, 0, 20, 20));
+            var compact = new RoxNinePatchData(new Rectangle(0, 0, headSize * 0.4, headSize * 0.4));
             dateLabel = new RoxFlowPane([ clock, time ], new RoxNinePatch(compact));
             var tmp = new RoxFlowPane([ userLabel, dateLabel ], new RoxNinePatch(compact), UiUtil.LEFT);
             var hlayout = new RoxFlowPane([ userAvatar, tmp ], new RoxNinePatch(layout), [ margin ]);

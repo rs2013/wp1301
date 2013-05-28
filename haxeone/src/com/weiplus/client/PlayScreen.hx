@@ -88,7 +88,7 @@ class PlayScreen extends BaseScreen {
         frontLayer = new Sprite();
         addChild(frontLayer.rox_move(0, TOP_HEIGHT * d2rScale));
         addChild(titleBar);
-        var btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回", 0xFFFFFF, buttonFontSize, "res/btn_dark.9.png", function(_) { finish(RoxScreen.OK); } );
+        var btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回", 0xFFFFFF, titleFontSize, "res/btn_dark.9.png", function(_) { finish(RoxScreen.OK); } );
         addTitleButton(btnBack, UiUtil.LEFT);
 
         addEventListener(Event.DEACTIVATE, onDeactive);
@@ -213,7 +213,7 @@ class PlayScreen extends BaseScreen {
         var spacing = (tiph - headw) / 2;
         head.graphics.rox_drawRegionRound(userAvatar, 0, 0, headw, headw);
         head.graphics.rox_drawRoundRect(2, 0xFFFFFFFF, 0, 0, headw, headw);
-        var text = UiUtil.staticText("你太有才了！", 0xFFFFFF, 24);
+        var text = UiUtil.staticText("你太有才了！", 0xFFFFFF, buttonFontSize * 1.1);
         var textx = 2 * spacing + head.width;
         var dist = textx + text.width;
         var button: Sprite = null, buttonPic: Sprite = null;

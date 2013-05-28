@@ -34,7 +34,7 @@ class PublicScreen extends TimelineScreen {
         var h = 100 * d2rScale;
         btnpanel.graphics.rox_fillRect(0xAA000000, 0, -h, screenWidth, h);
         var btnBg = UiUtil.bitmap("res/btn_login.png").rox_scale(d2rScale);
-        btnpanel.addChild(btnBg.rox_move((screenWidth - btnBg.width) / 2, (h - btnBg.height * d2rScale) / 2 - h));
+        btnpanel.addChild(btnBg.rox_move((screenWidth - btnBg.width) / 2, (h - btnBg.height) / 2 - h));
         btnLogin = UiUtil.button(UiUtil.TOP_LEFT, null, "登录哈利波图", 0xFFFFFF, 40 * d2rScale, null, doLogin);
         btnpanel.addChild(btnLogin.rox_move((screenWidth - btnLogin.width) / 2, (h - btnLogin.height) / 2  - h));
         return btnpanel;

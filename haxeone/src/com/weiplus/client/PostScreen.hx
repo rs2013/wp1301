@@ -40,10 +40,10 @@ class PostScreen extends BaseScreen {
 
     override public function onCreate() {
         title = new Sprite();
-        title.addChild(UiUtil.staticText("发布", 0xFFFFFF, buttonFontSize * 1.2));
+        title.addChild(UiUtil.staticText("发布", 0xFFFFFF, titleFontSize * 1.2));
         super.onCreate();
         graphics.rox_fillRect(0xFF2C2C2C, 0, 0, screenWidth, screenHeight);
-        var btn = UiUtil.button(UiUtil.TOP_LEFT, null, "发布", 0xFFFFFF, buttonFontSize, "res/btn_red.9.png", doPost);
+        var btn = UiUtil.button(UiUtil.TOP_LEFT, null, "发布", 0xFFFFFF, titleFontSize, "res/btn_red.9.png", doPost);
         addTitleButton(btn, UiUtil.RIGHT);
     }
 
@@ -78,7 +78,7 @@ class PostScreen extends BaseScreen {
         var bmd = new BitmapData(80, 80, true, 0);
         bmd.draw(shape);
         var npd = new RoxNinePatchData(new Rectangle(20, 20, 40, 40), bmd);
-        input = UiUtil.staticText("", 0, 30, UiUtil.LEFT, true, 576, inputh - 40);
+        input = UiUtil.staticText("", 0, titleFontSize * 0.8, UiUtil.LEFT, true, 576, inputh - 40);
         var inputbox = new RoxFlowPane(616, inputh, UiUtil.TOP_LEFT, [ input ], new RoxNinePatch(npd), function(_) {
 #if android
             HaxeStub.startInputDialog("编辑内容", input.text, "完成", this);
@@ -184,7 +184,7 @@ class PostScreen extends BaseScreen {
         var lpanel = new RoxFlowPane([ btn0, btn2 ], new RoxNinePatch(layout), UiUtil.HCENTER, [ 0 ]);
         var rpanel = new RoxFlowPane([ btn1, btn3 ], new RoxNinePatch(layout), UiUtil.HCENTER, [ 0 ]);
         var sp = new Sprite();
-        var label = UiUtil.staticText("同步到：", 0x808080, 26, UiUtil.LEFT, 610);
+        var label = UiUtil.staticText("同步到：", 0x808080, titleFontSize * 0.8, UiUtil.LEFT, 610);
         sp.addChild(label.rox_move(20, 0));
         sp.addChild(lpanel.rox_move(12, label.height + 12));
         sp.addChild(rpanel.rox_move(320, label.height + 12));
@@ -204,7 +204,7 @@ class PostScreen extends BaseScreen {
         var valid = true;
 #end
         var ico = icon != null ? new Bitmap(ResKeeper.getAssetImage("res/icon_" + icon + (valid ? "" : "_g") + ".png")).rox_smooth() : null;
-        var txt = icon != null ? UiUtil.staticText(name, valid ? 0xFFFFFF : 0x666666, 32, UiUtil.LEFT, 150) : null;
+        var txt = icon != null ? UiUtil.staticText(name, valid ? 0xFFFFFF : 0x666666, titleFontSize * 1.2, UiUtil.LEFT, 150) : null;
 
         var sp = new RoxFlowPane(308, 88, UiUtil.TOP_LEFT, icon != null ? [ ico, txt ] : [],
                 bg, UiUtil.VCENTER, [ 10 ], icon != null ? onShareButton : null);

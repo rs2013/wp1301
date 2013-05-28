@@ -43,9 +43,9 @@ class SimpleMaker extends MakerScreen {
 //        btnCamera = UiUtil.button(UiUtil.CENTER, null, "系统相机", 0xFFFFFF, 50, "res/btn_common.9.png", onCamera);
 //        btnLocal = UiUtil.button(UiUtil.CENTER, null, "本地图库", 0xFFFFFF, 50, "res/btn_common.9.png", onLocal);
 //        btnReset = UiUtil.button(UiUtil.TOP_LEFT, null, "重新选择", 0xFFFFFF, buttonFontSize, "res/btn_common.9.png", setSelectUI);
-        btnSimple = UiUtil.button(UiUtil.CENTER, null, "简单", 0xFFFFFF, buttonFontSize, function(_) { setLevel(0); });
-        btnNormal = UiUtil.button(UiUtil.CENTER, null, "中等", 0xFFFFFF, buttonFontSize, function(_) { setLevel(1); });
-        btnHard = UiUtil.button(UiUtil.CENTER, null, "困难", 0xFFFFFF, buttonFontSize, function(_) { setLevel(2); });
+        btnSimple = UiUtil.button(UiUtil.CENTER, null, "简单", 0xFFFFFF, titleFontSize, function(_) { setLevel(0); });
+        btnNormal = UiUtil.button(UiUtil.CENTER, null, "中等", 0xFFFFFF, titleFontSize, function(_) { setLevel(1); });
+        btnHard = UiUtil.button(UiUtil.CENTER, null, "困难", 0xFFFFFF, titleFontSize, function(_) { setLevel(2); });
         levelBg = UiUtil.bitmap("res/bg_maker_bottom_selected.png");
         var levelPaneH = levelBg.height;
         levelPane = new Sprite();

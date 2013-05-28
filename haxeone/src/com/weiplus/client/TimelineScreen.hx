@@ -88,6 +88,7 @@ class TimelineScreen extends BaseScreen {
     override public function onCreate() {
 //        starttm = haxe.Timer.stamp();
         if (title == null) title = UiUtil.bitmap("res/icon_logo.png");
+        hasBack = false;
         super.onCreate();
         btnCol = btnSingleCol = UiUtil.button("res/icon_single_column.png", null, "res/btn_common.9.png", onButton);
         addTitleButton(btnCol, UiUtil.RIGHT);
@@ -219,6 +220,8 @@ class TimelineScreen extends BaseScreen {
         }
         if (page != null && statuses.length > 0) page.oldestId = oldest;
         update(numCol);
+//        DisplayListQuery.query.print(this.parent);
+//        trace("Postit.Sprite".find(this.parent));
     }
 
 #if cpp

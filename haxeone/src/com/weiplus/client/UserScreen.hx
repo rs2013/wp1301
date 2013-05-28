@@ -60,7 +60,9 @@ class UserScreen extends TimelineScreen {
         user.id = uid;
         if (uid == HpApi.instance.uid) {
             addTitleButton(btnSetting, UiUtil.RIGHT);
+            removeTitleButton(btnBack);
         } else {
+            addTitleButton(btnBack, UiUtil.LEFT);
             removeTitleButton(btnSetting);
         }
 //#if cpp
@@ -113,7 +115,7 @@ class UserScreen extends TimelineScreen {
         if (HpApi.instance.uid != user.id) {
             var cmd = (user.friendship & 1) != 0 ? "delete" : "create";
             var txt = cmd == "create" ? "添加关注" : "取消关注";
-            var btn: RoxFlowPane = UiUtil.button(UiUtil.TOP_LEFT, null, txt, 0xFFFFFF, 24, "res/btn_common.9.png", function(e: Dynamic) {
+            var btn: RoxFlowPane = UiUtil.button(UiUtil.TOP_LEFT, null, txt, 0xFFFFFF, titleFontSize * 0.7, "res/btn_common.9.png", function(e: Dynamic) {
                 HpApi.instance.get("/friendships/" + cmd + "/" + user.id, {}, function(code: Int, _) {
                     var txt = cmd == "create" ? "添加关注" : "取消关注";
                     if (code == 200) {
@@ -134,8 +136,8 @@ class UserScreen extends TimelineScreen {
             [ "粉丝", user.followerCount, 530, "followers" ]
         ];
         for (info in arr) {
-            var label = UiUtil.staticText(info[0], 0xFFFFFF, 24);
-            var num = UiUtil.staticText("" + info[1], 0xFFFFFF, 24);
+            var label = UiUtil.staticText(info[0], 0xFFFFFF, titleFontSize * 0.8);
+            var num = UiUtil.staticText("" + info[1], 0xFFFFFF, titleFontSize * 0.8);
             var panel = new Sprite();
             var gap = (100 - num.height - label.height) / 3;
             panel.graphics.rox_fillRect(0x01FFFFFF, 0, 0, 110, 100);
@@ -150,7 +152,7 @@ class UserScreen extends TimelineScreen {
             }
             sp.addChild(panel.rox_move(info[2], 0));
         }
-        sp.rox_scale(screenWidth / designWidth);
+        sp.rox_scale(d2rScale);
         headPanel = sp;
         return sp;
     }
@@ -184,7 +186,7 @@ class UserScreen extends TimelineScreen {
                 }
 
                 titleBar.rox_remove(title);
-                var txt = UiUtil.staticText(user.name, 0xFFFFFF, buttonFontSize * 1.2);
+                var txt = UiUtil.staticText(user.name, 0xFFFFFF, titleFontSize * 1.1);
                 title = new Sprite();
                 title.addChild(txt);
                 titleBar.addChild(title.rox_move((titleBar.width / d2rScale - title.width) / 2, (titleBar.height / d2rScale - title.height) / 2));

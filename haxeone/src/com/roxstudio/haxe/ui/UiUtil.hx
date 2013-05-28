@@ -143,7 +143,10 @@ class UiUtil {
                 } else {
                     onComplete(null);
                 }
-            }).onRaw(onRaw).onProgress(onProgress).start();
+            });
+            ldr.onRaw = onRaw;
+            ldr.onProgress = onProgress;
+            ldr.start();
         } else { // already in cache
             delay(function() { onComplete(cast img); });
         }
@@ -295,12 +298,12 @@ class UiUtil {
     }
 
     public static function message(text: String, ?timeInSec: Float = 2.0) {
-        var label = UiUtil.staticText(text, 0xFFFFFF, 24);
+        var stage = Lib.current.stage;
+        var ratio = stage.stageWidth / 640;
+        var label = UiUtil.staticText(text, 0xFFFFFF, 24 * ratio);
         var box = new Sprite();
         GfxUtil.rox_fillRoundRect(box.graphics, 0xBB333333, 0, 0, label.width + 20, label.height + 16);
         box.addChild(UiUtil.rox_move(label, (box.width - label.width) / 2, (box.height - label.height) / 2));
-        var stage = Lib.current.stage;
-        var ratio = stage.stageWidth / 640;
         stage.addChild(UiUtil.rox_move(box, (stage.stageWidth - box.width) / 2, stage.stageHeight - box.height - 100 * ratio));
         delay(function() { stage.removeChild(box); }, timeInSec);
     }

@@ -35,9 +35,8 @@ class Splash extends BaseScreen {
         var r = new Rectangle(0, bg.height - screenHeight / d2rScale, bg.width, screenHeight / d2rScale);
         graphics.rox_drawRegion(bg, r, 0, 0, screenWidth, screenHeight);
         var logo = ResKeeper.getAssetImage("res/icon_logo_big.png");
-        var ratio = logo.width / 640;
-        graphics.rox_drawRegion(logo, null, (screenWidth - logo.width * ratio) / 2, 0.15 * screenHeight,
-                logo.width * ratio, logo.height * ratio);
+        graphics.rox_drawRegion(logo, null, (screenWidth - logo.width * d2rScale) / 2, 0.15 * screenHeight,
+                logo.width * d2rScale, logo.height * d2rScale);
 //        trace("x=" + ((w - logo.width) / 2) + ",y=" + (0.33 * h));
     }
 

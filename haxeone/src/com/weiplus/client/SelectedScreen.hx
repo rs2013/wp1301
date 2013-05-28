@@ -21,7 +21,7 @@ class SelectedScreen extends TimelineScreen {
 
     override public function onCreate() {
         title = new Sprite();
-        title.addChild(UiUtil.staticText("精选", 0xFFFFFF, buttonFontSize * 1.2));
+        title.addChild(UiUtil.staticText("精选", 0xFFFFFF, titleFontSize * 1.2));
         super.onCreate();
     }
 

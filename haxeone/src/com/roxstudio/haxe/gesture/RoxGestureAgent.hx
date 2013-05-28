@@ -1,7 +1,6 @@
 package com.roxstudio.haxe.gesture;
 
 import nme.ui.MultitouchInputMode;
-import flash.display.InteractiveObject;
 import nme.display.Sprite;
 import nme.display.DisplayObjectContainer;
 import com.eclecticdesignstudio.motion.actuators.GenericActuator;
