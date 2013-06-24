@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import nme.events.MouseEvent;
 import com.roxstudio.haxe.ui.UiUtil;
 import com.weiplus.client.model.Routine;
@@ -116,7 +117,7 @@ class TimelineScreen extends BaseScreen {
             restore();
 #end
             if (storedStatuses == null || storedStatuses.length == 0) {
-                addChild(MyUtils.getLoadingAnim("载入中").rox_move(screenWidth / 2, screenHeight / 2));
+                addChild(MyUtils.getLoadingAnim("载入中".i18n()).rox_move(screenWidth / 2, screenHeight / 2));
                 refresh(false);
             } else {
                 updateList(storedStatuses, false);
@@ -341,7 +342,7 @@ class TimelineScreen extends BaseScreen {
 //        trace(">>>type=" + e.type + ",target=" + e.target+",current="+e.currentTarget);
         switch (e.type) {
             case RoxGestureEvent.GESTURE_TAP:
-                trace("timeline.onTap,target=" + e.target + ",currentTarget=" + e.currentTarget);
+//                trace("timeline.onTap,target=" + e.target + ",currentTarget=" + e.currentTarget);
                 for (i in 0...main.numChildren) {
                     var sp = main.getChildAt(i);
                     if (Std.is(sp, Postit)) {
@@ -442,7 +443,7 @@ class TimelineScreen extends BaseScreen {
         animating = true;
         var pin: Sprite = switch (action) { case 1: popup1; case 2: popup2; case 3: popup1; case 4: null; }
         var pout: Sprite = switch (action) { case 1: null; case 2: popup1; case 3: popup2; case 4: popupbg.contains(popup1) ? popup1 : popup2; }
-        trace("pin=" + pin+",pout=" + pout);
+//        trace("pin=" + pin+",pout=" + pout);
         if (pin != null) {
             popupbg.addChild(pin);
             pin.alpha = 0.01;
@@ -464,14 +465,14 @@ class TimelineScreen extends BaseScreen {
             UiUtil.delay(function() { this.rox_remove(popupbg); }, FADE_TM);
         }
         var items: Array<ListItem> = [];
-        items.push({ id: "", icon: null, name: "用照片创建小游戏", type: 1, data: null });
-        items.push({ id: "jigsaw", icon: "res/icon_jigsaw_maker.png", name: "奇幻拼图", type: 3, data: null });
-        items.push({ id: "swappuzzle", icon: "res/icon_swap_maker.png", name: "方块挑战", type: 3, data: null });
-        items.push({ id: "slidepuzzle", icon: "res/icon_slide_maker.png", name: "移形换位", type: 3, data: null });
-        items.push({ id: "", icon: null, name: "拍摄神奇魔法照片", type: 1, data: null });
-        items.push({ id: "camera", icon: "res/icon_camera.png", name: "魔法相机", type: 2, data: null });
+        items.push({ id: "", icon: null, name: "用照片创建小游戏".i18n(), type: 1, data: null });
+        items.push({ id: "jigsaw", icon: "res/icon_jigsaw_maker.png", name: "奇幻拼图".i18n(), type: 3, data: null });
+        items.push({ id: "swappuzzle", icon: "res/icon_swap_maker.png", name: "方块挑战".i18n(), type: 3, data: null });
+        items.push({ id: "slidepuzzle", icon: "res/icon_slide_maker.png", name: "移形换位".i18n(), type: 3, data: null });
+        items.push({ id: "", icon: null, name: "拍摄神奇魔法照片".i18n(), type: 1, data: null });
+        items.push({ id: "camera", icon: "res/icon_camera.png", name: "魔法相机".i18n(), type: 2, data: null });
         popup1 = MyUtils.bubbleList(items, function(i: ListItem) {
-            trace(i);
+//            trace(i);
             switch (i.id) {
                 case "camera":
                     startScreen(Type.getClassName(com.weiplus.client.HarryCamera), RoxAnimate.NO_ANIMATE);
@@ -485,10 +486,10 @@ class TimelineScreen extends BaseScreen {
         });
 
         items = [];
-        items.push({ id: "", icon: null, name: "用照片创建小游戏", type: 1, data: null });
-        items.push({ id: "local_album", icon: "res/icon_local_album.png", name: "从相册选择", type: 2, data: null });
-        items.push({ id: "sys_camera", icon: "res/icon_sys_camera.png", name: "系统相机拍摄", type: 2, data: null });
-        items.push({ id: "harry_camera", icon: "res/icon_harry_camera.png", name: "魔法相机拍摄", type: 2, data: null });
+        items.push({ id: "", icon: null, name: "用照片创建小游戏".i18n(), type: 1, data: null });
+        items.push({ id: "local_album", icon: "res/icon_local_album.png", name: "从相册选择".i18n(), type: 2, data: null });
+        items.push({ id: "sys_camera", icon: "res/icon_sys_camera.png", name: "系统相机拍摄".i18n(), type: 2, data: null });
+        items.push({ id: "harry_camera", icon: "res/icon_harry_camera.png", name: "魔法相机拍摄".i18n(), type: 2, data: null });
         items.push({ id: "back", icon: "res/icon_back.png", name: "", type: 4, data: null });
         popup2 = MyUtils.bubbleList(items, function(i: ListItem) {
             switch (i.id) {
@@ -531,7 +532,7 @@ class TimelineScreen extends BaseScreen {
     }
 
     private function onHarry(_) {
-        trace("onHarryCamera");
+//        trace("onHarryCamera");
         requestCode = 3;
 #if android
         HaxeStub.startHarryCamera(requestCode);
@@ -541,7 +542,7 @@ class TimelineScreen extends BaseScreen {
     }
 
     private function onCamera(_) {
-        trace("oncamera");
+//        trace("oncamera");
         requestCode = 1;
 #if android
         if (!sys.FileSystem.exists(ALBUM_DIR)) com.roxstudio.haxe.io.FileUtil.mkdirs(ALBUM_DIR);
@@ -554,7 +555,7 @@ class TimelineScreen extends BaseScreen {
     }
 
     private function onLocal(_) {
-        trace("onlocal");
+//        trace("onlocal");
 //        if (!FileSystem.exists(ALBUM_DIR)) FileUtil.mkdirs(ALBUM_DIR);
 //        var name = "" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
         requestCode = 2;

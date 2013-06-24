@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import haxe.Json;
 import com.roxstudio.haxe.ui.RoxScreenManager;
 import com.roxstudio.haxe.game.GameUtil;
@@ -23,8 +24,6 @@ using com.roxstudio.haxe.ui.UiUtil;
 class PostScreen extends BaseScreen {
 
     private static inline var SPACING = 30;
-    private static inline var TEXT1 = "我用#哈利波图#制作了一个很酷的游戏，快来玩吧！";
-    private static inline var TEXT2 = "我用#哈利波图#拍了一张有趣的照片，快来看看吧！";
 
 #if android
     private static inline var MAKER_DIR = "/sdcard/.harryphoto/maker";
@@ -40,10 +39,10 @@ class PostScreen extends BaseScreen {
 
     override public function onCreate() {
         title = new Sprite();
-        title.addChild(UiUtil.staticText("发布", 0xFFFFFF, titleFontSize * 1.2));
+        title.addChild(UiUtil.staticText("发布".i18n(), 0xFFFFFF, titleFontSize * 1.2));
         super.onCreate();
         graphics.rox_fillRect(0xFF2C2C2C, 0, 0, screenWidth, screenHeight);
-        var btn = UiUtil.button(UiUtil.TOP_LEFT, null, "发布", 0xFFFFFF, titleFontSize, "res/btn_red.9.png", doPost);
+        var btn = UiUtil.button(UiUtil.TOP_LEFT, null, "发布".i18n(), 0xFFFFFF, titleFontSize, "res/btn_red.9.png", doPost);
         addTitleButton(btn, UiUtil.RIGHT);
     }
 
@@ -53,12 +52,12 @@ class PostScreen extends BaseScreen {
         useBinds = new Hash<Bool>();
         for (t in com.weiplus.client.model.Binding.allTypes()) {
             var enabled = true;
-#if android
+#if (android && !testin)
             enabled = HpManager.isBindingEnabled(com.weiplus.client.model.Binding.id(t));
 #end
             useBinds.set(com.weiplus.client.model.Binding.id(t), enabled);
         }
-        trace("useBinds="+useBinds);
+//        trace("useBinds="+useBinds);
 
         main = new Sprite();
         var mainh = height / d2rScale;
@@ -80,14 +79,16 @@ class PostScreen extends BaseScreen {
         var npd = new RoxNinePatchData(new Rectangle(20, 20, 40, 40), bmd);
         input = UiUtil.staticText("", 0, titleFontSize * 0.8, UiUtil.LEFT, true, 576, inputh - 40);
         var inputbox = new RoxFlowPane(616, inputh, UiUtil.TOP_LEFT, [ input ], new RoxNinePatch(npd), function(_) {
+            var text1 = "编辑内容".i18n();
+            var text2 = "完成".i18n();
 #if android
-            HaxeStub.startInputDialog("编辑内容", input.text, "完成", this);
+            HaxeStub.startInputDialog(text1, input.text, text2, this);
 #end
         });
 
         main.addChild(inputbox.rox_move(12, preview.height + 2 * SPACING));
-        trace("inputh="+inputh+",mainh="+mainh+",inputboxh="+inputbox.height+",input=("+input.width+","+input.height
-                +"),text=("+input.textWidth+","+input.textHeight+")");
+//        trace("inputh="+inputh+",mainh="+mainh+",inputboxh="+inputbox.height+",input=("+input.width+","+input.height
+//                +"),text=("+input.textWidth+","+input.textHeight+")");
 
         main.rox_scale(d2rScale);
         content.addChild(main);
@@ -98,8 +99,10 @@ class PostScreen extends BaseScreen {
         status = makerData.status;
         image = makerData.image.bmd;
         data = makerData.data;
-        trace("PostScreen: image.w=" + image.width + ",h=" + image.height);
-        input.text = status.appData.type == "image" ? TEXT2 : TEXT1;
+//        trace("PostScreen: image.w=" + image.width + ",h=" + image.height);
+        input.text = status.appData.type == "image" ?
+            "我用#哈利波图#拍了一张有趣的照片，快来看看吧！".i18n() :
+            "我用#哈利波图#制作了一个很酷的游戏，快来玩吧！".i18n();
         var rect: Rectangle = if (image.width == image.height) {
             null;
         } else {
@@ -126,9 +129,10 @@ class PostScreen extends BaseScreen {
     }
 
     private function doPost(_) {
-        trace("doPost");
-#if android
-        addChild(waitingAnim("发布中"));
+//        trace("doPost");
+        var text = "发布中".i18n();
+#if (android && !testin)
+        addChild(waitingAnim(text));
         var imgPath = MAKER_DIR + "/image.jpg";
         if (!sys.FileSystem.exists(imgPath)) imgPath = "";
         var zipPath = MAKER_DIR + "/data.zip";
@@ -139,7 +143,7 @@ class PostScreen extends BaseScreen {
         }
         HpManager.postStatus(types, input.text, imgPath, status.appData.type, zipPath, "", "", this);
 #else
-        onApiCallback(null, "ok", "");
+        onApiCallback("statuses_create", "ok", "");
 #end
     }
 
@@ -153,7 +157,7 @@ class PostScreen extends BaseScreen {
     }
 
     private function onApiCallback(apiName: String, resultCode: String, str: String) {
-        trace("onApiCallback: name="+apiName+",result="+resultCode+",str="+str);
+//        trace("onApiCallback: name="+apiName+",result="+resultCode+",str="+str);
         UiUtil.rox_removeByName(this, "waitingMask"); // remove mask
         switch (apiName) {
             case "statuses_create":
@@ -173,9 +177,9 @@ class PostScreen extends BaseScreen {
     }
 
     private function sharePanel() : Sprite {
-        var btn0 = shareButton("sina", "新浪微博", "tl", "SINA_WEIBO");
-        var btn1 = shareButton("tencent", "腾讯微博", "tr", "TENCENT_WEIBO");
-        var btn2 = shareButton("renren", "人人网", "ml", "RENREN_WEIBO");
+        var btn0 = shareButton("sina", "新浪微博".i18n(), "tl", "SINA_WEIBO");
+        var btn1 = shareButton("tencent", "腾讯微博".i18n(), "tr", "TENCENT_WEIBO");
+        var btn2 = shareButton("renren", "人人网".i18n(), "ml", "RENREN_WEIBO");
         var btn3 = shareButton(null, "", "mr", "");
 //        var btn3 = shareButton("sohu_g", "搜狐微博", "ml");
 //        var btn4 = shareButton("qqspace_g", "QQ空间", "ml");
@@ -184,7 +188,7 @@ class PostScreen extends BaseScreen {
         var lpanel = new RoxFlowPane([ btn0, btn2 ], new RoxNinePatch(layout), UiUtil.HCENTER, [ 0 ]);
         var rpanel = new RoxFlowPane([ btn1, btn3 ], new RoxNinePatch(layout), UiUtil.HCENTER, [ 0 ]);
         var sp = new Sprite();
-        var label = UiUtil.staticText("同步到：", 0x808080, titleFontSize * 0.8, UiUtil.LEFT, 610);
+        var label = UiUtil.staticText("同步到：".i18n(), 0x808080, titleFontSize * 0.8, UiUtil.LEFT, 610);
         sp.addChild(label.rox_move(20, 0));
         sp.addChild(lpanel.rox_move(12, label.height + 12));
         sp.addChild(rpanel.rox_move(320, label.height + 12));
@@ -197,7 +201,7 @@ class PostScreen extends BaseScreen {
 
     private function shareButton(icon: String, name: String, bg: String, type: String) : RoxFlowPane {
         var bg = UiUtil.ninePatch("res/btn_share_" + bg + ".9.png");
-#if android
+#if (android && !testin)
         var valid = type != "" && HpManager.isBindingSessionValid(type) && useBinds.get(type);
 //        trace("type=" + type + ",hasBinding=" + HpManager.hasBinding(type) + ",isValid=" + HpManager.isBindingSessionValid(type));
 #else
@@ -220,15 +224,16 @@ class PostScreen extends BaseScreen {
     }
 
     private function onShareButton(e: Dynamic) {
-        trace("share button " + e.target.name + " clicked");
-#if android
+//        trace("share button " + e.target.name + " clicked");
+        var text = "登录中".i18n();
+#if (android && !testin)
         var type = e.target.name;
         if (HpManager.isBindingSessionValid(type)) {
             useBinds.set(type, !useBinds.get(type));
             resetSharePanel();
             return;
         }
-        addChild(waitingAnim("登录中"));
+        addChild(waitingAnim(text));
         HpManager.startAuth(type, this);
 #end
     }

@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import com.roxstudio.haxe.ui.RoxApp;
 import com.roxstudio.haxe.game.ResKeeper;
 import com.eclecticdesignstudio.motion.easing.Linear;
@@ -30,7 +31,7 @@ class Refresher extends Sprite {
         var spacing = 40 * d2rScale;
         var arrowwrap = new Sprite();
         arrowwrap.addChild(arrow);
-        var label = UiUtil.staticText(top ? "下拉可以刷新" : "上拉可以刷新", 0, buttonFontSize * 0.8);
+        var label = UiUtil.staticText(top ? "下拉可以刷新".i18n() : "上拉可以刷新".i18n(), 0, buttonFontSize * 0.8);
         var w = arrowwrap.width + spacing + label.width;
         graphics.rox_fillRect(0x01FFFFFF, 0, 0, RoxApp.screenWidth, 80);
         addChild(arrowwrap.rox_move((this.width - w) / 2 + arrow.width / 2, (80 - arrowwrap.height) / 2 + arrow.height / 2));
@@ -41,7 +42,7 @@ class Refresher extends Sprite {
         if (updated) return;
         updated = true;
         var oldLabel = getChildAt(numChildren - 1);
-        var label = UiUtil.staticText("松开立即刷新", 0, buttonFontSize * 0.8);
+        var label = UiUtil.staticText("松开立即刷新".i18n(), 0, buttonFontSize * 0.8);
         removeChild(oldLabel);
         addChild(label.rox_move(oldLabel.x, oldLabel.y));
         Actuate.tween(arrow, 0.2, { rotation: this.top ? 0 : 180}).ease(Linear.easeNone);

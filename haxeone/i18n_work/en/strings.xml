@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<strings>
+  <file path="src/com/weiplus/apps/jigsaw/App.hx">
+    <t id="预览">Preview</t>
+  </file>
+  <file path="src/com/weiplus/apps/slidepuzzle/App.hx">
+    <t id="预览">Preview</t>
+  </file>
+  <file path="src/com/weiplus/apps/swappuzzle/App.hx">
+    <t id="预览">Preview</t>
+  </file>
+  <file path="src/com/weiplus/client/BaseScreen.hx">
+    <t id="返回">Back</t>
+  </file>
+  <file path="src/com/weiplus/client/CommentsScreen.hx">
+    <t id="发表评论">Add Comment</t>
+    <t id="暂时没有评论">No comments at the moment.</t>
+    <t id="没有更多评论了">No more comments</t>
+    <t id="测试评论">A test comment</t>
+    <t id="添加">Add</t>
+    <t id="添加评论...">Add comment...</t>
+    <t id="网络错误. code=">Network error. code=</t>
+    <t id="评论列表">Comments</t>
+    <t id="评论已经添加">Comment added</t>
+    <t id="载入中">Loading</t>
+  </file>
+  <file path="src/com/weiplus/client/FriendsList.hx">
+    <t id="关注列表">Follows</t>
+    <t id="关系更新成功">Updated</t>
+    <t id="取消关注">Unfollow</t>
+    <t id="好友列表">_Friends_</t>
+    <t id="尚未关注任何人"> has no follows.</t>
+    <t id="您">You</t>
+    <t id="添加关注">Follow</t>
+    <t id="目前还没有粉丝"> has no followers.</t>
+    <t id="粉丝列表">Followers</t>
+    <t id="网络错误. code=">Network error. code=</t>
+    <t id="网络错误，code=">Network error. code=</t>
+    <t id="载入中">Loading</t>
+  </file>
+  <file path="src/com/weiplus/client/HomeScreen.hx">
+    <t id="个人">Personal</t>
+    <t id="广场">Public</t>
+  </file>
+  <file path="src/com/weiplus/client/LoginScreen.hx">
+    <t id="人人网账号登陆">Use Renren Account</t>
+    <t id="新浪微博账号登陆">Use Weibo Account</t>
+    <t id="登录中">Signing In</t>
+    <t id="登录错误. error=">Login failed. error=</t>
+    <t id="腾讯微博账号登陆">Use Tencent Account</t>
+  </file>
+  <file path="src/com/weiplus/client/MakerScreen.hx">
+    <t id="下一步">Next</t>
+    <t id="处理中">Processing</t>
+  </file>
+  <file path="src/com/weiplus/client/MyUtils.hx">
+    <t id="分钟前"> minutes ago</t>
+    <t id="刚刚">Just now</t>
+    <t id="小时前"> hours ago</t>
+  </file>
+  <file path="src/com/weiplus/client/PictureScreen.hx">
+    <t id="保存">Save</t>
+    <t id="保存中">Saving</t>
+    <t id="保存成功">Saved</t>
+    <t id="查看原图">Original Picture</t>
+  </file>
+  <file path="src/com/weiplus/client/PlayScreen.hx">
+    <t id="你太有才了！">You are genius!</t>
+    <t id="分">' </t>
+    <t id="发布">Add</t>
+    <t id="发表感受">Comment</t>
+    <t id="完成了你制作的游戏！"> !</t>
+    <t id="完成游戏，用时">Game completed, used </t>
+    <t id="我用">I've completed your game within </t>
+    <t id="查看原图">V i e w</t>
+    <t id="秒">'' </t>
+    <t id="评论已经添加">Comment added</t>
+    <t id="载入中">Loading</t>
+    <t id="返回">Back</t>
+  </file>
+  <file path="src/com/weiplus/client/PostScreen.hx">
+    <t id="人人网">Renren</t>
+    <t id="发布">Post</t>
+    <t id="发布中">Sending</t>
+    <t id="同步到：">Share to: </t>
+    <t id="完成">Done</t>
+    <t id="我用#哈利波图#制作了一个很酷的游戏，快来玩吧！">I've just made a super cool game with #AppMagics#, come & enjoy it!</t>
+    <t id="我用#哈利波图#拍了一张有趣的照片，快来看看吧！">I've just take a super cool magic photo with #AppMagics#, hope you enjoy it!</t>
+    <t id="新浪微博">Weibo</t>
+    <t id="登录中">Signing in</t>
+    <t id="编辑内容">Edit</t>
+    <t id="腾讯微博">Tencent</t>
+  </file>
+  <file path="src/com/weiplus/client/Postit.hx">
+    <t id="已经赞过了">Praised</t>
+    <t id="网络错误，ex=">Network error. ex=</t>
+    <t id="评论(">Comments(</t>
+    <t id="赞 +1">Praise +1</t>
+    <t id="赞(">Praises(</t>
+    <t id="赞已取消">Canceled</t>
+    <t id="载入中">Loading</t>
+    <t id="载入失败">Loading failed</t>
+  </file>
+  <file path="src/com/weiplus/client/PublicScreen.hx">
+    <t id="登录哈利波图">Login AppMagics</t>
+  </file>
+  <file path="src/com/weiplus/client/Refresher.hx">
+    <t id="上拉可以刷新">Drag-up to refresh</t>
+    <t id="下拉可以刷新">Draw-down to refresh</t>
+    <t id="松开立即刷新">Release to refresh</t>
+  </file>
+  <file path="src/com/weiplus/client/RoutineScreen.hx">
+    <t id="从相册选择">From Album</t>
+    <t id="奇幻拼图">Jigsaw</t>
+    <t id="拍摄神奇魔法照片">Take a Magic Photo</t>
+    <t id="方块挑战">Swap Puzzle</t>
+    <t id="暂时没有动态">No activities</t>
+    <t id="没有更多动态了">No more activities</t>
+    <t id="消息">Activities</t>
+    <t id="用照片创建小游戏">Create Game with Photo</t>
+    <t id="移形换位">Slide Puzzle</t>
+    <t id="系统相机拍摄">Installed Cameras</t>
+    <t id="网络错误. code=">Network error. code=</t>
+    <t id="载入中">Loading</t>
+    <t id="魔法相机">Magic Camera</t>
+    <t id="魔法相机拍摄">Magic Camera</t>
+  </file>
+  <file path="src/com/weiplus/client/SelectedScreen.hx">
+    <t id="精选">Selection</t>
+  </file>
+  <file path="src/com/weiplus/client/SettingScreen.hx">
+    <t id="你已经登出">Logged off</t>
+    <t id="关于哈利波图">About AppMagics</t>
+    <t id="分享设置">Share Settings</t>
+    <t id="图片缓存已清除">Cache cleared</t>
+    <t id="意见反馈">Feedback</t>
+    <t id="推荐应用">Recommended</t>
+    <t id="注销登录">Logoff</t>
+    <t id="清除图片缓存">Clear Cache</t>
+    <t id="迈吉客科技（上海）有限公司">AppMagics (Shanghai) Co.Ltd</t>
+  </file>
+  <file path="src/com/weiplus/client/ShareSetting.hx">
+    <t id="人人网">Renren.com</t>
+    <t id="新浪微博">Sina Weibo</t>
+    <t id="登录错误. error=">Login failed. error=</t>
+    <t id="腾讯微博">Tencent Weibo</t>
+  </file>
+  <file path="src/com/weiplus/client/SimpleMaker.hx">
+    <t id="中等">Normal</t>
+    <t id="困难">Hard</t>
+    <t id="简单">Easy</t>
+  </file>
+  <file path="src/com/weiplus/client/TimelineScreen.hx">
+    <t id="从相册选择">From Album</t>
+    <t id="奇幻拼图">Jigsaw</t>
+    <t id="拍摄神奇魔法照片">Take a Magic Photo</t>
+    <t id="方块挑战">Swap Puzzle</t>
+    <t id="用照片创建小游戏">Create Game with Photo</t>
+    <t id="移形换位">Slide Puzzle</t>
+    <t id="系统相机拍摄">Installed Cameras</t>
+    <t id="载入中">Loading</t>
+    <t id="魔法相机">Magic Camera</t>
+    <t id="魔法相机拍摄">Magic Camera</t>
+  </file>
+  <file path="src/com/weiplus/client/UserScreen.hx">
+    <t id="作品">Spells</t>
+    <t id="关注">Follow</t>
+    <t id="取消关注">Unfollow</t>
+    <t id="已成功">$1ed</t>
+    <t id="添加关注">Follow</t>
+    <t id="粉丝">Follower</t>
+    <t id="载入中">Loading</t>
+    <t id="错误,code=">Error. code=</t>
+  </file>
+</strings>

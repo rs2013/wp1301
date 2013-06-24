@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import Reflect;
 import nme.net.SharedObject;
 import com.roxstudio.haxe.ui.RoxFlowPane;
@@ -24,8 +25,8 @@ class HomeScreen extends TimelineScreen {
         super();
         this.disposeAtFinish = false;
         this.screenTabIndex = 0;
-        btnPlaza = UiUtil.button(UiUtil.TOP_LEFT, null, "广场", 0xFFFFFF, titleFontSize, "res/btn_common.9.png", doSwitch);
-        btnHome = UiUtil.button(UiUtil.TOP_LEFT, null, "个人", 0xFFFFFF, titleFontSize, "res/btn_common.9.png", doSwitch);
+        btnPlaza = UiUtil.button(UiUtil.TOP_LEFT, null, "广场".i18n(), 0xFFFFFF, titleFontSize, "res/btn_common.9.png", doSwitch);
+        btnHome = UiUtil.button(UiUtil.TOP_LEFT, null, "个人".i18n(), 0xFFFFFF, titleFontSize, "res/btn_common.9.png", doSwitch);
         so = SharedObject.getLocal("harryphoto.HomeScreen");
         isPublic = Reflect.hasField(so.data, "isPublic") ? so.data.isPublic : true;
     }

@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import nme.text.TextField;
 import com.weiplus.client.model.Friendship;
 import com.weiplus.client.model.User;
@@ -43,16 +44,16 @@ class FriendsList extends BaseScreen {
 
     override public function onCreate() {
         title = new Sprite();
-        title.addChild(UiUtil.staticText("好友列表", 0xFFFFFF, titleFontSize * 1.2));
+        title.addChild(UiUtil.staticText("好友列表".i18n(), 0xFFFFFF, titleFontSize * 1.2));
         super.onCreate();
     }
 
     override public function onNewRequest(data: Dynamic) {
         user = data.user;
         type = data.type;
-        cast(title.getChildAt(0), TextField).text = type == "friends" ? "关注列表" : "粉丝列表";
+        cast(title.getChildAt(0), TextField).text = type == "friends" ? "关注列表".i18n() : "粉丝列表".i18n();
         isOwner = HpApi.instance.uid == user.id;
-        addChild(MyUtils.getLoadingAnim("载入中").rox_move(screenWidth / 2, screenHeight / 2));
+        addChild(MyUtils.getLoadingAnim("载入中".i18n()).rox_move(screenWidth / 2, screenHeight / 2));
         refresh(false);
     }
 
@@ -93,7 +94,7 @@ class FriendsList extends BaseScreen {
         UiUtil.rox_removeByName(this, MyUtils.LOADING_ANIM_NAME);
         refreshing = false;
         if (code != 200) {
-            UiUtil.message("网络错误. code=" + code + ",message=" + data);
+            UiUtil.message("网络错误. code=".i18n() + code + ",message=" + data);
             return;
         }
 
@@ -133,8 +134,9 @@ class FriendsList extends BaseScreen {
         main.rox_removeAll();
 
         if (list.length == 0) {
-            var name = isOwner ? "您" : user.name;
-            var label = UiUtil.staticText(name + (type == "friends" ? "尚未关注任何人" : "目前还没有粉丝"), 0, buttonFontSize);
+            var name = isOwner ? "您".i18n() : user.name;
+            var label = UiUtil.staticText(name +
+                (type == "friends" ? "尚未关注任何人".i18n() : "目前还没有粉丝".i18n()), 0, buttonFontSize);
             main.addChild(label.rox_move((screenWidth - label.width) / 2, spacing * 2));
             return;
         }
@@ -149,19 +151,19 @@ class FriendsList extends BaseScreen {
                 avatar = c.avatar;
                 name = c.name;
             }
-            var text = UiUtil.staticText(name, 0, buttonFontSize * 0.8);
+            var text = UiUtil.staticText(name, 0, buttonFontSize * 0.9);
             sp.addChild(text.rox_move(60 + 2 * spacing, (h - text.height) / 2));
             if (isOwner) {
-                var label = (type == "friends" || c.bilateral) ? "取消关注" : "添加关注";
-                var btn = UiUtil.button(UiUtil.TOP_LEFT, null, label, 0, buttonFontSize * 0.6, "res/btn_grey.9.png", function(_) {
+                var label = (type == "friends" || c.bilateral) ? "取消关注".i18n() : "添加关注".i18n();
+                var btn = UiUtil.button(UiUtil.TOP_LEFT, null, label, 0, buttonFontSize * 0.8, "res/btn_grey.9.png", function(_) {
                     var cmd = type == "friends" || c.bilateral ? "delete" : "create";
-                    trace("update friendship: cmd=" + cmd + ",fid=" + fid + ",fname=" + (type == "friends" ? c.friendName : c.name));
+//                    trace("update friendship: cmd=" + cmd + ",fid=" + fid + ",fname=" + (type == "friends" ? c.friendName : c.name));
                     HpApi.instance.get("/friendships/" + cmd + "/" + fid, {}, function(code: Int, data: Dynamic) {
                         var msg = if (code == 200) {
                             refresh(false);
-                            "关系更新成功";
+                            "关系更新成功".i18n();
                         } else {
-                            "网络错误，code=" + code;
+                            "网络错误，code=".i18n() + code;
                         }
                         UiUtil.message(msg);
                     });

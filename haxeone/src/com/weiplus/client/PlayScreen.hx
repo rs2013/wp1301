@@ -1,5 +1,6 @@
 ﻿package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import nme.text.TextField;
 import com.eclecticdesignstudio.motion.easing.Linear;
 import com.roxstudio.haxe.game.GameUtil;
@@ -88,7 +89,7 @@ class PlayScreen extends BaseScreen {
         frontLayer = new Sprite();
         addChild(frontLayer.rox_move(0, TOP_HEIGHT * d2rScale));
         addChild(titleBar);
-        var btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回", 0xFFFFFF, titleFontSize, "res/btn_dark.9.png", function(_) { finish(RoxScreen.OK); } );
+        var btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回".i18n(), 0xFFFFFF, titleFontSize, "res/btn_dark.9.png", function(_) { finish(RoxScreen.OK); } );
         addTitleButton(btnBack, UiUtil.LEFT);
 
         addEventListener(Event.DEACTIVATE, onDeactive);
@@ -97,7 +98,7 @@ class PlayScreen extends BaseScreen {
 
     override public function onNewRequest(data: Dynamic) {
         this.status = cast(data);
-        trace("playscreen: status=" + status);
+//        trace("playscreen: status=" + status);
         this.userAvatar = ResKeeper.getAssetImage("res/no_avatar.png");
         if (status.makerData != null) { // from maker
             onStart(null);
@@ -116,7 +117,7 @@ class PlayScreen extends BaseScreen {
         }
         var mask = new Sprite();
         mask.graphics.rox_fillRect(0x77000000, 0, 0, viewWidth, viewHeight);
-        var loading = MyUtils.getLoadingAnim("载入中");
+        var loading = MyUtils.getLoadingAnim("载入中".i18n());
         loading.rox_move(viewWidth / 2, viewHeight / 2);
         mask.addChild(loading);
         mask.name = "loadingMask";
@@ -178,7 +179,7 @@ class PlayScreen extends BaseScreen {
     private static inline function timestr2(tm: Float) {
         var minutes = Std.int(tm / 60);
         var seconds = Std.int(tm % 60);
-        return (minutes > 0 ? "" + minutes + "分" : "") + (seconds > 0 ? "" + seconds + "秒" : "");
+        return (minutes > 0 ? "" + minutes + "分".i18n() : "") + (seconds > 0 ? "" + seconds + "秒".i18n() : "");
     }
 
     public function stopTimer() {
@@ -213,22 +214,24 @@ class PlayScreen extends BaseScreen {
         var spacing = (tiph - headw) / 2;
         head.graphics.rox_drawRegionRound(userAvatar, 0, 0, headw, headw);
         head.graphics.rox_drawRoundRect(2, 0xFFFFFFFF, 0, 0, headw, headw);
-        var text = UiUtil.staticText("你太有才了！", 0xFFFFFF, buttonFontSize * 1.1);
+        var text = UiUtil.staticText("你太有才了！".i18n(), 0xFFFFFF, buttonFontSize * 1.1);
         var textx = 2 * spacing + head.width;
         var dist = textx + text.width;
         var button: Sprite = null, buttonPic: Sprite = null;
         if (status.makerData == null && !MyUtils.isEmpty(HpApi.instance.uid)) {
-            button = UiUtil.button(UiUtil.TOP_LEFT, null, "发表感受", 0xFFFFFF, buttonFontSize * 0.7, "res/btn_dark.9.png", function(_) {
-                var txt = "我用" + timestr2(getElapsedTime()) + "完成了你制作的游戏！";
+            button = UiUtil.button(UiUtil.TOP_LEFT, null, "发表感受".i18n(), 0xFFFFFF, buttonFontSize * 0.7, "res/btn_dark.9.png", function(_) {
+                var txt = "我用".i18n() + timestr2(getElapsedTime()) + "完成了你制作的游戏！".i18n();
+                var text1 = "发表感受".i18n();
+                var text2 = "发布".i18n();
 #if android
-                HaxeStub.startInputDialog("发表感受", txt, "发布", this);
+                HaxeStub.startInputDialog(text1, txt, text2, this);
 #else
                 onApiCallback("startInputDialog", "ok", txt);
 #end
             });
-            onApiCallback("autoComment", "ok", "完成游戏，用时" + timestr2(getElapsedTime()));
+            onApiCallback("autoComment", "ok", "完成游戏，用时".i18n() + timestr2(getElapsedTime()));
             if (image != null) {
-                buttonPic = UiUtil.button(UiUtil.TOP_LEFT, null, "查看原图", 0xFFFFFF, buttonFontSize * 0.7, "res/btn_dark.9.png", function(_) {
+                buttonPic = UiUtil.button(UiUtil.TOP_LEFT, null, "查看原图".i18n(), 0xFFFFFF, buttonFontSize * 0.7, "res/btn_dark.9.png", function(_) {
                     startScreen(Type.getClassName(PictureScreen), image);
                 });
             }
@@ -259,13 +262,14 @@ class PlayScreen extends BaseScreen {
             Actuate.tween(sp, 5, { x: wd2 + r * Math.cos(idx[i]), y: hd2 + r * Math.sin(idx[i]), scaleX: 1, scaleY: 1, alpha: 0 }).delay(i * interval);
             Actuate.tween(sp, 2.5, { rotation: sp.rotation + 360 }).repeat().ease(Linear.easeNone).delay(i * interval);
         }
+        UiUtil.delay(function() { startScreen(Type.getClassName(PictureScreen), image); }, 2.2);
     }
 
     private function onApiCallback(apiName: String, result: String, str: String) {
         if (result == "ok" && str.length > 0) {
             HpApi.instance.get("/comments/create/" + status.id, { text: str }, function(code: Int, data: Dynamic) {
                 if (code == 200 && apiName != "autoComment") {
-                    UiUtil.message("评论已经添加");
+                    UiUtil.message("评论已经添加".i18n());
                 }
             });
         }

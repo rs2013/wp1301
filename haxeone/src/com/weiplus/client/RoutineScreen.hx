@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import com.eclecticdesignstudio.motion.easing.Linear;
 import com.eclecticdesignstudio.motion.Actuate;
 import com.weiplus.client.MyUtils;
@@ -57,13 +58,13 @@ class RoutineScreen extends BaseScreen {
 
     override public function onNewRequest(data: Dynamic) {
 //        uid = data != null ? cast data : HpApi.instance.uid; // user id
-        addChild(MyUtils.getLoadingAnim("载入中").rox_move(screenWidth / 2, screenHeight / 2));
+        addChild(MyUtils.getLoadingAnim("载入中".i18n()).rox_move(screenWidth / 2, screenHeight / 2));
         refresh(false);
     }
 
     override public function onCreate() {
         title = new Sprite();
-        title.addChild(UiUtil.staticText("消息", 0xFFFFFF, titleFontSize * 1.2));
+        title.addChild(UiUtil.staticText("消息".i18n(), 0xFFFFFF, titleFontSize * 1.2));
         hasBack = false;
         super.onCreate();
         var btnpanel = buttonPanel();
@@ -117,7 +118,7 @@ class RoutineScreen extends BaseScreen {
         if (refreshing) return;
         this.append = append && page != null;
         if (this.append && page.oldestId - 1 <= 0) {
-            UiUtil.message("没有更多动态了");
+            UiUtil.message("没有更多动态了".i18n());
             return;
         }
 
@@ -131,7 +132,7 @@ class RoutineScreen extends BaseScreen {
         UiUtil.rox_removeByName(this, MyUtils.LOADING_ANIM_NAME);
         refreshing = false;
         if (code != 200) {
-            UiUtil.message("网络错误. code=" + code + ",message=" + data);
+            UiUtil.message("网络错误. code=".i18n() + code + ",message=" + data);
             return;
         }
 
@@ -166,7 +167,7 @@ class RoutineScreen extends BaseScreen {
         page.oldestId = oldest;
         if (this.append && cast(pageInfo.records, Array<Dynamic>).length == 0) {
             page.oldestId = 0;
-            UiUtil.message("没有更多动态了");
+            UiUtil.message("没有更多动态了".i18n());
         }
 
         var spacing = SPACING_RATIO * screenWidth;
@@ -175,7 +176,7 @@ class RoutineScreen extends BaseScreen {
         main.rox_removeAll();
 
         if (routines.length == 0) {
-            var label = UiUtil.staticText("暂时没有动态", 0, buttonFontSize);
+            var label = UiUtil.staticText("暂时没有动态".i18n(), 0, buttonFontSize);
             main.addChild(label.rox_move((screenWidth - label.width) / 2, spacing * 2));
             return;
         }
@@ -183,9 +184,9 @@ class RoutineScreen extends BaseScreen {
         var yoff: Float = 0;
         for (c in routines) {
             var sp = new Sprite();
-            var text = UiUtil.staticText(c.getMessage(), 0, buttonFontSize * 0.8, true, screenWidth - 60 - 3 * spacing);
+            var text = UiUtil.staticText(c.getMessage(), 0, buttonFontSize * 0.9, true, screenWidth - 60 - 3 * spacing);
             sp.addChild(text.rox_move(60 + 2 * spacing, spacing));
-            var time = UiUtil.staticText(MyUtils.timeStr(c.createdAt), 0, buttonFontSize * 0.8);
+            var time = UiUtil.staticText(MyUtils.timeStr(c.createdAt), 0, buttonFontSize * 0.9);
             sp.addChild(time.rox_move(60 + 2 * spacing, text.height + 2 * spacing));
             var h = GameUtil.max(60 + 2 * spacing, time.height + text.height + 3 * spacing);
             sp.graphics.rox_fillRect(0x01FFFFFF, 0, 0, screenWidth, h);
@@ -261,7 +262,7 @@ class RoutineScreen extends BaseScreen {
         animating = true;
         var pin: Sprite = switch (action) { case 1: popup1; case 2: popup2; case 3: popup1; case 4: null; }
         var pout: Sprite = switch (action) { case 1: null; case 2: popup1; case 3: popup2; case 4: popupbg.contains(popup1) ? popup1 : popup2; }
-        trace("pin=" + pin+",pout=" + pout);
+//        trace("pin=" + pin+",pout=" + pout);
         if (pin != null) {
             popupbg.addChild(pin);
             pin.alpha = 0.01;
@@ -283,14 +284,14 @@ class RoutineScreen extends BaseScreen {
             UiUtil.delay(function() { this.rox_remove(popupbg); }, FADE_TM);
         }
         var items: Array<ListItem> = [];
-        items.push({ id: "", icon: null, name: "用照片创建小游戏", type: 1, data: null });
-        items.push({ id: "jigsaw", icon: "res/icon_jigsaw_maker.png", name: "奇幻拼图", type: 3, data: null });
-        items.push({ id: "swappuzzle", icon: "res/icon_swap_maker.png", name: "方块挑战", type: 3, data: null });
-        items.push({ id: "slidepuzzle", icon: "res/icon_slide_maker.png", name: "移形换位", type: 3, data: null });
-        items.push({ id: "", icon: null, name: "拍摄神奇魔法照片", type: 1, data: null });
-        items.push({ id: "camera", icon: "res/icon_camera.png", name: "魔法相机", type: 2, data: null });
+        items.push({ id: "", icon: null, name: "用照片创建小游戏".i18n(), type: 1, data: null });
+        items.push({ id: "jigsaw", icon: "res/icon_jigsaw_maker.png", name: "奇幻拼图".i18n(), type: 3, data: null });
+        items.push({ id: "swappuzzle", icon: "res/icon_swap_maker.png", name: "方块挑战".i18n(), type: 3, data: null });
+        items.push({ id: "slidepuzzle", icon: "res/icon_slide_maker.png", name: "移形换位".i18n(), type: 3, data: null });
+        items.push({ id: "", icon: null, name: "拍摄神奇魔法照片".i18n(), type: 1, data: null });
+        items.push({ id: "camera", icon: "res/icon_camera.png", name: "魔法相机".i18n(), type: 2, data: null });
         popup1 = MyUtils.bubbleList(items, function(i: ListItem) {
-            trace(i);
+//            trace(i);
             switch (i.id) {
                 case "camera":
                     startScreen(Type.getClassName(com.weiplus.client.HarryCamera), RoxAnimate.NO_ANIMATE);
@@ -303,10 +304,10 @@ class RoutineScreen extends BaseScreen {
         });
 
         items = [];
-        items.push({ id: "", icon: null, name: "用照片创建小游戏", type: 1, data: null });
-        items.push({ id: "local_album", icon: "res/icon_local_album.png", name: "从相册选择", type: 2, data: null });
-        items.push({ id: "sys_camera", icon: "res/icon_sys_camera.png", name: "系统相机拍摄", type: 2, data: null });
-        items.push({ id: "harry_camera", icon: "res/icon_harry_camera.png", name: "魔法相机拍摄", type: 2, data: null });
+        items.push({ id: "", icon: null, name: "用照片创建小游戏".i18n(), type: 1, data: null });
+        items.push({ id: "local_album", icon: "res/icon_local_album.png", name: "从相册选择".i18n(), type: 2, data: null });
+        items.push({ id: "sys_camera", icon: "res/icon_sys_camera.png", name: "系统相机拍摄".i18n(), type: 2, data: null });
+        items.push({ id: "harry_camera", icon: "res/icon_harry_camera.png", name: "魔法相机拍摄".i18n(), type: 2, data: null });
         items.push({ id: "back", icon: "res/icon_back.png", name: "", type: 4, data: null });
         popup2 = MyUtils.bubbleList(items, function(i: ListItem) {
             switch (i.id) {
@@ -348,7 +349,7 @@ class RoutineScreen extends BaseScreen {
     }
 
     private function onHarry(_) {
-        trace("onHarryCamera");
+//        trace("onHarryCamera");
         requestCode = 3;
 #if android
         HaxeStub.startHarryCamera(requestCode);
@@ -358,7 +359,7 @@ class RoutineScreen extends BaseScreen {
     }
 
     private function onCamera(_) {
-        trace("oncamera");
+//        trace("oncamera");
         requestCode = 1;
 #if android
         if (!sys.FileSystem.exists(ALBUM_DIR)) com.roxstudio.haxe.io.FileUtil.mkdirs(ALBUM_DIR);
@@ -371,7 +372,7 @@ class RoutineScreen extends BaseScreen {
     }
 
     private function onLocal(_) {
-        trace("onlocal");
+//        trace("onlocal");
 //        if (!FileSystem.exists(ALBUM_DIR)) FileUtil.mkdirs(ALBUM_DIR);
 //        var name = "" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
         requestCode = 2;

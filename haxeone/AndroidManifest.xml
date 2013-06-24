@@ -2,14 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="::ANDROID_INSTALL_LOCATION::" android:versionCode="::APP_BUILD_NUMBER::" android:versionName="::APP_VERSION::" package="::APP_PACKAGE::">
 
 	<application
-            android:label="::APP_TITLE::"
+            android:label="@string/app_name"
             android:name="com.vbo.harry_camera.HarryCameraApp"
             android:allowBackup="true"
             android:theme="@style/AppTheme"
             ::if (HAS_ICON):: android:icon="@drawable/icon"::end::>
     <!--android:debuggable="true"-->
     <activity android:name=".MainActivity"
-                  android:label="::APP_TITLE::"
+                  android:label="@string/app_name"
                   android:configChanges="keyboard|keyboardHidden|orientation"
                   ::if (WIN_ORIENTATION!=""):: android:screenOrientation="::WIN_ORIENTATION::"::end:: >
              <!-- android:windowSoftInputMode="adjustPan"> -->

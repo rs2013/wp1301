@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<strings>
+  <file path="src/com/weiplus/apps/jigsaw/App.hx">
+    <t id="预览">预览</t><!--line 118-->
+  </file>
+  <file path="src/com/weiplus/apps/slidepuzzle/App.hx">
+    <t id="预览">预览</t><!--line 91-->
+  </file>
+  <file path="src/com/weiplus/apps/swappuzzle/App.hx">
+    <t id="预览">预览</t><!--line 90-->
+  </file>
+  <file path="src/com/weiplus/client/BaseScreen.hx">
+    <t id="返回">返回</t><!--line 65-->
+  </file>
+  <file path="src/com/weiplus/client/CommentsScreen.hx">
+    <t id="发表评论">发表评论</t><!--line 73-->
+    <t id="暂时没有评论">暂时没有评论</t><!--line 166-->
+    <t id="没有更多评论了">没有更多评论了</t><!--line 110, 157-->
+    <t id="测试评论">测试评论</t><!--line 75-->
+    <t id="添加">添加</t><!--line 74-->
+    <t id="添加评论...">添加评论...</t><!--line 69-->
+    <t id="网络错误. code=">网络错误. code=</t><!--line 124-->
+    <t id="评论列表">评论列表</t><!--line 43-->
+    <t id="评论已经添加">评论已经添加</t><!--line 99-->
+    <t id="载入中">载入中</t><!--line 49-->
+  </file>
+  <file path="src/com/weiplus/client/FriendsList.hx">
+    <t id="关注列表">关注列表</t><!--line 54-->
+    <t id="关系更新成功">关系更新成功</t><!--line 164-->
+    <t id="取消关注">取消关注</t><!--line 157-->
+    <t id="好友列表">好友列表</t><!--line 47-->
+    <t id="尚未关注任何人">尚未关注任何人</t><!--line 139-->
+    <t id="您">您</t><!--line 137-->
+    <t id="添加关注">添加关注</t><!--line 157-->
+    <t id="目前还没有粉丝">目前还没有粉丝</t><!--line 139-->
+    <t id="粉丝列表">粉丝列表</t><!--line 54-->
+    <t id="网络错误. code=">网络错误. code=</t><!--line 97-->
+    <t id="网络错误，code=">网络错误，code=</t><!--line 166-->
+    <t id="载入中">载入中</t><!--line 56-->
+  </file>
+  <file path="src/com/weiplus/client/HomeScreen.hx">
+    <t id="个人">个人</t><!--line 29-->
+    <t id="广场">广场</t><!--line 28-->
+  </file>
+  <file path="src/com/weiplus/client/LoginScreen.hx">
+    <t id="人人网账号登陆">人人网账号登陆</t><!--line 35-->
+    <t id="新浪微博账号登陆">新浪微博账号登陆</t><!--line 33-->
+    <t id="登录中">登录中</t><!--line 45-->
+    <t id="登录错误. error=">登录错误. error=</t><!--line 75-->
+    <t id="腾讯微博账号登陆">腾讯微博账号登陆</t><!--line 34-->
+  </file>
+  <file path="src/com/weiplus/client/MakerScreen.hx">
+    <t id="下一步">下一步</t><!--line 49-->
+    <t id="处理中">处理中</t><!--line 59-->
+  </file>
+  <file path="src/com/weiplus/client/MyUtils.hx">
+    <t id="分钟前">分钟前</t><!--line 117-->
+    <t id="刚刚">刚刚</t><!--line 115-->
+    <t id="小时前">小时前</t><!--line 119-->
+  </file>
+  <file path="src/com/weiplus/client/PictureScreen.hx">
+    <t id="保存">保存</t><!--line 31-->
+    <t id="保存中">保存中</t><!--line 40-->
+    <t id="保存成功">保存成功</t><!--line 39-->
+    <t id="查看原图">查看原图</t><!--line 29-->
+  </file>
+  <file path="src/com/weiplus/client/PlayScreen.hx">
+    <t id="你太有才了！">你太有才了！</t><!--line 217-->
+    <t id="分">分</t><!--line 182-->
+    <t id="发布">发布</t><!--line 225-->
+    <t id="发表感受">发表感受</t><!--line 222, 224-->
+    <t id="完成了你制作的游戏！">完成了你制作的游戏！</t><!--line 223-->
+    <t id="完成游戏，用时">完成游戏，用时</t><!--line 232-->
+    <t id="我用">我用</t><!--line 223-->
+    <t id="查看原图">查看原图</t><!--line 234-->
+    <t id="秒">秒</t><!--line 182-->
+    <t id="评论已经添加">评论已经添加</t><!--line 272-->
+    <t id="载入中">载入中</t><!--line 120-->
+    <t id="返回">返回</t><!--line 92-->
+  </file>
+  <file path="src/com/weiplus/client/PostScreen.hx">
+    <t id="人人网">人人网</t><!--line 182-->
+    <t id="发布">发布</t><!--line 42, 45-->
+    <t id="发布中">发布中</t><!--line 133-->
+    <t id="同步到：">同步到：</t><!--line 191-->
+    <t id="完成">完成</t><!--line 83, 83, 83-->
+    <t id="我用#哈利波图#制作了一个很酷的游戏，快来玩吧！">我用#哈利波图#制作了一个很酷的游戏，快来玩吧！</t><!--line 105-->
+    <t id="我用#哈利波图#拍了一张有趣的照片，快来看看吧！">我用#哈利波图#拍了一张有趣的照片，快来看看吧！</t><!--line 104-->
+    <t id="新浪微博">新浪微博</t><!--line 180-->
+    <t id="登录中">登录中</t><!--line 228-->
+    <t id="编辑内容">编辑内容</t><!--line 82, 82, 82-->
+    <t id="腾讯微博">腾讯微博</t><!--line 181-->
+  </file>
+  <file path="src/com/weiplus/client/Postit.hx">
+    <t id="已经赞过了">已经赞过了</t><!--line 205-->
+    <t id="网络错误，ex=">网络错误，ex=</t><!--line 208-->
+    <t id="评论(">评论(</t><!--line 120-->
+    <t id="赞 +1">赞 +1</t><!--line 203-->
+    <t id="赞(">赞(</t><!--line 117-->
+    <t id="赞已取消">赞已取消</t><!--line 203-->
+    <t id="载入中">载入中</t><!--line 179-->
+    <t id="载入失败">载入失败</t><!--line 175-->
+  </file>
+  <file path="src/com/weiplus/client/PublicScreen.hx">
+    <t id="登录哈利波图">登录哈利波图</t><!--line 39-->
+  </file>
+  <file path="src/com/weiplus/client/Refresher.hx">
+    <t id="上拉可以刷新">上拉可以刷新</t><!--line 34-->
+    <t id="下拉可以刷新">下拉可以刷新</t><!--line 34-->
+    <t id="松开立即刷新">松开立即刷新</t><!--line 45-->
+  </file>
+  <file path="src/com/weiplus/client/RoutineScreen.hx">
+    <t id="从相册选择">从相册选择</t><!--line 308-->
+    <t id="奇幻拼图">奇幻拼图</t><!--line 288-->
+    <t id="拍摄神奇魔法照片">拍摄神奇魔法照片</t><!--line 291-->
+    <t id="方块挑战">方块挑战</t><!--line 289-->
+    <t id="暂时没有动态">暂时没有动态</t><!--line 179-->
+    <t id="没有更多动态了">没有更多动态了</t><!--line 121, 170-->
+    <t id="消息">消息</t><!--line 67-->
+    <t id="用照片创建小游戏">用照片创建小游戏</t><!--line 287, 307-->
+    <t id="移形换位">移形换位</t><!--line 290-->
+    <t id="系统相机拍摄">系统相机拍摄</t><!--line 309-->
+    <t id="网络错误. code=">网络错误. code=</t><!--line 135-->
+    <t id="载入中">载入中</t><!--line 61-->
+    <t id="魔法相机">魔法相机</t><!--line 292-->
+    <t id="魔法相机拍摄">魔法相机拍摄</t><!--line 310-->
+  </file>
+  <file path="src/com/weiplus/client/SelectedScreen.hx">
+    <t id="精选">精选</t><!--line 25-->
+  </file>
+  <file path="src/com/weiplus/client/SettingScreen.hx">
+    <t id="你已经登出">你已经登出</t><!--line 59-->
+    <t id="关于哈利波图">关于哈利波图</t><!--line 36-->
+    <t id="分享设置">分享设置</t><!--line 24-->
+    <t id="图片缓存已清除">图片缓存已清除</t><!--line 45-->
+    <t id="意见反馈">意见反馈</t><!--line 34-->
+    <t id="推荐应用">推荐应用</t><!--line 33-->
+    <t id="注销登录">注销登录</t><!--line 55-->
+    <t id="清除图片缓存">清除图片缓存</t><!--line 35-->
+    <t id="迈吉客科技（上海）有限公司">迈吉客科技（上海）有限公司</t><!--line 47-->
+  </file>
+  <file path="src/com/weiplus/client/ShareSetting.hx">
+    <t id="人人网">人人网</t><!--line 30-->
+    <t id="新浪微博">新浪微博</t><!--line 28-->
+    <t id="登录中">登录中</t><!--line 39-->
+    <t id="登录错误. error=">登录错误. error=</t><!--line 66-->
+    <t id="腾讯微博">腾讯微博</t><!--line 29-->
+  </file>
+  <file path="src/com/weiplus/client/SimpleMaker.hx">
+    <t id="中等">中等</t><!--line 48-->
+    <t id="困难">困难</t><!--line 49-->
+    <t id="简单">简单</t><!--line 47-->
+  </file>
+  <file path="src/com/weiplus/client/TimelineScreen.hx">
+    <t id="从相册选择">从相册选择</t><!--line 490-->
+    <t id="奇幻拼图">奇幻拼图</t><!--line 469-->
+    <t id="拍摄神奇魔法照片">拍摄神奇魔法照片</t><!--line 472-->
+    <t id="方块挑战">方块挑战</t><!--line 470-->
+    <t id="用照片创建小游戏">用照片创建小游戏</t><!--line 468, 489-->
+    <t id="移形换位">移形换位</t><!--line 471-->
+    <t id="系统相机拍摄">系统相机拍摄</t><!--line 491-->
+    <t id="载入中">载入中</t><!--line 120-->
+    <t id="魔法相机">魔法相机</t><!--line 473-->
+    <t id="魔法相机拍摄">魔法相机拍摄</t><!--line 492-->
+  </file>
+  <file path="src/com/weiplus/client/UserScreen.hx">
+    <t id="作品">作品</t><!--line 135-->
+    <t id="关注">关注</t><!--line 136-->
+    <t id="取消关注">取消关注</t><!--line 118, 121, 125-->
+    <t id="已成功">已成功$1</t><!--line 123-->
+    <t id="添加关注">添加关注</t><!--line 118, 121, 125-->
+    <t id="粉丝">粉丝</t><!--line 137-->
+    <t id="载入中">载入中</t><!--line 80-->
+    <t id="错误,code=">错误,code=</t><!--line 128-->
+  </file>
+</strings>

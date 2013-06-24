@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import com.roxstudio.haxe.ui.UiUtil;
 import com.roxstudio.haxe.game.GameUtil;
 import com.roxstudio.haxe.game.ResKeeper;
@@ -43,9 +44,9 @@ class SimpleMaker extends MakerScreen {
 //        btnCamera = UiUtil.button(UiUtil.CENTER, null, "系统相机", 0xFFFFFF, 50, "res/btn_common.9.png", onCamera);
 //        btnLocal = UiUtil.button(UiUtil.CENTER, null, "本地图库", 0xFFFFFF, 50, "res/btn_common.9.png", onLocal);
 //        btnReset = UiUtil.button(UiUtil.TOP_LEFT, null, "重新选择", 0xFFFFFF, buttonFontSize, "res/btn_common.9.png", setSelectUI);
-        btnSimple = UiUtil.button(UiUtil.CENTER, null, "简单", 0xFFFFFF, titleFontSize, function(_) { setLevel(0); });
-        btnNormal = UiUtil.button(UiUtil.CENTER, null, "中等", 0xFFFFFF, titleFontSize, function(_) { setLevel(1); });
-        btnHard = UiUtil.button(UiUtil.CENTER, null, "困难", 0xFFFFFF, titleFontSize, function(_) { setLevel(2); });
+        btnSimple = UiUtil.button(UiUtil.CENTER, null, "简单".i18n(), 0xFFFFFF, titleFontSize, function(_) { setLevel(0); });
+        btnNormal = UiUtil.button(UiUtil.CENTER, null, "中等".i18n(), 0xFFFFFF, titleFontSize, function(_) { setLevel(1); });
+        btnHard = UiUtil.button(UiUtil.CENTER, null, "困难".i18n(), 0xFFFFFF, titleFontSize, function(_) { setLevel(2); });
         levelBg = UiUtil.bitmap("res/bg_maker_bottom_selected.png");
         var levelPaneH = levelBg.height;
         levelPane = new Sprite();
@@ -118,7 +119,7 @@ class SimpleMaker extends MakerScreen {
 #if android
         var s = HaxeStub.getResult(requestCode);
         var json: Dynamic = haxe.Json.parse(s);
-        trace("))))))))))))) active, requestCode=" + requestCode + ",result=" + s + ",parsed=" + json);
+//        trace("))))))))))))) active, requestCode=" + requestCode + ",result=" + s + ",parsed=" + json);
         if (untyped json.resultCode != "ok") return;
         var path = requestCode == 1 ? snapPath : untyped json.intentDataPath;
 //        path = StringTools.replace(path, "\\/", "/");
@@ -141,7 +142,7 @@ class SimpleMaker extends MakerScreen {
 //    }
 
     private function onHarry(_) {
-        trace("onHarryCamera");
+//        trace("onHarryCamera");
         requestCode = 3;
 #if android
         HaxeStub.startHarryCamera(requestCode);
@@ -151,7 +152,7 @@ class SimpleMaker extends MakerScreen {
     }
 
     private function onCamera(_) {
-        trace("oncamera");
+//        trace("oncamera");
         requestCode = 1;
 #if android
         if (!sys.FileSystem.exists(ALBUM_DIR)) com.roxstudio.haxe.io.FileUtil.mkdirs(ALBUM_DIR);
@@ -164,7 +165,7 @@ class SimpleMaker extends MakerScreen {
     }
 
     private function onLocal(_) {
-        trace("onlocal");
+//        trace("onlocal");
 //        if (!FileSystem.exists(ALBUM_DIR)) FileUtil.mkdirs(ALBUM_DIR);
 //        var name = "" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
         requestCode = 2;
