@@ -27,6 +27,9 @@
     <haxelib name="actuate" />
     <haxelib name="spritesheet" />
     <haxelib name="format" />
+    <haxelib name="rox-i18n" />
+    <compilerflag name="--macro com.roxstudio.i18n.I18n.locale('global')" />
+    <compilerflag name="--macro com.roxstudio.i18n.I18n.assets('res/i18n')" />
 
     <icon path="res/icon/icon96.png" size="96"/>
     <assets path="res" include="*" exclude="icon/*.*" />

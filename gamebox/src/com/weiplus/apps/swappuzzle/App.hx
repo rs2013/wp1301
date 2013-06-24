@@ -1,6 +1,7 @@
 package com.weiplus.apps.swappuzzle;
 
 import haxe.Json;
+using com.roxstudio.i18n.I18n;
 import com.weiplus.client.PlayScreen;
 import com.eclecticdesignstudio.motion.easing.Elastic;
 import com.eclecticdesignstudio.motion.Actuate;
@@ -87,7 +88,7 @@ class App extends PlayScreen {
                 map[i][j] = t;
             }
         }
-        var btnView = UiUtil.button(UiUtil.TOP_LEFT, null, "预览", 0xFFFFFF, 36, "res/btn_dark.9.png", onView);
+        var btnView = UiUtil.button(UiUtil.TOP_LEFT, null, "预览".i18n(), 0xFFFFFF, 36, "res/btn_dark.9.png", onView);
         addTitleButton(btnView, UiUtil.RIGHT);
     }
 

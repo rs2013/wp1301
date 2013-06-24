@@ -1,5 +1,6 @@
 ﻿package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import nme.text.TextField;
 import com.eclecticdesignstudio.motion.easing.Linear;
 import com.roxstudio.haxe.game.GameUtil;
@@ -115,7 +116,7 @@ class PlayScreen extends BaseScreen {
         }
         var mask = new Sprite();
         mask.graphics.rox_fillRect(0x77000000, 0, 0, viewWidth, viewHeight);
-        var loading = MyUtils.getLoadingAnim("载入中");
+        var loading = MyUtils.getLoadingAnim("载入中".i18n());
         loading.rox_move(viewWidth / 2, viewHeight / 2);
         mask.addChild(loading);
         mask.name = "loadingMask";
@@ -211,10 +212,10 @@ class PlayScreen extends BaseScreen {
         var spacing = (tiph - headw) / 2;
         head.graphics.rox_drawRegionRound(userAvatar, 0, 0, headw, headw);
         head.graphics.rox_drawRoundRect(2, 0xFFFFFFFF, 0, 0, headw, headw);
-        var text = UiUtil.staticText("你太有才了！", 0xFFFFFF, 24);
+        var text = UiUtil.staticText("你太有才了！".i18n(), 0xFFFFFF, 24);
         var textx = 2 * spacing + head.width;
         var dist = textx + text.width;
-        var button: RoxFlowPane = UiUtil.button(UiUtil.TOP_LEFT, null, "重玩", 0xFFFFFF, 36, "res/btn_dark.9.png", function(_) {
+        var button: RoxFlowPane = UiUtil.button(UiUtil.TOP_LEFT, null, "重玩".i18n(), 0xFFFFFF, 36, "res/btn_dark.9.png", function(_) {
             reset(status);
         });
 
@@ -251,7 +252,7 @@ class PlayScreen extends BaseScreen {
         if (result == "ok" && str.length > 0) {
             HpApi.instance.get("/comments/create/" + status.id, { text: str }, function(code: Int, data: Dynamic) {
                 if (code == 200) {
-                    UiUtil.message("评论已经添加");
+                    UiUtil.message("评论已经添加".i18n());
                 }
             });
         }

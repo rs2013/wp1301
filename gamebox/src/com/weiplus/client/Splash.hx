@@ -75,7 +75,7 @@ class Splash extends BaseScreen {
 #if flash
         var statusId = root.loaderInfo.parameters.id;
 #else
-        var statusId = "274";
+        var statusId = "38";
 #end
         trace("statusId=" + statusId);
         HpApi.instance.get("/statuses/show/" + statusId, {}, function(code: Int, data: Dynamic) {

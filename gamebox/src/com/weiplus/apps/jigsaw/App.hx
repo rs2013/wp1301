@@ -1,5 +1,6 @@
 package com.weiplus.apps.jigsaw;
 
+using com.roxstudio.i18n.I18n;
 import com.roxstudio.haxe.ui.UiUtil;
 import haxe.Json;
 import flash.geom.Rectangle;
@@ -115,7 +116,7 @@ class App extends PlayScreen {
         }
         board.rox_scale(sc);
 
-        var btnView = UiUtil.button(UiUtil.TOP_LEFT, null, "预览", 0xFFFFFF, 36, "res/btn_dark.9.png", onView);
+        var btnView = UiUtil.button(UiUtil.TOP_LEFT, null, "预览".i18n(), 0xFFFFFF, 36, "res/btn_dark.9.png", onView);
         addTitleButton(btnView, UiUtil.RIGHT);
     }
 
