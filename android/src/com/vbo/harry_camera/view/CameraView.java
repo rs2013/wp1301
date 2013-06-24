@@ -318,7 +318,7 @@ public class CameraView extends SurfaceView {
             parameters.setFocusMode(Parameters.FOCUS_MODE_AUTO);
         }
         supportedMode = parameters.getSupportedFlashModes();
-        if (supportedMode.contains(Parameters.FLASH_MODE_AUTO)) {
+        if (supportedMode != null && supportedMode.contains(Parameters.FLASH_MODE_AUTO)) {
             parameters.setFlashMode(Parameters.FLASH_MODE_AUTO);
         }
         parameters.setJpegQuality(95); // 1-100

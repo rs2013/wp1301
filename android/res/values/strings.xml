@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">HarryPhoto</string>
+    <string name="app_name">MagicPhoto</string>
     <string name="btnBack">返回</string>
     <string name="btnDone">完成</string>
     <string name="btnWeibo">使用新浪微博账号登录</string>
@@ -81,7 +81,7 @@
 
     <string name="no_camera">Sorry, your device has no camera, can\'t run this app!</string>
     <!-- Camera Activity -->
-    <string name="category_title">魔贴分类</string>
+    <string name="category_title">Categories</string>
     
     <string name="umeng_example_home_btn_analytics">Analytics</string>
     <string name="umeng_example_home_btn_xp">XP</string>

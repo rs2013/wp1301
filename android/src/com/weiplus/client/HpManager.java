@@ -79,7 +79,7 @@ public class HpManager {
 
                 @Override
                 public void onError(HpException e) {
-                    Utility.safeToast("登陆哈利波图服务器失败，请检查网络。ex=" + e.getMessage(), Toast.LENGTH_LONG);
+                    Utility.safeToast("Login to AppMagics server failed. ex=" + e.getMessage(), Toast.LENGTH_LONG);
                 }
                 
             });
@@ -276,7 +276,9 @@ public class HpManager {
                 Binding.Type.SINA_WEIBO, Binding.Type.TENCENT_WEIBO, Binding.Type.RENREN_WEIBO,
         };
         for (Binding.Type t: types) {
-            createBinding(t, new String[] { "", "" } ).logout();
+            try {
+                createBinding(t, new String[] { "", "" } ).logout();
+            } catch (Exception ex) { }
         }
         bindings.clear();
     }
@@ -338,7 +340,7 @@ public class HpManager {
 
             @Override
             public void onError(HpException e) {
-                Utility.safeToast(Binding.Type.valueOf(type) + "登录失败，请重试", Toast.LENGTH_SHORT);
+                Utility.safeToast(Binding.Type.valueOf(type) + "Login failed, please retry.", Toast.LENGTH_SHORT);
                 Utility.haxeError(callback, "startAuth", e);
                 candidate = null;
             }
@@ -436,7 +438,7 @@ outer:
                                 throw new Exception("error code=" + json.getInt("code"));
                             }
                             HpManager.addBinding(HpManager.candidate);
-                            Utility.safeToast(MainActivity.getInstance(), HpManager.candidate.getType() + "账号合并成功", Toast.LENGTH_SHORT);
+                            Utility.safeToast(MainActivity.getInstance(), HpManager.candidate.getType() + " account merged.", Toast.LENGTH_SHORT);
                             HpManager.candidate = null;
                             HpManager.login();
                             Utility.haxeOk(callback, "startAuth", "ok");
@@ -454,7 +456,7 @@ outer:
                     public void onError(HpException e) {
                         Log.i(TAG, "Merge.onError: " + e);
                         Activity activity = MainActivity.getInstance();
-                        Utility.safeToast(activity, HpManager.candidate.getType() + "账号合并失败, ex=" + e.getMessage(), Toast.LENGTH_LONG);
+                        Utility.safeToast(activity, HpManager.candidate.getType() + " merging failed, ex=" + e.getMessage(), Toast.LENGTH_LONG);
                         Utility.haxeError(callback, "startAuth", e);
                     }
                     
@@ -462,7 +464,7 @@ outer:
             } else {
 //                HpManager.addBinding(HpManager.candidate);
                 HpManager.restoreBindings(users.getJSONObject(0).getJSONArray("bindUsers"));
-                Utility.safeToast(activity, HpManager.candidate.getType() + "账号登录成功", Toast.LENGTH_SHORT);
+                Utility.safeToast(activity, HpManager.candidate.getType() + " login ok", Toast.LENGTH_SHORT);
                 HpManager.candidate = null;
                 Utility.haxeOk(callback, "startAuth", "ok");
             }
@@ -480,7 +482,7 @@ outer:
     public void onError(HpException e) {
         Log.i(TAG, "onError: " + e);
         Activity activity = MainActivity.getInstance();
-        Utility.safeToast(activity, HpManager.candidate.getType() + "账号绑定失败, ex=" + e.getMessage(), Toast.LENGTH_LONG);
+        Utility.safeToast(activity, HpManager.candidate.getType() + " binding failed, ex=" + e.getMessage(), Toast.LENGTH_LONG);
         Utility.haxeError(callback, "startAuth", e);
     }
     

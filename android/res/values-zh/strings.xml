@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">哈利波图</string>
+    <string name="category_title">魔贴分类</string>
     <string name="umeng_example_home_btn_analytics">统计分析</string>
     <string name="umeng_example_home_btn_xp">应用联盟</string>
     <string name="umeng_example_home_btn_ad">移动广告</string>

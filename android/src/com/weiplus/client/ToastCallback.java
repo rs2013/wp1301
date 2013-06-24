@@ -23,7 +23,7 @@ class ToastCallback implements HpListener {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(activity, msg + "成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, msg + " ok", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -33,7 +33,7 @@ class ToastCallback implements HpListener {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(activity, msg + "错误, ex=" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, msg + " error, ex=" + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -43,7 +43,7 @@ class ToastCallback implements HpListener {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(activity, msg + "错误, error=" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, msg + " error, error=" + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
