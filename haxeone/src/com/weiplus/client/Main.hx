@@ -1,6 +1,9 @@
 package com.weiplus.client;
 
 //import com.weiplus.client.TestMakerScreen;
+import Lambda;
+using com.roxstudio.i18n.I18n;
+import com.roxstudio.i18n.Global;
 import nme.events.Event;
 import com.weiplus.client.model.AppData;
 import com.weiplus.client.model.Status;
@@ -25,9 +28,18 @@ class Main {
     }
 
     static public function main() {
-        trace("before init");
+//        trace("before init");
+        I18n.init();
+        var loc = nme.system.Capabilities.language;
+        trace("lang=" + loc);
+        if (StringTools.startsWith(loc, "zh")) {
+            loc = "default";
+        } else if (!Lambda.has(Global.supportedLocales, loc)) {
+            loc = "en";
+        }
+        Global.currentLocale = loc;
         RoxApp.init();
-        trace("init ok");
+//        trace("init ok");
         var m = new RoxScreenManager();
 //        m.startScreen(Type.getClassName(com.weiplus.client.HomeScreen));
 //        m.startScreen(Type.getClassName(CameraScreen));

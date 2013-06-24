@@ -174,7 +174,7 @@ class RoxGestureAgent {
     }
 
     private inline static function get_multitouchSupported() : Bool {
-        trace("multitouchSupported: isTouch=" + Multitouch.supportsTouchEvents + ",maxPoints=" + Multitouch.maxTouchPoints);
+//        trace("multitouchSupported: isTouch=" + Multitouch.supportsTouchEvents + ",maxPoints=" + Multitouch.maxTouchPoints);
         return Multitouch.supportsTouchEvents && Multitouch.maxTouchPoints > 1;
     }
 

@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import com.weiplus.client.MyUtils;
 import com.roxstudio.haxe.ui.RoxScreen;
 import nme.display.Sprite;
@@ -29,9 +30,9 @@ class LoginScreen extends BaseScreen {
         content.addChild(btnClose.rox_move(screenWidth - 10, 10));
 
         var binds = [
-        { icon: "res/icon_sina.png", id: "SINA_WEIBO", name: "新浪微博账号登陆", type: 1, data: null },
-        { icon: "res/icon_tencent.png", id: "TENCENT_WEIBO", name: "腾讯微博账号登陆", type: 1, data: null },
-        { icon: "res/icon_renren.png", id: "RENREN_WEIBO", name: "人人网账号登陆", type: 1, data: null },
+        { icon: "res/icon_sina.png", id: "SINA_WEIBO", name: "新浪微博账号登陆".i18n(), type: 1, data: null },
+        { icon: "res/icon_tencent.png", id: "TENCENT_WEIBO", name: "腾讯微博账号登陆".i18n(), type: 1, data: null },
+        { icon: "res/icon_renren.png", id: "RENREN_WEIBO", name: "人人网账号登陆".i18n(), type: 1, data: null },
         ];
         var spacing = 18 * d2rScale;
         var list = MyUtils.list(binds, screenWidth - 2 * spacing, onLogin);
@@ -41,11 +42,12 @@ class LoginScreen extends BaseScreen {
     }
 
     private function onLogin(item: ListItem) : Bool {
-#if android
+        var text = "登录中".i18n();
+#if (android && !testin)
         var name = item.id;
-        trace("onLogin, name=" + name);
+//        trace("onLogin, name=" + name);
         var type = Binding.valueOf(name);
-        addChild(waitingAnim("登录中"));
+        addChild(waitingAnim(text));
         HpManager.startAuth(type.id(), this);
 #else
         finish(RoxScreen.OK);
@@ -63,14 +65,14 @@ class LoginScreen extends BaseScreen {
     }
 
     private function onApiCallback(apiName: String, resultCode: String, str: String) {
-        trace("onApiCallback: name="+apiName+",result="+resultCode+",str="+str);
+//        trace("onApiCallback: name="+apiName+",result="+resultCode+",str="+str);
         UiUtil.rox_removeByName(this, "waitingMask"); // remove mask
         if (resultCode == "ok") {
             if (str == "ok") {
                 finish(RoxScreen.OK);
             }
         } else {
-            UiUtil.message("登录错误. error=" + str);
+            UiUtil.message("登录错误. error=".i18n() + str);
         }
     }
 

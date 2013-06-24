@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import nme.text.TextField;
 import nme.events.MouseEvent;
 import com.weiplus.client.MyUtils;
@@ -76,7 +77,7 @@ class UserScreen extends TimelineScreen {
 //            }
 //            addTitleButton(btnSetting, UiUtil.RIGHT);
 //        } else {
-            addChild(MyUtils.getLoadingAnim("载入中").rox_move(screenWidth / 2, screenHeight / 2));
+            addChild(MyUtils.getLoadingAnim("载入中".i18n()).rox_move(screenWidth / 2, screenHeight / 2));
             refresh(false);
 //        }
         if (data != null || MyUtils.isEmpty(HpApi.instance.uid)) {
@@ -114,26 +115,26 @@ class UserScreen extends TimelineScreen {
         sp.graphics.rox_drawRoundRect(3, 0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
         if (HpApi.instance.uid != user.id) {
             var cmd = (user.friendship & 1) != 0 ? "delete" : "create";
-            var txt = cmd == "create" ? "添加关注" : "取消关注";
+            var txt = cmd == "create" ? "添加关注".i18n() : "取消关注".i18n();
             var btn: RoxFlowPane = UiUtil.button(UiUtil.TOP_LEFT, null, txt, 0xFFFFFF, titleFontSize * 0.7, "res/btn_common.9.png", function(e: Dynamic) {
                 HpApi.instance.get("/friendships/" + cmd + "/" + user.id, {}, function(code: Int, _) {
-                    var txt = cmd == "create" ? "添加关注" : "取消关注";
+                    var txt = cmd == "create" ? "添加关注".i18n() : "取消关注".i18n();
                     if (code == 200) {
-                        UiUtil.message("已成功" + txt);
+                        UiUtil.message(StringTools.replace("已成功".i18n(), "$1", txt));
                         cmd = cmd == "create" ? "delete" : "create";
-                        cast(e.target.childAt(0), TextField).text = cmd == "create" ? "添加关注" : "取消关注";
+                        cast(e.target.childAt(0), TextField).text = cmd == "create" ? "添加关注".i18n() : "取消关注".i18n();
                         refresh(false);
                     } else {
-                        UiUtil.message("错误,code=" + code);
+                        UiUtil.message("错误,code=".i18n() + code);
                     }
                 });
             });
             sp.addChild(btn.rox_move(60 + 2 * spacing, (100 - btn.height) / 2));
         }
         var arr = [
-            [ "作品", user.postCount, 310, null ],
-            [ "关注", user.friendCount, 420, "friends" ],
-            [ "粉丝", user.followerCount, 530, "followers" ]
+            [ "作品".i18n(), user.postCount, 310, null ],
+            [ "关注".i18n(), user.friendCount, 420, "friends" ],
+            [ "粉丝".i18n(), user.followerCount, 530, "followers" ]
         ];
         for (info in arr) {
             var label = UiUtil.staticText(info[0], 0xFFFFFF, titleFontSize * 0.8);
@@ -146,7 +147,7 @@ class UserScreen extends TimelineScreen {
             if (info[3] != null) {
                 panel.mouseEnabled = true;
                 panel.addEventListener(MouseEvent.CLICK, function(_) {
-                    trace("FriendScreen, uid=" + user.id + ",type=" + info[3]);
+//                    trace("FriendScreen, uid=" + user.id + ",type=" + info[3]);
                     startScreen(Type.getClassName(FriendsList), { user: user, type: info[3] });
                 });
             }

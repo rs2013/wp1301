@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import com.roxstudio.haxe.ui.RoxScreen;
 import nme.geom.Point;
 import com.roxstudio.haxe.ui.RoxAnimate;
@@ -35,7 +36,7 @@ class PublicScreen extends TimelineScreen {
         btnpanel.graphics.rox_fillRect(0xAA000000, 0, -h, screenWidth, h);
         var btnBg = UiUtil.bitmap("res/btn_login.png").rox_scale(d2rScale);
         btnpanel.addChild(btnBg.rox_move((screenWidth - btnBg.width) / 2, (h - btnBg.height) / 2 - h));
-        btnLogin = UiUtil.button(UiUtil.TOP_LEFT, null, "登录哈利波图", 0xFFFFFF, 40 * d2rScale, null, doLogin);
+        btnLogin = UiUtil.button(UiUtil.TOP_LEFT, null, "登录哈利波图".i18n(), 0xFFFFFF, 40 * d2rScale, null, doLogin);
         btnpanel.addChild(btnLogin.rox_move((screenWidth - btnLogin.width) / 2, (h - btnLogin.height) / 2  - h));
         return btnpanel;
     }
@@ -75,7 +76,7 @@ class PublicScreen extends TimelineScreen {
     }
 
     override public function onScreenResult(requestCode: Int, resultCode: Int, resultData: Dynamic) {
-        trace("publicscreen.onScreenResult:request=" + requestCode + ",result=" + resultCode + ",data=" + resultData);
+//        trace("publicscreen.onScreenResult:request=" + requestCode + ",result=" + resultCode + ",data=" + resultData);
         if (requestCode == 12345 && resultCode == RoxScreen.OK) {
             UiUtil.delay(function() { startScreen(Type.getClassName(HomeScreen), PARENT); });
         }

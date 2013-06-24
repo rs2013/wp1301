@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import com.weiplus.client.MyUtils;
 import nme.display.Shape;
 import nme.display.Sprite;
@@ -20,7 +21,7 @@ class SettingScreen extends BaseScreen {
         var spacing = 20 * d2rScale;
         var yoff = spacing;
         var arr: Array<ListItem> = [];
-        arr.push({ id: "share", icon: null, name: "分享设置", type: 1, data: null });
+        arr.push({ id: "share", icon: null, name: "分享设置".i18n(), type: 1, data: null });
         var list = MyUtils.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
             startScreen(Type.getClassName(ShareSetting));
             return true;
@@ -29,10 +30,10 @@ class SettingScreen extends BaseScreen {
         yoff += list.height + spacing;
 
         arr = [];
-        arr.push({ id: "umeng_xp", icon: null, name: "推荐应用", type: 1, data: null });
-        arr.push({ id: "umeng_fb", icon: null, name: "意见反馈", type: 1, data: null });
-        arr.push({ id: "clear_image_cache", icon: null, name: "清除图片缓存", type: 1, data: null });
-        arr.push({ id: "about", icon: null, name: "关于哈利波图", type: 1, data: null });
+        arr.push({ id: "umeng_xp", icon: null, name: "推荐应用".i18n(), type: 1, data: null });
+        arr.push({ id: "umeng_fb", icon: null, name: "意见反馈".i18n(), type: 1, data: null });
+        arr.push({ id: "clear_image_cache", icon: null, name: "清除图片缓存".i18n(), type: 1, data: null });
+        arr.push({ id: "about", icon: null, name: "关于哈利波图".i18n(), type: 1, data: null });
         list = MyUtils.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
             switch (i.id) {
 #if android
@@ -41,9 +42,9 @@ class SettingScreen extends BaseScreen {
 #end
                 case "clear_image_cache":
                     MyUtils.clearImageCache();
-                    UiUtil.message("图片缓存已清除");
+                    UiUtil.message("图片缓存已清除".i18n());
                 case "about":
-                    UiUtil.message("迈吉客科技（上海）有限公司");
+                    UiUtil.message("迈吉客科技（上海）有限公司".i18n());
             }
             return true;
         });
@@ -51,11 +52,11 @@ class SettingScreen extends BaseScreen {
         yoff += list.height + spacing;
 
         arr = [];
-        arr.push({ id: "logoff", icon: null, name: "注销登录", type: 2, data: null });
+        arr.push({ id: "logoff", icon: null, name: "注销登录".i18n(), type: 2, data: null });
         var list = MyUtils.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
             MyUtils.logout();
             startScreen(Type.getClassName(PublicScreen), CLEAR);
-            UiUtil.message("你已经登出");
+            UiUtil.message("你已经登出".i18n());
             return true;
         });
         content.addChild(list.rox_move(spacing, yoff));
@@ -63,7 +64,7 @@ class SettingScreen extends BaseScreen {
     }
 
     override public function onNewRequest(_) {
-        trace("SettingScreen started, time=" + (haxe.Timer.stamp() - starttm));
+//        trace("SettingScreen started, time=" + (haxe.Timer.stamp() - starttm));
     }
 
 }

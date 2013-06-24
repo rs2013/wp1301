@@ -43,7 +43,7 @@ class HarryCamera extends MakerScreen {
 #if android
         var s = HaxeStub.getResult(112);
         var json: Dynamic = haxe.Json.parse(s);
-        trace(">>HarryCamera active, result=" + s + ",parsed=" + json);
+//        trace(">>HarryCamera active, result=" + s + ",parsed=" + json);
         if (untyped json.resultCode != "ok") return;
         var path = untyped json.intentDataPath;
         image = { path: path, bmd: ResKeeper.loadLocalImage(path) };
@@ -170,14 +170,14 @@ class HarryCamera extends MakerScreen {
 #if android
         var s = HaxeStub.getResult(112);
         var json: Dynamic = haxe.Json.parse(s);
-        trace(">>HarryCamera active, result=" + s + ",parsed=" + json);
+//        trace(">>HarryCamera active, result=" + s + ",parsed=" + json);
         if (json.resultCode != "ok") { // canceled
             finish(RoxScreen.CANCELED);
             return;
         }
         var path = untyped json.intentDataPath;
         image = { path: path, bmd: ResKeeper.loadLocalImage(path) };
-        trace("HarryCamera.onActive: image=" + image);
+//        trace("HarryCamera.onActive: image=" + image);
 //        var bmp = new nme.display.Bitmap(image);
 //        content.addChild(bmp);
         var appdata: AppData = status.appData;

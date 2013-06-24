@@ -26,7 +26,7 @@ class Maker extends SimpleMaker {
         var pw = (preview.width / preview.scaleX);
         var sideLen = pw / n;
         var maxLen = sideLen * shape.height / 184;
-        trace("sideLen="+sideLen+",maxLen="+maxLen+",scale="+preview.scaleX);
+//        trace("sideLen="+sideLen+",maxLen="+maxLen+",scale="+preview.scaleX);
         var bottoms: Array<Int> = [];
         var grid = new Shape();
         for (i in 0...rows) {
@@ -41,7 +41,7 @@ class Maker extends SimpleMaker {
                 x = sideLen / 2 + sideLen * j;
                 y = sideLen / 2 + sideLen * i;
                 var t = Tile.getMask(shape, maxLen, sides);
-                trace("t.w="+t.width+",t.h="+t.height+",x="+x+",y="+y);
+//                trace("t.w="+t.width+",t.h="+t.height+",x="+x+",y="+y);
                 grid.graphics.rox_drawRegion(t, x - maxLen / 2, y - maxLen / 2);
                 left = 3 - (right - 2);
             }

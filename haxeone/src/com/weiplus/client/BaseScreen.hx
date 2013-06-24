@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import com.roxstudio.haxe.ui.RoxScreenManager;
 import nme.events.MouseEvent;
 import com.roxstudio.haxe.ui.UiUtil;
@@ -61,7 +62,7 @@ class BaseScreen extends RoxScreen {
                 titleBar.addChild(title.rox_anchor(UiUtil.CENTER).rox_move(titleBar.width / 2, titleBar.height / 2));
             }
             titleBar.rox_scale(d2rScale);
-            btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回", 0xFFFFFF, titleFontSize, "res/btn_back.9.png", function(e) { finish(RoxScreen.CANCELED); } );
+            btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回".i18n(), 0xFFFFFF, titleFontSize, "res/btn_back.9.png", function(e) { finish(RoxScreen.CANCELED); } );
             if (hasBack) {
                 addTitleButton(btnBack, UiUtil.LEFT);
             }
@@ -78,7 +79,7 @@ class BaseScreen extends RoxScreen {
     }
 
     public function onTitleClicked() {
-        trace("onTitleClicked");
+//        trace("onTitleClicked");
     }
 
     public function drawBackground() {

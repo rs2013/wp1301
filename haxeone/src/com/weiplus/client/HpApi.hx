@@ -24,14 +24,14 @@ class HpApi {
 
     private static function get_instance() : HpApi {
         if (instance == null) {
-#if android
+#if (android && !testin)
             instance = new HpApi(Json.parse(HpManager.getTokenAsJson()));
 #else
 //            instance = new HpApi({ accessToken: "5de6dd1b60c6e090042d9fb605136bba", uid: "7", refreshToken: "" });
             instance = new HpApi({ accessToken: "ad589fd46c1dbea90cfb99c0010e61b4", uid: "3", refreshToken: "" });
 #end
         }
-#if android
+#if (android && !testin)
         if (instance.accessToken == null || instance.accessToken == "") {
             instance.update(Json.parse(HpManager.getTokenAsJson()));
         }
@@ -97,7 +97,7 @@ class HpApi {
                 data = response.toString();
             }
             var datastr: String = "" + data;
-            trace("get.onComplete: code=" + code + ",data=" + (datastr.length > 80 ? datastr.substr(0, 80) + "..." : datastr));
+//            trace("get.onComplete: code=" + code + ",data=" + (datastr.length > 80 ? datastr.substr(0, 80) + "..." : datastr));
             onComplete(code, data);
         }).start();
     }

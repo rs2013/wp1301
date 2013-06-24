@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import nme.geom.Point;
 import com.roxstudio.haxe.ui.RoxFlowPane;
 import com.weiplus.client.model.AppData;
@@ -45,7 +46,7 @@ class MakerScreen extends BaseScreen {
         appdata.id = "fromMaker";
         image = null;
         data = {};
-        btnNextStep = UiUtil.button(UiUtil.TOP_LEFT, null, "下一步", 0xFFFFFF, titleFontSize, "res/btn_common.9.png", function(_) { onNextStep(); } );
+        btnNextStep = UiUtil.button(UiUtil.TOP_LEFT, null, "下一步".i18n(), 0xFFFFFF, titleFontSize, "res/btn_common.9.png", function(_) { onNextStep(); } );
         super.onCreate();
 //        addTitleButton(btnNextStep, UiUtil.RIGHT);
     }
@@ -55,7 +56,7 @@ class MakerScreen extends BaseScreen {
 #if cpp
         var mask = new Sprite();
         mask.graphics.rox_fillRect(0x77000000, 0, 0, screenWidth, screenHeight);
-        var loading = MyUtils.getLoadingAnim("处理中").rox_move(screenWidth / 2, screenHeight / 2);
+        var loading = MyUtils.getLoadingAnim("处理中".i18n()).rox_move(screenWidth / 2, screenHeight / 2);
         mask.addChild(loading);
         addChild(mask);
         GameUtil.worker.addJob(new SimpleJob<Dynamic>(null, packData, function(_) {
@@ -76,14 +77,14 @@ class MakerScreen extends BaseScreen {
         if (FileSystem.exists(MAKER_DIR)) FileUtil.rmdir(MAKER_DIR, true);
         FileUtil.mkdirs(MAKER_DIR);
         if (image.path == null) {
-            trace("start saving image");
+//            trace("start saving image");
             File.saveBytes(MAKER_DIR + "/image.jpg", GameUtil.encodeJpeg(image.bmd));
-            trace("image saved, type=\"" + status.appData.type + "\"");
+//            trace("image saved, type=\"" + status.appData.type + "\"");
         } else {
             File.copy(image.path, MAKER_DIR + "/image.jpg");
         }
         if (status.appData.type == "image") return;
-        trace("start saving zip data");
+//        trace("start saving zip data");
         var cnt = 1;
         var out = {};
         var zipdata = new format.zip.Data();
@@ -109,7 +110,7 @@ class MakerScreen extends BaseScreen {
         var w = new format.zip.Writer(output);
         w.writeData(zipdata);
         output.close();
-        trace("zip saved");
+//        trace("zip saved");
 #end
     }
 

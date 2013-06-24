@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import com.roxstudio.haxe.game.GameUtil;
 import com.roxstudio.haxe.gesture.RoxGestureEvent;
 import com.roxstudio.haxe.gesture.RoxGestureAgent;
@@ -36,8 +37,8 @@ class Postit extends Sprite {
 
     private static inline var MARGIN_RATIO = 1 / 40;
 
-    private static inline var FONT_SIZE_RATIO = 24 / 600;
-    private static inline var MIN_FONT_SIZE = 14.0;
+    private static inline var FONT_SIZE_RATIO = 32 / 600;
+    private static inline var MIN_FONT_SIZE = 16.0;
 
     private var userAvatar: RoxFlowPane;
     private var userLabel: TextField;
@@ -113,10 +114,10 @@ class Postit extends Sprite {
 
         if (mode == FULL) {
             var praisebtn = UiUtil.button(UiUtil.TOP_LEFT, status.praised ? "res/icon_praised.png" : "res/icon_praise.png",
-                    "赞(" + status.praiseCount + ")", 0, fontsize + 2, "res/btn_grey.9.png", onButton);
+                "赞(".i18n() + status.praiseCount + ")", 0, fontsize + 2, "res/btn_grey.9.png", onButton);
             praisebtn.name = "praise_" + status.id;
             var commentbtn = UiUtil.button(UiUtil.TOP_LEFT, "res/icon_comment.png",
-                    "评论(" + status.commentCount + ")", 0, fontsize + 2, "res/btn_grey.9.png", onButton);
+                "评论(".i18n() + status.commentCount + ")", 0, fontsize + 2, "res/btn_grey.9.png", onButton);
             commentbtn.name = "comment_" + status.id;
 //            var morebtn = UiUtil.button(UiUtil.TOP_LEFT, "res/icon_more.png",
 //                    null, "res/btn_grey.9.png", onButton);
@@ -139,8 +140,11 @@ class Postit extends Sprite {
                     var r = 6;
                     if (mode == COMPACT) {
                         graphics.rox_drawRegionRound(image, 0, 0, w, imh, r);
+                    } else if (imageScale == 1 && imageOffset > 0) {
+                        var bmp = new Bitmap(image);
+                        addChild(bmp.rox_move(imageOffset, 0));
                     } else {
-                        graphics.beginBitmapFill(image, new Matrix(imageScale, 0, 0, imageScale, imageOffset, 0), false, false);
+                        graphics.beginBitmapFill(image, new Matrix(imageScale, 0, 0, imageScale, imageOffset, 0), false, true);
                         graphics.moveTo(0, r);
                         graphics.curveTo(0, 0, r, 0);
                         graphics.lineTo(w - r, 0);
@@ -168,11 +172,11 @@ class Postit extends Sprite {
                     }
 //                trace("im="+imw+","+imh+",scale="+imageScale+",offset="+imageOffset);
                 } else {
-                    var placeholder = UiUtil.staticText("载入失败");
+                    var placeholder = UiUtil.staticText("载入失败".i18n());
                     addChild(placeholder.rox_move((w - placeholder.width) / 2, (imh - placeholder.height) / 2));
                 }
             });
-            var anim = MyUtils.getLoadingAnim("载入中");
+            var anim = MyUtils.getLoadingAnim("载入中".i18n());
             addChild(anim.rox_move(w / 2, imh / 2));
         }
     }
@@ -196,12 +200,12 @@ class Postit extends Sprite {
                             status.praiseCount = stat.praiseCount;
                             status.praised = !status.praised;
                             setWidth(w, mode);
-                            UiUtil.message(status.praised ? "赞 +1" : "赞已取消");
+                            UiUtil.message(status.praised ? "赞 +1".i18n() : "赞已取消".i18n());
                         case 19:
-                            UiUtil.message("已经赞过了");
+                            UiUtil.message("已经赞过了".i18n());
 //                            UiUtil.message
                         default:
-                            UiUtil.message("网络错误，ex=" + data);
+                            UiUtil.message("网络错误，ex=".i18n() + data);
                     }
                 });
             case "comment":

@@ -1,5 +1,6 @@
 package com.weiplus.apps.slidepuzzle;
 
+using com.roxstudio.i18n.I18n;
 import haxe.Json;
 import com.weiplus.client.PlayScreen;
 import com.eclecticdesignstudio.motion.easing.Elastic;
@@ -87,7 +88,7 @@ class App extends PlayScreen {
                 map[i][j] = t;
             }
         }
-        var btnView = UiUtil.button(UiUtil.TOP_LEFT, null, "预览", 0xFFFFFF, titleFontSize, "res/btn_dark.9.png", onView);
+        var btnView = UiUtil.button(UiUtil.TOP_LEFT, null, "预览".i18n(), 0xFFFFFF, titleFontSize, "res/btn_dark.9.png", onView);
         addTitleButton(btnView, UiUtil.RIGHT);
     }
 

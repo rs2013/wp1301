@@ -23,10 +23,10 @@ class Splash extends BaseScreen {
         hasBack = false;
         super.onCreate();
         UiUtil.delay(doLoad, 1);
-#if android
+#if (android && !testin)
 //        HpManager.logout();
         loginOk = HpManager.login();
-        trace("loginOk=" + loginOk + ",token=" + HpManager.getTokenAsJson());
+//        trace("loginOk=" + loginOk + ",token=" + HpManager.getTokenAsJson());
 #end
     }
 

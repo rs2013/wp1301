@@ -12,7 +12,7 @@ class FileUtil {
     private function new() {
     }
 
-#if cpp
+#if (cpp || neko)
 
     public static function mkdirs(path: String) {
         path = path.replace("\\", "/");
@@ -66,7 +66,7 @@ class FileUtil {
     public static inline function fileUrl(s: String) : String {
         var url: String = (#if windows "file:///" #else "file://" #end) + fullPath(s);
         url = url.replace("\\", "/");
-        trace("fileUrl(\"" + s + "\") = \"" + url + "\"");
+//        trace("fileUrl(\"" + s + "\") = \"" + url + "\"");
         return url;
     }
 

@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import nme.geom.Point;
 import com.roxstudio.haxe.gesture.RoxGestureAgent;
 import com.roxstudio.haxe.gesture.RoxGestureEvent;
@@ -39,13 +40,13 @@ class CommentsScreen extends BaseScreen {
 
     override public function onCreate() {
         title = new Sprite();
-        title.addChild(UiUtil.staticText("评论列表", 0xFFFFFF, titleFontSize * 1.2));
+        title.addChild(UiUtil.staticText("评论列表".i18n(), 0xFFFFFF, titleFontSize * 1.2));
         super.onCreate();
     }
 
     override public function onNewRequest(data: Dynamic) {
         statusId = cast data; // status id
-        addChild(MyUtils.getLoadingAnim("载入中").rox_move(screenWidth / 2, screenHeight / 2));
+        addChild(MyUtils.getLoadingAnim("载入中".i18n()).rox_move(screenWidth / 2, screenHeight / 2));
         refresh(false);
     }
 
@@ -65,14 +66,17 @@ class CommentsScreen extends BaseScreen {
         input.graphics.rox_bitmapFill(bg, 0, 0, screenWidth, bg.height);
         input.graphics.rox_fillRoundRect(0xFFFFFFFF, spacing, spacing, screenWidth - 2 * spacing, bg.height - 2 * spacing);
         input.graphics.rox_drawRoundRect(1, 0xFF999999, spacing, spacing, screenWidth - 2 * spacing, bg.height - 2 * spacing);
-        var text = UiUtil.staticText("添加评论...", 0xBBBBBB, buttonFontSize, input.width - 8);
+        var text = UiUtil.staticText("添加评论...".i18n(), 0xBBBBBB, buttonFontSize, input.width - 8);
         input.addChild(text.rox_move(spacing + 4, (input.height - text.height) / 2));
         input.mouseEnabled = true;
         input.addEventListener(MouseEvent.CLICK, function(_) {
+            var text1 = "发表评论".i18n();
+            var text2 = "添加".i18n();
+            var text3 = "测试评论".i18n();
 #if android
-            HaxeStub.startInputDialog("发表评论", "", "添加", this);
+            HaxeStub.startInputDialog(text1, "", text2, this);
 #else
-            UiUtil.delay(function() { onApiCallback(null, "ok", "测试评论"); });
+            UiUtil.delay(function() { onApiCallback(null, "ok", text3); });
 #end
         });
         main = new Sprite();
@@ -92,7 +96,7 @@ class CommentsScreen extends BaseScreen {
         if (result == "ok" && str.length > 0) {
             HpApi.instance.get("/comments/create/" + statusId, { text: str }, function(code: Int, data: Dynamic) {
                 if (code == 200) {
-                    UiUtil.message("评论已经添加");
+                    UiUtil.message("评论已经添加".i18n());
                     refresh(false);
                 }
             });
@@ -103,7 +107,7 @@ class CommentsScreen extends BaseScreen {
         if (refreshing) return;
         this.append = append && page != null;
         if (this.append && page.oldestId - 1 <= 0) {
-            UiUtil.message("没有更多评论了");
+            UiUtil.message("没有更多评论了".i18n());
             return;
         }
 
@@ -117,7 +121,7 @@ class CommentsScreen extends BaseScreen {
         UiUtil.rox_removeByName(this, MyUtils.LOADING_ANIM_NAME);
         refreshing = false;
         if (code != 200) {
-            UiUtil.message("网络错误. code=" + code + ",message=" + data);
+            UiUtil.message("网络错误. code=".i18n() + code + ",message=" + data);
             return;
         }
 
@@ -150,7 +154,7 @@ class CommentsScreen extends BaseScreen {
         page.oldestId = oldest;
         if (this.append && cast(pageInfo.records, Array<Dynamic>).length == 0) {
             page.oldestId = 0;
-            UiUtil.message("没有更多评论了");
+            UiUtil.message("没有更多评论了".i18n());
         }
 
         var spacing = SPACING_RATIO * screenWidth;
@@ -159,7 +163,7 @@ class CommentsScreen extends BaseScreen {
         main.rox_removeAll();
 
         if (comments.length == 0) {
-            var label = UiUtil.staticText("暂时没有评论", 0, buttonFontSize);
+            var label = UiUtil.staticText("暂时没有评论".i18n(), 0, buttonFontSize);
             main.addChild(label.rox_move((screenWidth - label.width) / 2, spacing * 2));
             return;
         }
@@ -167,11 +171,11 @@ class CommentsScreen extends BaseScreen {
         var yoff: Float = 0;
         for (c in comments) {
             var sp = new Sprite();
-            var name = UiUtil.staticText(c.commenter.name, 0, buttonFontSize * 0.8);
+            var name = UiUtil.staticText(c.commenter.name, 0, buttonFontSize * 0.9);
             sp.addChild(name.rox_move(60 + 2 * spacing, spacing));
-            var time = UiUtil.staticText(MyUtils.timeStr(c.createdAt), 0, buttonFontSize * 0.8);
+            var time = UiUtil.staticText(MyUtils.timeStr(c.createdAt), 0, buttonFontSize * 0.9);
             sp.addChild(time.rox_move(screenWidth - time.width - spacing, spacing));
-            var text = UiUtil.staticText(c.text, 0, buttonFontSize * 0.8, true, screenWidth - 60 - 3 * spacing);
+            var text = UiUtil.staticText(c.text, 0, buttonFontSize * 0.9, true, screenWidth - 60 - 3 * spacing);
             sp.addChild(text.rox_move(60 + 2 * spacing, name.height + 2 * spacing));
             var h = GameUtil.max(60 + 2 * spacing, name.height + text.height + 3 * spacing);
             sp.graphics.rox_fillRect(0x01FFFFFF, 0, 0, screenWidth, h);

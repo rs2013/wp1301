@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+using com.roxstudio.i18n.I18n;
 import nme.display.Sprite;
 import com.weiplus.client.model.PageModel;
 import nme.events.Event;
@@ -21,7 +22,7 @@ class SelectedScreen extends TimelineScreen {
 
     override public function onCreate() {
         title = new Sprite();
-        title.addChild(UiUtil.staticText("精选", 0xFFFFFF, titleFontSize * 1.2));
+        title.addChild(UiUtil.staticText("精选".i18n(), 0xFFFFFF, titleFontSize * 1.2));
         super.onCreate();
     }
 

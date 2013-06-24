@@ -26,7 +26,7 @@ class Maker extends SimpleMaker {
         var size: Int = data.size;
         var osl = SimpleMaker.SIDELEN / size;
         var sl = w / size;
-        trace("w="+w+",img="+img.width+","+img.height+",size="+size+",osl="+osl+",sl="+sl);
+//        trace("w="+w+",img="+img.width+","+img.height+",size="+size+",osl="+osl+",sl="+sl);
         var set: Array<Int> = [];
         for (i in 0...(size * size)) set.push(i);
         GameUtil.shuffle(set);

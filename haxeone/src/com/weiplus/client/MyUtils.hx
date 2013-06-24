@@ -23,6 +23,7 @@ import nme.display.Sprite;
 import nme.display.Bitmap;
 import nme.display.BitmapData;
 
+using com.roxstudio.i18n.I18n;
 using com.roxstudio.haxe.game.GfxUtil;
 using com.roxstudio.haxe.ui.UiUtil;
 
@@ -45,21 +46,24 @@ class MyUtils {
         if (sheet == null) {
             sheet = new Spritesheet(ResKeeper.loadAssetImage("res/progress.png"));
             var frames: Array<Int> = [];
-            for (i in 0...12) {
-                sheet.addFrame(new SpritesheetFrame(100 * i, 0, 100, 100));
+            for (i in 0...6) {
+                sheet.addFrame(new SpritesheetFrame(74 * i, 0, 74, 74));
                 frames.push(i);
             }
-            sheet.addBehavior(new BehaviorData("loading", frames, true, 10, 50, 50));
+            sheet.addBehavior(new BehaviorData("loading", frames, true, 10, 37, 37));
             ResKeeper.add("spritesheet:res/progress.png", sheet, "default");
         }
+        var sp = new Sprite();
+        sp.graphics.rox_fillRoundRect(0x88000000, -55, -55, 110, 110, 10);
         var prog = new AutoplaySprite(sheet);
-        prog.name = LOADING_ANIM_NAME;
-        prog.alpha = 0.6;
-        var txt = UiUtil.staticText(label, 0xFFFFFF, 18);
+        sp.name = LOADING_ANIM_NAME;
+        prog.alpha = 0.8;
+        sp.addChild(prog.rox_move(0, -13));
+        var txt = UiUtil.staticText(label, 0xFFFFFF, 21);
 //        var sp = new Sprite();
 //        sp.addChild(prog);
-        prog.addChild(txt.rox_move(-txt.width / 2, -txt.height / 2));
-        return prog;
+        sp.addChild(txt.rox_move(-txt.width / 2, -txt.height / 2 + 39));
+        return sp;
     }
 
 #if cpp
@@ -79,7 +83,7 @@ class MyUtils {
 #end
 
     public static function logout() {
-#if android
+#if (android && !testin)
         HpManager.logout();
         HpApi.instance.update({ accessToken: "", uid: "", refreshToken: "" });
 #end
@@ -108,11 +112,11 @@ class MyUtils {
         var time = date.getTime() / 1000;
         var dt = now - time;
         if (dt <= 60) {
-            return "刚刚";
+            return "刚刚".i18n();
         } else if (dt <= 3600) {
-            return "" + Std.int(dt / 60) + "分钟前";
+            return "" + Std.int(dt / 60) + "分钟前".i18n();
         } else if (dt <= 86400) {
-            return "" + Std.int(dt / 3600) + "小时前";
+            return "" + Std.int(dt / 3600) + "小时前".i18n();
         } else {
             return "" + (date.getMonth() + 1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes();
         }
