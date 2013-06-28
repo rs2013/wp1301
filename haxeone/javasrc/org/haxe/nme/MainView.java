@@ -20,6 +20,7 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
+//import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.app.Activity;
@@ -57,8 +58,118 @@ class MainView extends GLSurfaceView {
    Activity mActivity;
 	static MainView mRefreshView;
 
+  //private InputDevice device;
     public MainView(Context context,Activity inActivity) {
         super(context);
+
+        int eglVersion = 1;
+
+        // See if version 2 is supported?
+        if (::WIN_ALLOW_SHADERS:: || ::WIN_REQUIRE_SHADERS:: )
+        {
+           EGL10 egl = (EGL10)EGLContext.getEGL();
+           EGLDisplay display = egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
+           int[] version = new int[2];
+           egl.eglInitialize(display, version);
+           EGLConfig[] v2_configs = new EGLConfig[1];
+           int[] num_config = new int[1];
+           int[] attrs = { EGL10.EGL_RENDERABLE_TYPE, 4 /*EGL_OPENGL_ES2_BIT*/, EGL10.EGL_NONE };
+           egl.eglChooseConfig(display, attrs, v2_configs, 1, num_config);
+           //Log.v("EGL","v2 configs : " + num_config[0]);
+           if (num_config[0]==1)
+           {
+              eglVersion = 2;
+              setEGLContextClientVersion(2); 
+           }
+        }
+
+        final int renderType = eglVersion==1 ? 0x01 : 0x04;
+
+
+        setEGLConfigChooser(new EGLConfigChooser() {
+             public EGLConfig chooseConfig (EGL10 egl, EGLDisplay display) {
+                int depth = ::if WIN_DEPTH_BUFFER:: 16 ::else:: 0 ::end::;
+                int stencil = ::if WIN_STENCIL_BUFFER:: 8 ::else:: 0 ::end::;
+
+                EGLConfig[] configs = new EGLConfig[1];
+                int[] num_config = new int[1];
+
+
+                // Try as specified - aa
+                if (::WIN_ANTIALIASING:: > 1)
+                {
+                   int[] attrs = { EGL10.EGL_DEPTH_SIZE, depth,
+                                   EGL10.EGL_STENCIL_SIZE, stencil,
+                                   EGL10.EGL_SAMPLE_BUFFERS, 1 /* true */,
+                                   EGL10.EGL_SAMPLES, ::WIN_ANTIALIASING::,
+                                   EGL10.EGL_RENDERABLE_TYPE, renderType,
+                                   EGL10.EGL_NONE };
+
+                   egl.eglChooseConfig(display, attrs, configs, 1, num_config);
+                   Log.v("EGL","Match AA=::WIN_ANTIALIASING::, depth + stencil : " + num_config[0]);
+
+                   if (num_config[0]==1)
+                      return configs[0];
+
+                   // Try with just 2 specified - aa
+                   if (::WIN_ANTIALIASING:: > 2)
+                   {
+                      int[] attrs_aa2 = { EGL10.EGL_DEPTH_SIZE, depth,
+                                      EGL10.EGL_STENCIL_SIZE, stencil,
+                                      EGL10.EGL_SAMPLE_BUFFERS, 1 /* true */,
+                                      EGL10.EGL_SAMPLES, 2,
+                                      EGL10.EGL_RENDERABLE_TYPE, renderType,
+                                      EGL10.EGL_NONE };
+   
+                      egl.eglChooseConfig(display, attrs_aa2, configs, 1, num_config);
+                      Log.v("EGL","Match AA=2, depth + stencil : " + num_config[0]);
+
+                      if (num_config[0]==1)
+                        return configs[0];
+                   }
+
+                   // No normal multisampling config was found. Try to create a
+                   // converage multisampling configuration, for the nVidia Tegra2.
+                   // See the EGL_NV_coverage_sample documentation.
+
+                   final int EGL_COVERAGE_BUFFERS_NV = 0x30E0;
+                   final int EGL_COVERAGE_SAMPLES_NV = 0x30E1;
+
+                   int[] attrs_aanv = { EGL10.EGL_DEPTH_SIZE, depth,
+                                      EGL10.EGL_STENCIL_SIZE, stencil,
+                                      EGL_COVERAGE_BUFFERS_NV, 1 /* true */,
+                                      EGL_COVERAGE_SAMPLES_NV, 2,  // always 5 in practice on tegra 2
+                                      EGL10.EGL_RENDERABLE_TYPE, renderType,
+                                      EGL10.EGL_NONE };
+
+                   egl.eglChooseConfig(display, attrs_aanv, configs, 1, num_config);
+                   Log.v("EGL","Match AANV, depth + stencil : " + num_config[0]);
+
+                   if (num_config[0]==1)
+                       return configs[0];
+                }
+
+                // Try just specifying just depth and stencil
+                int[] attrs1 = { EGL10.EGL_DEPTH_SIZE, depth,
+                                EGL10.EGL_STENCIL_SIZE, stencil,
+                                EGL10.EGL_RENDERABLE_TYPE, renderType,
+                                EGL10.EGL_NONE };
+
+                egl.eglChooseConfig(display, attrs1, configs, 1, num_config);
+                Log.v("EGL","Matched depth + stencil : " + num_config[0]);
+                if (num_config[0]==1)
+                   return configs[0];
+
+                // Just give me whatever you've got
+                int[] attrs2 = { EGL10.EGL_NONE };
+                egl.eglChooseConfig(display, attrs2, configs, 1, num_config);
+                if (num_config[0]==1)
+                   return configs[0];
+                Log.v("EGL","Matched any : " + num_config[0]);
+
+                return null;
+             }
+        });
         mActivity = inActivity;
 		  mRefreshView = this;
         setFocusable(true);
@@ -67,6 +178,11 @@ class MainView extends GLSurfaceView {
 
         setRenderer(new Renderer(this));
 		  setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+       //Log.v("VIEW", "present on system: " + InputDevice.getDeviceIds());
+      for (int i = 0; i < 4; i++) {
+        //device = InputDevice.getDevice(i);
+        //if (device != null) { Log.v("VIEW", "id of controller is: " + i + " and identification is: " + device.getName());}
+      }
     }
 
    static final int etTouchBegin = 15;
@@ -196,6 +312,13 @@ class MainView extends GLSurfaceView {
           case KeyEvent.KEYCODE_DPAD_DOWN: return 40;
           case KeyEvent.KEYCODE_BACK: return 27; /* Fake Escape */
 		  case KeyEvent.KEYCODE_MENU: return 0x01000012; /* Fake MENU */
+          //case KeyEvent.KEYCODE_DPAD_CENTER: return 13; // Fake ENTER
+          //case KeyEvent.KEYCODE_DPAD_LEFT: return 1;//37;
+          //case KeyEvent.KEYCODE_DPAD_RIGHT: return 2;//39;
+          //case KeyEvent.KEYCODE_DPAD_UP: return 3;//38;
+          //case KeyEvent.KEYCODE_DPAD_DOWN: return 4;//40;
+          //case KeyEvent.KEYCODE_BACK: return 3;//27; // Fake Escape
+          //case KeyEvent.KEYCODE_MENU: return 0x01000012; // Fake MENU
 
           case KeyEvent.KEYCODE_DEL: return 8;
        }
@@ -212,13 +335,17 @@ class MainView extends GLSurfaceView {
     @Override
     public boolean onKeyDown(final int inKeyCode, KeyEvent event) {
          // Log.e("VIEW","onKeyDown " + inKeyCode);
+          Log.v("VIEW", "device of event is " + event.getDeviceId());
+          Log.v("VIEW","onKeyDown " + inKeyCode);
          final MainView me = this;
          final int keyCode = translateKey(inKeyCode,event);
+         final int deviceId = event.getDeviceId();
          if (keyCode!=0) {
              queueEvent(new Runnable() {
                  // This method will be called on the rendering thread:
                  public void run() {
                      me.HandleResult(NME.onKeyChange(keyCode,true));
+                     //me.HandleResult(NME.onJoyChange(deviceId,keyCode,true));
                  }});
              return true;
          }
@@ -229,13 +356,17 @@ class MainView extends GLSurfaceView {
     @Override
     public boolean onKeyUp(final int inKeyCode, KeyEvent event) {
          //Log.v("VIEW","onKeyUp " + inKeyCode);
+          Log.v("VIEW", "device of event is " + event.getDeviceId());
+         Log.v("VIEW","onKeyUp " + inKeyCode);
          final MainView me = this;
          final int keyCode = translateKey(inKeyCode,event);
+         final int deviceId = event.getDeviceId();
          if (keyCode!=0) {
              queueEvent(new Runnable() {
                  // This method will be called on the rendering thread:
                  public void run() {
                      me.HandleResult(NME.onKeyChange(keyCode,false));
+//                     me.HandleResult(NME.onJoyChange(deviceId,keyCode,false));
                  }});
              return true;
          }
@@ -282,6 +413,7 @@ class MainView extends GLSurfaceView {
         public void onDrawFrame(GL10 gl) {
             //Log.v("VIEW","onDrawFrame !");
             mMainView.HandleResult( NME.onRender() );
+            Sound.checkSoundCompletion();
             //Log.v("VIEW","onDrawFrame DONE!");
         }
 
