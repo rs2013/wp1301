@@ -142,6 +142,7 @@
   <file path="src/com/weiplus/client/ShareSetting.hx">
     <t id="人人网">Renren.com</t>
     <t id="新浪微博">Sina Weibo</t>
+    <t id="登录中">Signing in</t><!--line 33-->
     <t id="登录错误. error=">Login failed. error=</t>
     <t id="腾讯微博">Tencent Weibo</t>
   </file>
