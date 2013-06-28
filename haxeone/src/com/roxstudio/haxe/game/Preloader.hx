@@ -116,7 +116,8 @@ class Preloader extends EventDispatcher {
             } else {
                 throw "Preloader: download " + url + " failed.";
             }
-        }).start();
+        });
+        ldr.start();
     }
 
     private function addData(id: String, data: Dynamic) {

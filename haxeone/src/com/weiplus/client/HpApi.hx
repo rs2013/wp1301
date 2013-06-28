@@ -4,7 +4,11 @@ import nme.errors.Error;
 import haxe.Json;
 import nme.events.Event;
 import com.roxstudio.haxe.net.RoxURLLoader;
+#if haxe3
+import haxe.crypto.BaseCode;
+#else
 import haxe.BaseCode;
+#end
 
 class HpApi {
 
@@ -60,10 +64,12 @@ class HpApi {
         }
         for (k in Reflect.fields(params)) {
             var val = Reflect.field(params, k);
-            switch (true) {
-                case Std.is(val, Int), Std.is(val, Float): addBuf(buf, k, "" + val);
-                case Std.is(val, String): addBuf(buf, k, StringTools.urlEncode(cast val));
-                case val == null: addBuf(buf, k, "");
+            if (Std.is(val, Int) || Std.is(val, Float)) {
+                addBuf(buf, k, "" + val);
+            } else if (Std.is(val, String)) {
+                addBuf(buf, k, StringTools.urlEncode(cast val));
+            } else if (val == null) {
+                addBuf(buf, k, "");
             }
         }
         return buf.toString();
@@ -99,7 +105,8 @@ class HpApi {
             var datastr: String = "" + data;
 //            trace("get.onComplete: code=" + code + ",data=" + (datastr.length > 80 ? datastr.substr(0, 80) + "..." : datastr));
             onComplete(code, data);
-        }).start();
+        });
+        ldr.start();
     }
 
 //    private function complete()

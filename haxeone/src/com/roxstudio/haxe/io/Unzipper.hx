@@ -14,6 +14,13 @@ import nme.utils.ByteArray;
 
 using com.roxstudio.haxe.io.IOUtil;
 
+#if haxe3
+
+typedef Hash<T> = Map<String, T>;
+typedef IntHash<T> = Map<Int, T>;
+
+#end
+
 class Unzipper extends EventDispatcher {
 
     public var completed(default, null): Bool = false;
@@ -78,7 +85,7 @@ class Unzipper extends EventDispatcher {
         images.set(id, ldr);
         var imageDone = function(_) { zipDone(id); }
         if (ldr.content != null) {
-            Timer.delay(callback(imageDone, null), 1);
+            Timer.delay(#if haxe3 imageDone.bind(null) #else callback(imageDone, null) #end, 1);
         } else {
             var ldri = ldr.contentLoaderInfo;
             ldri.addEventListener(Event.COMPLETE, imageDone);

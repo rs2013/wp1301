@@ -2,10 +2,6 @@ package com.weiplus.client;
 
 import com.roxstudio.haxe.io.Unzipper;
 import com.roxstudio.haxe.ui.AutoplaySprite;
-import com.eclecticdesignstudio.spritesheet.AnimatedSprite;
-import com.eclecticdesignstudio.spritesheet.data.BehaviorData;
-import com.eclecticdesignstudio.spritesheet.data.SpritesheetFrame;
-import com.eclecticdesignstudio.spritesheet.Spritesheet;
 import haxe.Timer;
 import nme.geom.Rectangle;
 import com.roxstudio.haxe.game.ResKeeper;

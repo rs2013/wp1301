@@ -5,8 +5,8 @@ import com.roxstudio.haxe.ui.UiUtil;
 import haxe.Json;
 import flash.geom.Rectangle;
 import com.weiplus.client.PlayScreen;
-import com.eclecticdesignstudio.motion.easing.Elastic;
-import com.eclecticdesignstudio.motion.Actuate;
+import motion.easing.Elastic;
+import motion.Actuate;
 import com.roxstudio.haxe.ui.RoxScreen;
 import com.roxstudio.haxe.game.GameUtil;
 import com.roxstudio.haxe.game.ResKeeper;
@@ -60,7 +60,7 @@ class App extends PlayScreen {
         var origw = viewWidth / sc, origh = viewHeight / sc;
 
         groups = new IntHash<TileGroup>();
-        var isNew = saved == null || saved.tiles == null;
+        var isNew = saved == null || saved.tiles == null || saved.tiles.length == 0;
         var savedTiles: IntHash<Array<Int>> = null;
         if (!isNew) {
             savedTiles = new IntHash<Array<Int>>();

@@ -8,8 +8,8 @@ import com.weiplus.client.model.Routine;
 import sys.FileSystem;
 import sys.io.File;
 #end
-import com.eclecticdesignstudio.motion.easing.Linear;
-import com.eclecticdesignstudio.motion.Actuate;
+import motion.easing.Linear;
+import motion.Actuate;
 import com.weiplus.client.MyUtils;
 import com.roxstudio.haxe.ui.UiUtil;
 import StringTools;
@@ -441,8 +441,8 @@ class TimelineScreen extends BaseScreen {
     private function doPop(action: Int) {
         if (animating) return;
         animating = true;
-        var pin: Sprite = switch (action) { case 1: popup1; case 2: popup2; case 3: popup1; case 4: null; }
-        var pout: Sprite = switch (action) { case 1: null; case 2: popup1; case 3: popup2; case 4: popupbg.contains(popup1) ? popup1 : popup2; }
+        var pin: Sprite = switch (action) { case 1: popup1; case 2: popup2; case 3: popup1; case 4: null; case _: null; }
+        var pout: Sprite = switch (action) { case 1: null; case 2: popup1; case 3: popup2; case 4: popupbg.contains(popup1) ? popup1 : popup2; case _: null; }
 //        trace("pin=" + pin+",pout=" + pout);
         if (pin != null) {
             popupbg.addChild(pin);

@@ -2,7 +2,7 @@
 
 using com.roxstudio.i18n.I18n;
 import nme.text.TextField;
-import com.eclecticdesignstudio.motion.easing.Linear;
+import motion.easing.Linear;
 import com.roxstudio.haxe.game.GameUtil;
 import nme.geom.Point;
 import com.roxstudio.haxe.ui.UiUtil;
@@ -13,8 +13,8 @@ import com.weiplus.client.MyUtils;
 import nme.events.MouseEvent;
 import com.roxstudio.haxe.ui.UiUtil;
 import nme.display.BitmapData;
-import com.eclecticdesignstudio.motion.easing.Elastic;
-import com.eclecticdesignstudio.motion.Actuate;
+import motion.easing.Elastic;
+import motion.Actuate;
 import com.roxstudio.haxe.game.ResKeeper;
 import com.roxstudio.haxe.io.FileUtil;
 import com.roxstudio.haxe.io.Unzipper;

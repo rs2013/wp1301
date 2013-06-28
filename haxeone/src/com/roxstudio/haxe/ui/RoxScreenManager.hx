@@ -1,6 +1,6 @@
 package com.roxstudio.haxe.ui;
 
-import com.eclecticdesignstudio.motion.Actuate;
+import motion.Actuate;
 import com.roxstudio.haxe.game.ResKeeper;
 import com.roxstudio.haxe.ui.RoxAnimate;
 import com.roxstudio.haxe.ui.RoxScreen;
@@ -10,6 +10,13 @@ import nme.display.Sprite;
 import nme.events.KeyboardEvent;
 import nme.geom.Rectangle;
 import nme.Lib;
+
+#if haxe3
+
+private typedef Hash<T> = Map<String, T>;
+private typedef IntHash<T> = Map<Int, T>;
+
+#end
 
 class RoxScreenManager extends Sprite {
 

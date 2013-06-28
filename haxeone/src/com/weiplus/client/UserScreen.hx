@@ -131,7 +131,7 @@ class UserScreen extends TimelineScreen {
             });
             sp.addChild(btn.rox_move(60 + 2 * spacing, (100 - btn.height) / 2));
         }
-        var arr = [
+        var arr: Array<Dynamic> = [
             [ "作品".i18n(), user.postCount, 310, null ],
             [ "关注".i18n(), user.friendCount, 420, "friends" ],
             [ "粉丝".i18n(), user.followerCount, 530, "followers" ]

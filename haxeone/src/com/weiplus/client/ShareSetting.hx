@@ -30,13 +30,14 @@ class ShareSetting extends BaseScreen {
         { id: "RENREN_WEIBO", icon: "res/icon_renren.png", name: "人人网".i18n(), type: 3, data: on("RENREN_WEIBO") },
         ];
         var list = MyUtils.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
+            var text = "登录中".i18n();
 #if (android && !testin)
             var type = i.id;
             if (HpManager.isBindingSessionValid(type)) {
                 HpManager.setBindingEnabled(type, !HpManager.isBindingEnabled(type));
                 return true;
             }
-            addChild(waitingAnim("登录中".i18n()));
+            addChild(waitingAnim(text));
             HpManager.startAuth(type, this);
             return false;
 #else

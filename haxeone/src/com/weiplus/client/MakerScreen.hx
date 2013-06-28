@@ -53,10 +53,11 @@ class MakerScreen extends BaseScreen {
 
     public function onNextStep() {
         // can be overrided by sub-classes
+        var text = "处理中".i18n();
 #if cpp
         var mask = new Sprite();
         mask.graphics.rox_fillRect(0x77000000, 0, 0, screenWidth, screenHeight);
-        var loading = MyUtils.getLoadingAnim("处理中".i18n()).rox_move(screenWidth / 2, screenHeight / 2);
+        var loading = MyUtils.getLoadingAnim(text).rox_move(screenWidth / 2, screenHeight / 2);
         mask.addChild(loading);
         addChild(mask);
         GameUtil.worker.addJob(new SimpleJob<Dynamic>(null, packData, function(_) {
@@ -108,7 +109,11 @@ class MakerScreen extends BaseScreen {
                     dataSize: bytes.length, data: bytes, crc32: null, extraFields: ef });
         var output = File.write(MAKER_DIR + "/data.zip");
         var w = new format.zip.Writer(output);
+#if haxe3
+        w.write(zipdata);
+#else
         w.writeData(zipdata);
+#end
         output.close();
 //        trace("zip saved");
 #end

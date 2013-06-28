@@ -3,8 +3,8 @@ package com.roxstudio.haxe.gesture;
 import nme.ui.MultitouchInputMode;
 import nme.display.Sprite;
 import nme.display.DisplayObjectContainer;
-import com.eclecticdesignstudio.motion.actuators.GenericActuator;
-import com.eclecticdesignstudio.motion.Actuate;
+import motion.actuators.GenericActuator;
+import motion.Actuate;
 import com.roxstudio.haxe.gesture.RoxGestureEvent;
 import com.roxstudio.haxe.game.GameUtil;
 import haxe.Timer;
@@ -44,16 +44,16 @@ class RoxGestureAgent {
 //    private static inline var DOUBLE_TAP_DELAY = 0.3;
     private static inline var SWIPE_SCROLL_TIME = 2.0;
     private static inline var SWIPE_SAMPLE_TIME = 0.2;
-    private static inline var VELOCITY_RATIO = 1 / 4;
-    private static inline var touchEvents = [
+    private static inline var VELOCITY_RATIO = 0.25;
+    private static var touchEvents = [
         TouchEvent.TOUCH_BEGIN, TouchEvent.TOUCH_END, TouchEvent.TOUCH_MOVE, TouchEvent.TOUCH_OVER,
         TouchEvent.TOUCH_OUT, TouchEvent.TOUCH_ROLL_OVER, TouchEvent.TOUCH_ROLL_OUT, TouchEvent.TOUCH_TAP ];
-    private static inline var mouseEvents = [
+    private static var mouseEvents = [
         MouseEvent.MOUSE_DOWN, MouseEvent.MOUSE_UP, MouseEvent.MOUSE_MOVE, MouseEvent.MOUSE_OVER,
         MouseEvent.MOUSE_OUT, MouseEvent.ROLL_OVER, MouseEvent.ROLL_OUT, MouseEvent.CLICK ];
-    private static inline var geTouchEvents = [
+    private static var geTouchEvents = [
         TouchEvent.TOUCH_BEGIN, TouchEvent.TOUCH_END, TouchEvent.TOUCH_MOVE, TouchEvent.TOUCH_OUT ];
-    private static inline var geMouseEvents = [
+    private static var geMouseEvents = [
         MouseEvent.MOUSE_DOWN, MouseEvent.MOUSE_UP, MouseEvent.MOUSE_MOVE, MouseEvent.MOUSE_OUT ];
 
     private static var initialized = false;
@@ -109,7 +109,7 @@ class RoxGestureAgent {
     }
 
     public inline function getHandler(?flags: Int = PAN_XY) : Dynamic -> Void {
-        return callback(handleEvent, flags);
+        return #if haxe3 handleEvent.bind(flags) #else callback(handleEvent, flags) #end;
     }
 
     public inline function startTween(target: Dynamic, interval: Float, properties: Dynamic) {
@@ -336,7 +336,7 @@ class RoxGestureAgent {
         }
     }
 
-    private static inline var MAP: Array<String> = [
+    private static var MAP: Array<String> = [
         MouseEvent.MOUSE_DOWN, RoxGestureEvent.TOUCH_BEGIN,
         MouseEvent.MOUSE_UP, RoxGestureEvent.TOUCH_END,
         MouseEvent.MOUSE_MOVE, RoxGestureEvent.TOUCH_MOVE,

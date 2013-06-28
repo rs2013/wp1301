@@ -29,6 +29,8 @@ class PictureScreen extends BaseScreen {
         title.addChild(UiUtil.staticText("查看原图".i18n(), 0xFFFFFF, titleFontSize * 1.2));
         super.onCreate();
         var btnSave = UiUtil.button(UiUtil.TOP_LEFT, null, "保存".i18n(), 0xFFFFFF, titleFontSize, "res/btn_common.9.png", function(_) {
+            var text1 = "保存成功".i18n();
+            var text2 = "保存中".i18n();
 #if cpp
             MyUtils.asyncOperation({}, function(_) {
                 FileUtil.mkdirs(IMAGE_SAVE_DIR);
@@ -36,8 +38,8 @@ class PictureScreen extends BaseScreen {
                 var name = "" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
                 sys.io.File.saveBytes(IMAGE_SAVE_DIR + "/" + name, bytes);
             }, function(_) {
-                UiUtil.message("保存成功".i18n());
-            }, "保存中".i18n());
+                UiUtil.message(text1);
+            }, text2);
 #end
         });
         addTitleButton(btnSave, UiUtil.RIGHT);

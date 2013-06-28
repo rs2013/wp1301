@@ -3,7 +3,6 @@ package com.weiplus.client;
 //import com.weiplus.client.TestMakerScreen;
 import Lambda;
 using com.roxstudio.i18n.I18n;
-import com.roxstudio.i18n.Global;
 import nme.events.Event;
 import com.weiplus.client.model.AppData;
 import com.weiplus.client.model.Status;
@@ -34,10 +33,10 @@ class Main {
         trace("lang=" + loc);
         if (StringTools.startsWith(loc, "zh")) {
             loc = "default";
-        } else if (!Lambda.has(Global.supportedLocales, loc)) {
+        } else if (!Lambda.has(I18n.getSupportedLocales(), loc)) {
             loc = "en";
         }
-        Global.currentLocale = loc;
+        I18n.setCurrentLocale(loc);
         RoxApp.init();
 //        trace("init ok");
         var m = new RoxScreenManager();

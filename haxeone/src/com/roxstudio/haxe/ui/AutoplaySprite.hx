@@ -1,8 +1,8 @@
 package com.roxstudio.haxe.ui;
 
 import nme.events.Event;
-import com.eclecticdesignstudio.spritesheet.Spritesheet;
-import com.eclecticdesignstudio.spritesheet.AnimatedSprite;
+import spritesheet.Spritesheet;
+import spritesheet.AnimatedSprite;
 
 class AutoplaySprite extends AnimatedSprite {
 

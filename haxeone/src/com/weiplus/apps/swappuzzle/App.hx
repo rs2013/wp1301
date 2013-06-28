@@ -3,8 +3,8 @@ package com.weiplus.apps.swappuzzle;
 using com.roxstudio.i18n.I18n;
 import haxe.Json;
 import com.weiplus.client.PlayScreen;
-import com.eclecticdesignstudio.motion.easing.Elastic;
-import com.eclecticdesignstudio.motion.Actuate;
+import motion.easing.Elastic;
+import motion.Actuate;
 import com.roxstudio.haxe.ui.RoxScreen;
 import com.roxstudio.haxe.game.GameUtil;
 import com.roxstudio.haxe.game.ResKeeper;
@@ -63,7 +63,7 @@ class App extends PlayScreen {
 
         map = [];
         var set: Array<Int>;
-        if (saved != null && saved.map != null) {
+        if (saved != null && saved.map != null && cast(saved.map, Array<Dynamic>).length == columns * rows) {
             set = saved.map;
         } else {
             set = [];

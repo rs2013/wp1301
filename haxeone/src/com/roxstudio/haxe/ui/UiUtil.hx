@@ -5,7 +5,6 @@ import nme.display.InteractiveObject;
 import nme.events.EventDispatcher;
 import nme.events.Event;
 import nme.Lib;
-import com.roxstudio.haxe.ui.UiUtil;
 import com.roxstudio.haxe.game.GfxUtil;
 import haxe.Timer;
 import nme.text.TextFieldType;
@@ -27,6 +26,13 @@ import nme.text.TextField;
 import nme.text.TextFormat;
 import nme.text.TextFormatAlign;
 import nme.utils.ByteArray;
+
+#if haxe3
+
+typedef Hash<T> = Map<String, T>;
+typedef IntHash<T> = Map<Int, T>;
+
+#end
 
 class UiUtil {
 
@@ -62,8 +68,11 @@ class UiUtil {
         format.color = color;
         format.size = Std.int(size);
         format.align = switch (hAlign & 0x0F) {
-            case LEFT: TextFormatAlign.LEFT; case HCENTER: TextFormatAlign.CENTER;
-            case RIGHT: TextFormatAlign.RIGHT; case JUSTIFY: TextFormatAlign.JUSTIFY; };
+            case HCENTER: TextFormatAlign.CENTER;
+            case RIGHT: TextFormatAlign.RIGHT;
+            case JUSTIFY: TextFormatAlign.JUSTIFY;
+            #if haxe3 case _ #else default #end: TextFormatAlign.LEFT;
+        };
         return format;
     }
 
@@ -255,14 +264,14 @@ class UiUtil {
     }
 
     public static inline function rox_stopPropagation(event: Dynamic, ?immediate: Null<Bool> = false) {
-#if cpp
-        Reflect.setField(event, "nmeIsCancelled", true);
-        if (immediate) Reflect.setField(event, "nmeIsCancelledNow", true);
-
-#else
+//#if cpp
+//        Reflect.setField(event, "nmeIsCancelled", true);
+//        if (immediate) Reflect.setField(event, "nmeIsCancelledNow", true);
+//
+//#else
         event.stopPropagation();
         if (immediate) event.stopImmediatePropagation();
-#end
+//#end
     }
 
     public static inline function rox_removeAll(dpc: DisplayObjectContainer) : DisplayObjectContainer {

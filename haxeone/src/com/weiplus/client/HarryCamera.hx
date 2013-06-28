@@ -4,7 +4,7 @@ import com.roxstudio.haxe.game.GameUtil;
 import com.roxstudio.haxe.io.IOUtil;
 import haxe.io.BytesOutput;
 import haxe.io.Bytes;
-import haxe.FastList;
+import haxe.ds.GenericStack; //FastList;
 import nme.geom.Point;
 import com.roxstudio.haxe.ui.UiUtil;
 import nme.geom.Rectangle;
@@ -72,7 +72,7 @@ class HarryCamera extends MakerScreen {
 //        var bhi: Int = rangeValue(Std.int((argb[3] & 0xFF) * TOLEH), 0, 255);
 //        var blo: Int = rangeValue(Std.int((argb[3] & 0xFF) * TOLEL), 0, 255);
 //        trace("r="+rhi+","+rlo+",g="+ghi+","+glo+",b="+bhi+","+blo);
-        var stk = new FastList<Int>();
+        var stk = new GenericStack<Int>();
         stk.add(0);
         var linew = 4 * bmd2.width, len: Int = argb.length;
         var idx: Null<Int>;

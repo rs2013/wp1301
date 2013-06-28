@@ -19,6 +19,13 @@ import sys.io.File;
 
 using StringTools;
 
+#if haxe3
+
+private typedef Hash<T> = Map<String, T>;
+private typedef IntHash<T> = Map<Int, T>;
+
+#end
+
 class ResKeeper {
 
     public static inline var DEFAULT_BUNDLE = "default";
