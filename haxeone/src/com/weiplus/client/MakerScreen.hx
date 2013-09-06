@@ -63,6 +63,7 @@ class MakerScreen extends BaseScreen {
         GameUtil.worker.addJob(new SimpleJob<Dynamic>(null, packData, function(_) {
             removeChildAt(numChildren - 1);
             startScreen(Type.getClassName(PostScreen), makerData());
+            trace("onNextStep: makerData=" + makerData());
         } ));
 #else
         startScreen(Type.getClassName(PostScreen), makerData());
@@ -78,14 +79,14 @@ class MakerScreen extends BaseScreen {
         if (FileSystem.exists(MAKER_DIR)) FileUtil.rmdir(MAKER_DIR, true);
         FileUtil.mkdirs(MAKER_DIR);
         if (image.path == null) {
-//            trace("start saving image");
+            trace("start saving image");
             File.saveBytes(MAKER_DIR + "/image.jpg", GameUtil.encodeJpeg(image.bmd));
 //            trace("image saved, type=\"" + status.appData.type + "\"");
         } else {
             File.copy(image.path, MAKER_DIR + "/image.jpg");
         }
         if (status.appData.type == "image") return;
-//        trace("start saving zip data");
+        trace("start saving zip data");
         var cnt = 1;
         var out = {};
         var zipdata = new format.zip.Data();
@@ -115,7 +116,7 @@ class MakerScreen extends BaseScreen {
         w.writeData(zipdata);
 #end
         output.close();
-//        trace("zip saved");
+        trace("zip saved");
 #end
     }
 

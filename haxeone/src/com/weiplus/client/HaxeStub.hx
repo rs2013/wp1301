@@ -17,7 +17,7 @@ class HaxeStub
 	public static function startActivity(arg0:String, arg1:Int, arg2:String):Void
 	{
 		if (_startActivity_func == null)
-			_startActivity_func = nme.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startActivity", "(Ljava/lang/String;ILjava/lang/String;)V", true);
+			_startActivity_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startActivity", "(Ljava/lang/String;ILjava/lang/String;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);
@@ -31,7 +31,7 @@ class HaxeStub
 	public static function startImageCapture(arg0:Int, arg1:String):Void
 	{
 		if (_startImageCapture_func == null)
-			_startImageCapture_func = nme.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startImageCapture", "(ILjava/lang/String;)V", true);
+			_startImageCapture_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startImageCapture", "(ILjava/lang/String;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);
@@ -44,7 +44,7 @@ class HaxeStub
 	public static function startHarryCamera(arg0:Int):Void
 	{
 		if (_startHarryCamera_func == null)
-			_startHarryCamera_func = nme.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startHarryCamera", "(I)V", true);
+			_startHarryCamera_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startHarryCamera", "(I)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		_startHarryCamera_func(a);
@@ -56,7 +56,7 @@ class HaxeStub
 	public static function startGetContent(arg0:Int, arg1:String):Void
 	{
 		if (_startGetContent_func == null)
-			_startGetContent_func = nme.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startGetContent", "(ILjava/lang/String;)V", true);
+			_startGetContent_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startGetContent", "(ILjava/lang/String;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);
@@ -69,7 +69,7 @@ class HaxeStub
 	public static function startInputDialog(arg0:String, arg1:String, arg2:String, arg3:Dynamic /*org.haxe.nme.HaxeObject*/):Void
 	{
 		if (_startInputDialog_func == null)
-			_startInputDialog_func = nme.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startInputDialog", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/haxe/nme/HaxeObject;)V", true);
+			_startInputDialog_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startInputDialog", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/haxe/nme/HaxeObject;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);
@@ -84,7 +84,7 @@ class HaxeStub
 	public static function startUmengFb():Void
 	{
 		if (_startUmengFb_func == null)
-			_startUmengFb_func = nme.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startUmengFb", "()V", true);
+			_startUmengFb_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startUmengFb", "()V", true);
 		var a = new Array<Dynamic>();
 		_startUmengFb_func(a);
 	}
@@ -95,7 +95,7 @@ class HaxeStub
 	public static function startUmengXp():Void
 	{
 		if (_startUmengXp_func == null)
-			_startUmengXp_func = nme.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startUmengXp", "()V", true);
+			_startUmengXp_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startUmengXp", "()V", true);
 		var a = new Array<Dynamic>();
 		_startUmengXp_func(a);
 	}
@@ -106,7 +106,7 @@ class HaxeStub
 	public static function onActivityResult(arg0:Int, arg1:Int, arg2:Dynamic /*android.content.Intent*/):Void
 	{
 		if (_onActivityResult_func == null)
-			_onActivityResult_func = nme.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "onActivityResult", "(IILandroid/content/Intent;)V", true);
+			_onActivityResult_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "onActivityResult", "(IILandroid/content/Intent;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);
@@ -120,7 +120,7 @@ class HaxeStub
 	public static function getResult(arg0:Int):String
 	{
 		if (_getResult_func == null)
-			_getResult_func = nme.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "getResult", "(I)Ljava/lang/String;", true);
+			_getResult_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "getResult", "(I)Ljava/lang/String;", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		return _getResult_func(a);

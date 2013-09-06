@@ -1,176 +1,336 @@
-package ::APP_PACKAGE::;
+package com.weiplus.client;
 
-import android.app.Activity;
-import android.content.Intent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.TreeSet;
 
-import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.hardware.Camera;
-import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
-import android.hardware.Camera.PreviewCallback;
 import android.os.Bundle;
+import android.content.Intent;
+import android.util.Log;
+import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.util.Log;
+import android.view.Window;
+import android.widget.RelativeLayout;
 
-import java.io.IOException;
-import java.util.List;
+public class MainActivity extends org.haxe.nme.GameActivity {
+    
+    public CamInfo camInfo;
 
-import com.umeng.analytics.MobclickAgent;
-
-public class MainActivity extends org.haxe.nme.GameActivity implements SurfaceHolder.Callback, Camera.PreviewCallback {
-
-    private SurfaceHolder holder;
-    private Camera camera;
-    public static int[] buffer;
-
-    protected void onCreate(Bundle state) {
-        super.onCreate(state);
-        Log.i("MainActivity", "My onCreate executed!!");
-//        SurfaceView preview = new SurfaceView(this);
-//        holder = preview.getHolder();
-//        holder.addCallback(this);
-//        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS); // TODO: is this api really deprecated?
-//        addContentView(preview, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-    }
-
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        try {
-            //Open the Camera in preview mode
-            this.camera = Camera.open();
-            this.camera.setPreviewDisplay(this.holder);
-        } catch(IOException ioe) {
-            ioe.printStackTrace(System.out);
+    private static final String TAG = "MainActivity";
+    
+    private SurfaceView blank;
+    private SurfaceView preview;
+    private RelativeLayout previewFrame;
+    public Point windowSize;
+    private Comparator<Size> areaComp = new Comparator<Size>() {
+        @Override
+        public int compare(Size lhs, Size rhs) {
+            return rhs.width * rhs.height - lhs.width * lhs.height;
         }
-    }
-
+    };
+    
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        if (width < height) camera.setDisplayOrientation(90);
-        // Now that the size is known, set up the camera parameters and begin
-        // the preview.
-        Camera.Parameters parameters = camera.getParameters();
-        List<Camera.Size> previewSizes = parameters.getSupportedPreviewSizes();
-        Log.e("CameraSize", "surfaceChanged:width=" + width + "," + height);
-        for (Camera.Size s: previewSizes) {
-            Log.e("CameraSize", "width=" + s.width + ",height=" + s.height);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        Log.i(TAG, "My onCreate executed!!");
+
+        camInfo = new CamInfo();
+        int[][] cis = camInfo.cameraInfos = new int[Camera.getNumberOfCameras()][2];
+        for (int i = 0; i < cis.length; i++) {
+            Camera.CameraInfo ci = new Camera.CameraInfo();
+            Camera.getCameraInfo(i, ci);
+            cis[i][0] = ci.facing;
+            cis[i][1] = ci.orientation;
         }
-        // You need to choose the most appropriate previewSize for your app
-        //Camera.Size previewSize = previewSizes.get(1);// .... select one of previewSizes here
+        camInfo.cameraId = -1;
+ 
+        blank = new SurfaceView(this);
+        SurfaceHolder holder = blank.getHolder();
+        holder.addCallback(new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceDestroyed(SurfaceHolder holder) { }
 
-        parameters.setPreviewSize(800, 480); // TODO
-//        Log.e("Preview", "supportedFormat=" + parameters.getSupportedPreviewFormats());
-        parameters.setPreviewFormat(ImageFormat.NV21);
-        camera.setParameters(parameters);
-        camera.startPreview();
-//        camera.setPreviewCallback(this);
-    }
+            @Override
+            public void surfaceCreated(SurfaceHolder holder) { }
 
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        // Surface will be destroyed when replaced with a new screen
-        //Always make sure to release the Camera instance
-        camera.stopPreview();
-        camera.release();
-        camera = null;
-    }
-
-    @Override
-    public void onPreviewFrame(byte[] data, Camera camera) {
-//        Log.e("Preview", "onPreviewFrame,bb=" + bb.length +",first="+bb[0]+","+bb[1]+","+bb[2]+","+bb[3]);
-        if (data != null) {
-//            Log.i("DEBUG", "data Not Null");
-
-            // Preprocessing
-//            Log.i("DEBUG", "Try For Image Processing");
-//            Camera.Parameters mParameters = camera.getParameters();
-            long time = System.currentTimeMillis();
-            Size mSize = camera.getParameters().getPreviewSize();
-            int mWidth = mSize.width;
-            int mHeight = mSize.height;
-            int[] mIntArray = buffer = new int[mWidth * mHeight];
-
-            // Decode Yuv data to integer array
-            decodeYUV420SP(mIntArray, data, mWidth, mHeight);
-            Log.e("DEBUG", "previewsize=" + mWidth + "," + mHeight +",time=" + (System.currentTimeMillis() - time));
-
-            // Converting int mIntArray to Bitmap and
-            // than image preprocessing
-            // and back to mIntArray.
-
-            // Encode intArray to Yuv data
-//            encodeYUV420SP(data, mIntArray, mWidth, mHeight);
-        }
-    }
-
-    static public void decodeYUV420SP(int[] rgba, byte[] yuv420sp, int width, int height) {
-        final int frameSize = width * height;
-        for (int j = 0, yp = 0; j < height; j++) {
-            int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
-            for (int i = 0; i < width; i++, yp++) {
-                int y = (0xff & ((int) yuv420sp[yp])) - 16;
-                if (y < 0)
-                    y = 0;
-                if ((i & 1) == 0) {
-                    v = (0xff & yuv420sp[uvp++]) - 128;
-                    u = (0xff & yuv420sp[uvp++]) - 128;
+            @Override
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+                Log.i(TAG, "blank surfaceChanged: format=" + format+",w=" + width+",h="+height);
+                if (windowSize == null) {
+                    windowSize = new Point(height, width); // width/height reversed for portrait mode
                 }
+            }
+        });
+        
+        preview = new SurfaceView(this);
+        holder = preview.getHolder();
+        holder.addCallback(new SurfaceHolder.Callback() {
 
-                int y1192 = 1192 * y;
-                int r = (y1192 + 1634 * v);
-                int g = (y1192 - 833 * v - 400 * u);
-                int b = (y1192 + 2066 * u);
+            @Override
+            public void surfaceDestroyed(SurfaceHolder holder) { }
 
-                if (r < 0)
-                    r = 0;
-                else if (r > 262143)
-                    r = 262143;
-                if (g < 0)
-                    g = 0;
-                else if (g > 262143)
-                    g = 262143;
-                if (b < 0)
-                    b = 0;
-                else if (b > 262143)
-                    b = 262143;
+            @Override
+            public void surfaceCreated(SurfaceHolder holder) { }
 
-                // rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) &
-                // 0xff00) | ((b >> 10) & 0xff);
-                // rgba, divide 2^10 ( >> 10)
-                rgba[yp] = (((r << 14) & 0xff000000) | ((g << 6) & 0xff0000)
-                        | ((b >> 2) | 0xff00)) >> 8; // to argb
+            @Override
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+                Log.i(TAG, "preview surfaceChanged: format=" + format+",w=" + width+",h="+height);
+//                if (windowSize == null) {
+//                    windowSize = new Point(height, width); // width/height reversed for portrait mode
+//                }
+//                if (camInfo.camera != null) camInfo.camera.startPreview();
+            }
+        });
+        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+
+        previewFrame = new RelativeLayout(this);
+        Display display = getWindowManager().getDefaultDisplay();
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(display.getWidth(), display.getHeight());
+        params.leftMargin = 0;
+        params.topMargin = 0;
+        previewFrame.addView(blank, params);
+        params = new RelativeLayout.LayoutParams(1, 1);
+        params.leftMargin = 0;
+        params.topMargin = 0;
+        previewFrame.addView(preview, params);
+        
+        setContentView(previewFrame, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+        addContentView(mView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+        
+    }
+    
+    public void closeCamera() {
+        if (camInfo.camera != null) {
+            try {
+                camInfo.camera.stopPreview();
+                camInfo.camera.release();
+            } catch (Exception e) { }
+            camInfo.camera = null;
+        }
+//        preview.getHolder().setType(SurfaceHolder.SURFACE_TYPE_NORMAL);
+//        preview.setBackgroundColor(Color.BLACK);
+//        Canvas canvas = preview.getHolder().lockCanvas();
+//        if (canvas != null) {
+//            canvas.drawColor(Color.BLACK);
+//            preview.getHolder().unlockCanvasAndPost(canvas);
+//        }
+    }
+
+    public void switchSurface(boolean openCamera, int top, int h) {
+        SurfaceView open = openCamera ? preview : blank;
+        SurfaceView close = openCamera ? blank : preview;
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) open.getLayoutParams();
+        layoutParams.width = windowSize.y;
+        layoutParams.height = h;
+        layoutParams.leftMargin = 0;
+        layoutParams.topMargin = top;
+        previewFrame.updateViewLayout(open, layoutParams);
+        layoutParams = (RelativeLayout.LayoutParams) close.getLayoutParams();
+        layoutParams.width = 1;
+        layoutParams.height = 1;
+        layoutParams.leftMargin = 0;
+        layoutParams.topMargin = 0;
+        previewFrame.updateViewLayout(close, layoutParams);
+        mView.setFocusable(true);
+        mView.setFocusableInTouchMode(true);
+//        ViewGroup parent = (ViewGroup) mView.getParent();
+//        parent.removeAllViews();
+//        if (openCamera) {
+//            setContentView(previewFrame, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+//        } else {
+//            setContentView(blank, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+//        }
+//        addContentView(mView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+    }
+
+    public void openCamera(int cameraId) {
+        closeCamera();
+//        preview.setBackgroundColor(Color.TRANSPARENT);
+        camInfo.cameraId = cameraId;
+        Camera camera = camInfo.camera = Camera.open(camInfo.cameraId);
+        Camera.Parameters params = camInfo.params = camera.getParameters();
+
+        int w = windowSize.x;
+        int h = windowSize.y;
+        double ratio = w / (double) h;
+        double area = w * h;
+
+        List<Camera.Size> preSizes = params.getSupportedPreviewSizes();
+        for (Camera.Size s: preSizes) {
+            Log.i(TAG, "Preview: width=" + s.width + ",height=" + s.height);
+        }
+        Size preSize = chooseSize(preSizes, ratio, area, area * 0.67, Double.MAX_VALUE);
+        params.setPreviewSize(preSize.width, preSize.height);
+
+        List<Size> picSizes = params.getSupportedPictureSizes();
+        for (Camera.Size s: picSizes) {
+            Log.i(TAG, "Picture: width=" + s.width + ",height=" + s.height);
+        }
+        int picArea = 1024 * 768;
+        Size picSize = chooseSize(picSizes, ratio, picArea, picArea * 0.8, picArea * 2.0);
+        params.setPictureSize(picSize.width, picSize.height);
+
+        List<String> flashModes = params.getSupportedFlashModes();
+        List<String> usedModes = new ArrayList<String>();
+        if (flashModes != null) {
+            if (flashModes.contains(Camera.Parameters.FLASH_MODE_AUTO)) {
+                params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+                usedModes.add(Camera.Parameters.FLASH_MODE_AUTO);
+            }
+            if (flashModes.contains(Camera.Parameters.FLASH_MODE_ON)
+                    && flashModes.contains(Camera.Parameters.FLASH_MODE_OFF)) {
+                usedModes.add(Camera.Parameters.FLASH_MODE_ON);
+                usedModes.add(Camera.Parameters.FLASH_MODE_OFF);
             }
         }
+        camInfo.flashModes = usedModes.toArray(new String[0]);
+        List<String> focusModes = params.getSupportedFocusModes();
+        if (focusModes != null && focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
+            params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+        }
+
+        params.setPictureFormat(PixelFormat.JPEG);
+        params.setJpegQuality(100); // 1-100
+
+        camInfo.maxZoom = params.isZoomSupported() ? params.getMaxZoom() : -1;
+
+//        Camera.CameraInfo info = new Camera.CameraInfo();
+//        Camera.getCameraInfo(camInfo.cameraId, info);
+//        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+//            camInfo.rotation = 270;
+//        } else {
+//            camInfo.rotation = 90;
+//        }
+        camInfo.rotation = 90;
+
+        double scale = windowSize.y / (double) preSize.height; // w > h for preview size
+        int preHeight = (int) (preSize.width * scale);
+//        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) preview.getLayoutParams();
+//        layoutParams.width = windowSize.y;
+//        layoutParams.height = preHeight;
+//        layoutParams.leftMargin = 0;
+//        layoutParams.topMargin = (w - preHeight) / 2;
+//        previewFrame.updateViewLayout(preview, layoutParams);
+//        layoutParams = (RelativeLayout.LayoutParams) blank.getLayoutParams();
+//        layoutParams.width = 1;
+//        layoutParams.height = 1;
+//        layoutParams.leftMargin = 0;
+//        layoutParams.topMargin = 0;
+//        previewFrame.updateViewLayout(blank, layoutParams);
+        switchSurface(true, (w - preHeight) / 2, preHeight);
+
+        camera.setParameters(camInfo.params);
+        try {
+            camera.setDisplayOrientation(camInfo.rotation);
+            camera.setPreviewDisplay(preview.getHolder());
+        } catch (Exception ex) {
+            Log.w(TAG, "openCamera failed, ex=" + ex.getMessage());
+            ex.printStackTrace();
+        }
+        camera.startPreview();
+    }
+    
+    /**
+     * @param list
+     * @param width
+     * @param height
+     * @return
+     */
+    private Size chooseSize(List<Camera.Size> list, final double ratio, final double area, double minArea, double maxArea) {
+        Collections.sort(list, areaComp);
+        Comparator<Size> comp = new Comparator<Size>() {
+            @Override
+            public int compare(Size s1, Size s2) {
+                int w1 = s1.width, h1 = s1.height, w2 = s2.width, h2 = s2.height;
+                if (w1 < h1) { w1 = h1; h1 = s1.width; }
+                if (w2 < h2) { w2 = h2; h2 = s2.width; }
+                double dr1 = (w1 / (float) h1) - ratio, dr2 = (w2 / (float) h2) - ratio;
+                int ret = varianceComp(dr1, dr2);
+                return ret != 0 ? ret : varianceComp(w1 * h1 - area, w2 * h2 - area);
+            }
+            
+        };
+        TreeSet<Size> set = new TreeSet<Size>(comp);
+        for (Size size: list) {
+            int ar = size.width * size.height;
+            if (size.width >= size.height && ar >= minArea && ar < maxArea) set.add(size);
+        }
+//        for (Size s: set) {
+//            Log.i(TAG, "width=" + s.width + ",height=" + s.height + ",ratio=" + (s.width / (float) s.height));
+//        }
+        if (set.size() == 0) {
+            Log.w(TAG, "best size not found, use the first one");
+            return list.get(0);
+        }
+        return set.first();
     }
 
-    public static org.haxe.nme.GameActivity getInstance() {
-        return org.haxe.nme.GameActivity.getInstance();
+    public static MainActivity getInstance() {
+        return (MainActivity) org.haxe.nme.GameActivity.getInstance();
+    }
+    
+    private static int varianceComp(double d1, double d2) {
+        d1 = d1 * d1;
+        d2 = d2 * d2;
+        return d1 < d2 ? -1 : d1 > d2 ? 1 : 0;
     }
 
     @Override
     public void onResume() {
         super.onResume();
         Log.i("MainActivity", "onResume");
-        MobclickAgent.onResume(this);
+        com.umeng.analytics.MobclickAgent.onResume(this);
+        if (camInfo.cameraId >= 0) {
+            HaxeCamera.openCamera(camInfo.cameraId, null, null);
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
         Log.i("MainActivity", "onPause");
-        MobclickAgent.onPause(this);
+        com.umeng.analytics.MobclickAgent.onPause(this);
+        closeCamera();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i("MainActivity", "onActivityResult: code=" + requestCode + ",result=" + resultCode + ",data=" + data);
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 22334) {
+            MainActivity.getInstance().mView.mActivity = this;
+            return;
+        }
         if (HpManager.getCandidate() != null) HpManager.getCandidate().onActivityResult(this, requestCode, resultCode, data);
         HaxeStub.onActivityResult(requestCode, resultCode, data);
     }
+
+    public static void startCameraActivity() {
+        MainActivity main = MainActivity.getInstance();
+        Intent it = new Intent(main, CameraActivity.class);
+        main.mView.mActivity = CameraActivity.getInstance();
+        main.startActivityForResult(it, 22334);
+    }
     
+}
+
+class CamInfo {
+    public int[][] cameraInfos;
+    public int cameraId;
+    public Camera camera;
+    public Camera.Parameters params;
+    public int rotation;
+    public double maxZoom;
+    public String[] flashModes;
 }

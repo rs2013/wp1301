@@ -5,6 +5,7 @@ import com.harryphoto.bind.*;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,7 +15,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
-    static Activity instance;
+    
+    static MainActivity instance;
+    public CamInfo camInfo;
+
     /** Called when the activity is first created. */
 //  @Override
 //  public void onCreate(Bundle savedInstanceState) {
@@ -146,8 +150,22 @@ public class MainActivity extends Activity {
         }
     }
     
-    public static Activity getInstance() {
+    public void resetPreview() {
+        
+    }
+    
+    public static MainActivity getInstance() {
         return instance;
     }
     
+}
+
+class CamInfo {
+    public int[][] cameraInfos;
+    public int cameraId;
+    public Camera camera;
+    public Camera.Parameters params;
+    public int rotation;
+    public double maxZoom;
+    public String[] flashModes;
 }

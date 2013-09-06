@@ -12,7 +12,7 @@ using com.roxstudio.haxe.ui.UiUtil;
 
 class Splash extends BaseScreen {
 
-    private var loginOk = false;
+    private var loginOk = true;
 
     override public function onCreate() {
         hasTitleBar = false;
@@ -27,12 +27,25 @@ class Splash extends BaseScreen {
     }
 
     override public function drawBackground() {
-        var bg = ResKeeper.getAssetImage("res/bg_splash.jpg", ResKeeper.DEFAULT_BUNDLE);
-        var r = new Rectangle(0, bg.height - screenHeight / d2rScale, bg.width, screenHeight / d2rScale);
-        graphics.rox_drawRegion(bg, r, 0, 0, screenWidth, screenHeight);
-        var logo = ResKeeper.getAssetImage("res/icon_logo_big.png");
-        graphics.rox_drawRegion(logo, null, (screenWidth - logo.width * d2rScale) / 2, 0.15 * screenHeight,
-                logo.width * d2rScale, logo.height * d2rScale);
+        var bg = ResKeeper.loadAssetImage("res/bg_splash.jpg");
+        var bgr = bg.width / bg.height, scr = screenWidth / screenHeight;
+        if (bgr < scr) {
+            var r = screenHeight / bg.height, marg = (screenWidth - (bg.width - 10) * r) / 2;
+            graphics.rox_drawRegion(bg, new Rectangle(0, 0, 5, bg.height), 0, 0, marg, screenHeight);
+            graphics.rox_drawRegion(bg, new Rectangle(5, 0, bg.width - 10, bg.height), marg, 0, (bg.width - 10) * r, screenHeight);
+            graphics.rox_drawRegion(bg, new Rectangle(bg.width - 5, 0, 5, bg.height), screenWidth - marg, 0, marg, screenHeight);
+        } else {
+            var r = screenWidth / bg.width, marg = (screenHeight - (bg.height - 10) * r) / 2;
+            graphics.rox_drawRegion(bg, new Rectangle(0, 0, bg.width, 5), 0, 0, screenWidth, marg);
+            graphics.rox_drawRegion(bg, new Rectangle(0, 5, bg.width, bg.height - 10), 0, marg, screenWidth, (bg.height - 10) * r);
+            graphics.rox_drawRegion(bg, new Rectangle(0, bg.height - 5, bg.width, 5), 0, screenHeight - marg, screenWidth, marg);
+        }
+//        var bg = ResKeeper.getAssetImage("res/bg_splash.jpg", ResKeeper.DEFAULT_BUNDLE);
+//        var r = new Rectangle(0, bg.height - screenHeight / d2rScale, bg.width, screenHeight / d2rScale);
+//        graphics.rox_drawRegion(bg, r, 0, 0, screenWidth, screenHeight);
+//        var logo = ResKeeper.getAssetImage("res/icon_logo_big.png");
+//        graphics.rox_drawRegion(logo, null, (screenWidth - logo.width * d2rScale) / 2, 0.15 * screenHeight,
+//                logo.width * d2rScale, logo.height * d2rScale);
 //        trace("x=" + ((w - logo.width) / 2) + ",y=" + (0.33 * h));
     }
 
@@ -66,7 +79,6 @@ class Splash extends BaseScreen {
                 "bg_play.jpg",
                 "bg_play_tip.png",
                 "bg_play_top.png",
-                "bg_splash.jpg",
                 "btn_back.9.png",
                 "btn_common.9.png",
                 "btn_dark.9.png",

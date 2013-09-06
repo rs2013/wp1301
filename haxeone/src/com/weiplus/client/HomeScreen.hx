@@ -25,8 +25,8 @@ class HomeScreen extends TimelineScreen {
         super();
         this.disposeAtFinish = false;
         this.screenTabIndex = 0;
-        btnPlaza = UiUtil.button(UiUtil.TOP_LEFT, null, "广场".i18n(), 0xFFFFFF, titleFontSize, "res/btn_common.9.png", doSwitch);
-        btnHome = UiUtil.button(UiUtil.TOP_LEFT, null, "个人".i18n(), 0xFFFFFF, titleFontSize, "res/btn_common.9.png", doSwitch);
+        btnPlaza = UiUtil.button("res/icon_plaza.png", null, "res/btn_common.9.png", doSwitch);
+        btnHome = UiUtil.button("res/icon_personal.png", null, "res/btn_common.9.png", doSwitch);
         so = SharedObject.getLocal("harryphoto.HomeScreen");
         isPublic = Reflect.hasField(so.data, "isPublic") ? so.data.isPublic : true;
     }

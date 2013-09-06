@@ -294,7 +294,8 @@ class RoutineScreen extends BaseScreen {
 //            trace(i);
             switch (i.id) {
                 case "camera":
-                    startScreen(Type.getClassName(com.weiplus.client.HarryCamera), RoxAnimate.NO_ANIMATE);
+                    startScreen(Type.getClassName(MagicCamera), {});
+                    MyUtils.makerParentScreen = this.className;
                     fadeout(null);
                 default:
                     makerId = i.id;
@@ -346,16 +347,27 @@ class RoutineScreen extends BaseScreen {
 #end
         requestCode = -1;
         startScreen("com.weiplus.apps." + makerId + ".Maker", bmd);
+        MyUtils.makerParentScreen = this.className;
     }
 
     private function onHarry(_) {
-//        trace("onHarryCamera");
+        trace("onHarry, makerId=" + makerId);
         requestCode = 3;
-#if android
-        HaxeStub.startHarryCamera(requestCode);
-#else
-        onActive(null);
-#end
+        startScreen(Type.getClassName(MagicCamera), 223);
+//#if android
+//        HaxeStub.startHarryCamera(requestCode);
+//#else
+//        onActive(null);
+//#end
+    }
+
+    override public function onScreenResult(requestCode: Int, resultCode: Int, resultData: Dynamic) {
+        trace("onScreenResult,resultCode=" + resultCode+",data="+resultData+",makerId="+makerId);
+        if (requestCode == 223 && resultCode == RoxScreen.OK) {
+            var bmd: BitmapData = cast resultData;
+            startScreen("com.weiplus.apps." + makerId + ".Maker", bmd);
+            MyUtils.makerParentScreen = this.className;
+        }
     }
 
     private function onCamera(_) {

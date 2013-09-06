@@ -46,6 +46,8 @@ public class HpManager {
     private static String PREFERENCES_NAME = "com_harryphoto_api_HpAPI";
 //    private static String LINK = "http://www.appmagics.com/w/statuses/show/${ID}";
     private static String LINK = "http://www.appmagics.cn/w/statuses/show/${ID}";
+    private static final String DEFAULT_UID = "113";
+    private static final String DEFAULT_TOKEN = "c0cd303a9f13db7d79b4ec3e6cc125a9";
     
     private static HpAccessToken accessToken;
     
@@ -61,15 +63,20 @@ public class HpManager {
             api.login(new HpListener() {
 
                 @Override
-                public void onComplete(String response) {
-                    try {
-                        JSONObject obj = new JSONObject(response);
-                        if (obj.getInt("code") != 200) throw new Exception("error code " + obj.getInt("code"));
-                        JSONArray bindUsers = obj.getJSONArray("users").getJSONObject(0).getJSONArray("bindUsers");
-                        restoreBindings(bindUsers);
-                    } catch (Exception e) {
-                        onError(new HpException(e));
-                    }
+                public void onComplete(final String response) {
+                     MainActivity.getInstance().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONObject obj = new JSONObject(response);
+                                if (obj.getInt("code") != 200) throw new Exception("error code " + obj.getInt("code"));
+                                JSONArray bindUsers = obj.getJSONArray("users").getJSONObject(0).getJSONArray("bindUsers");
+                                restoreBindings(bindUsers);
+                            } catch (Exception e) {
+                                onError(new HpException(e));
+                            }
+                        }
+                    });
                 }
 
                 @Override
@@ -98,8 +105,12 @@ public class HpManager {
                 b.setEnabled(false);
             }
         }
+        Binding b = HpManager.createBinding(Type.WEIXIN, new String[] { "" });
+        b.setEnabled(true);
+        HpManager.addBinding(b);
     }
     
+    @Deprecated
     public static void loginOld() {
         Activity activity = MainActivity.getInstance();
         HpAccessToken token = getAccessToken();
@@ -109,6 +120,7 @@ public class HpManager {
             l.add(Binding.Type.SINA_WEIBO.name());
             l.add(Binding.Type.TENCENT_WEIBO.name());
             l.add(Binding.Type.RENREN_WEIBO.name());
+            l.add(Binding.Type.WEIXIN.name());
             for (Binding b: bindings.values()) {
                 if (b.isSessionValid()) {
                     l.remove(b.getType().name());
@@ -119,6 +131,7 @@ public class HpManager {
         activity.startActivity(intent);
     }
     
+    @Deprecated
     public static void bind(String type) {
         Activity activity = MainActivity.getInstance();
         HpAccessToken token = getAccessToken();
@@ -129,16 +142,19 @@ public class HpManager {
         activity.startActivity(intent);
     }
     
+    @Deprecated
     public static void getPublicTimeline(int page, int rows, long sinceId, HaxeObject callback) {
         StatusAPI api = new StatusAPI(accessToken);
         api.publicTimeline(page, rows, sinceId, new HaxeCallback("statuses_public_timeline", callback)); 
     }
     
+    @Deprecated
     public static void getHomeTimeline(int page, int rows, long sinceId, HaxeObject callback) {
         StatusAPI api = new StatusAPI(accessToken);
         api.homeTimeline("", page, rows, sinceId, new HaxeCallback("statuses_home_timeline", callback));
     }
     
+    @Deprecated
     public static void getUserTimeline(String uid, int page, int rows, long sinceId, HaxeObject callback) {
         StatusAPI api = new StatusAPI(accessToken);
         api.userTimeline(uid != null ? uid : "", page, rows, sinceId, new HaxeCallback("statuses_user_timeline", callback));
@@ -220,7 +236,7 @@ public class HpManager {
     }
     
     public static HpAccessToken getAccessToken() {
-        if (accessToken == null) {
+        if (accessToken == null || !accessToken.isSessionValid()) {
             SharedPreferences pref = MainActivity.getInstance().getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
             HpAccessToken token = accessToken = new HpAccessToken();
             token.setToken(pref.getString("accessToken", ""));
@@ -228,6 +244,10 @@ public class HpManager {
             token.setExpiresTime(pref.getLong("expiresTime", 0));
             token.setUid(pref.getString("uid", ""));
             token.setDisabledBindingsFromString(pref.getString("disabledBindings", ""));
+            if (!accessToken.isSessionValid()) {
+                token.setUid(DEFAULT_UID);
+                token.setToken(DEFAULT_TOKEN);
+            }
         }
         return accessToken;
     }
@@ -273,7 +293,8 @@ public class HpManager {
             accessToken.setDisabledBindings(new HashSet<String>());
         }
         Binding.Type[] types = new Binding.Type[] { 
-                Binding.Type.SINA_WEIBO, Binding.Type.TENCENT_WEIBO, Binding.Type.RENREN_WEIBO,
+                Binding.Type.SINA_WEIBO, Binding.Type.TENCENT_WEIBO, 
+                Binding.Type.RENREN_WEIBO, Binding.Type.WEIXIN,
         };
         for (Binding.Type t: types) {
             try {
@@ -326,7 +347,11 @@ public class HpManager {
             @Override
             public void onComplete(String response) {
                 if ("ok".equals(response)) {
-                    new AuthAPI(HpManager.getAccessToken())
+                    HpAccessToken tok = HpManager.getAccessToken();
+                    if (DEFAULT_UID.equals(tok.getUid())) {
+                        tok = new HpAccessToken();
+                    }
+                    new AuthAPI(tok)
                             .bind(candidate.getType(), candidate.getBindInfo(), new BindListener(callback));
                 } else if ("cancel".equals(response)) {
                     Utility.haxeOk(callback, "startAuth", "cancel");
@@ -375,6 +400,9 @@ public class HpManager {
             break;
         case RENREN_WEIBO:
             b = new RenrenWeibo(param[0]);
+            break;
+        case WEIXIN:
+            b = new Weixin("");
             break;
         default:
             

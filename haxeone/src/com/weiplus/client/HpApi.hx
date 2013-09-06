@@ -16,6 +16,9 @@ class HpApi {
 //    public static inline var BASE_URL = "http://www.appmagics.com/api";
     public static inline var BASE_URL = "http://www.appmagics.cn/api";
 
+    private static inline var DEFAULT_UID = "113";
+//    private static inline var DEFAULT_TOKEN = "c0cd303a9f13db7d79b4ec3e6cc125a9";
+
     public static var instance(get_instance, null): HpApi;
 
     public var accessToken: String;
@@ -41,6 +44,15 @@ class HpApi {
         }
 #end
         return instance;
+    }
+
+//    public function useDefault() {
+//        uid = DEFAULT_UID;
+//        accessToken = DEFAULT_TOKEN;
+//    }
+
+    public function isDefault() {
+        return uid == DEFAULT_UID;
     }
 
     public function update(json: Dynamic) {

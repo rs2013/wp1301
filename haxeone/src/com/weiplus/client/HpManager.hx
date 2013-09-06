@@ -11,7 +11,7 @@ class HpManager
 	public static function _create():com.weiplus.client.HpManager
 	{
 		if (__create_func == null)
-			__create_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "<init>", "()V", true);
+			__create_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "<init>", "()V", true);
 		var a = new Array<Dynamic>();
 		return new com.weiplus.client.HpManager(__create_func(a));
 	}
@@ -28,7 +28,7 @@ class HpManager
 	public static function login():Bool
 	{
 		if (_login_func == null)
-			_login_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "login", "()Z", true);
+			_login_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "login", "()Z", true);
 		var a = new Array<Dynamic>();
 		return _login_func(a);
 	}
@@ -39,7 +39,7 @@ class HpManager
 	public static function restoreBindings(arg0:Dynamic /*org.json.JSONArray*/):Void
 	{
 		if (_restoreBindings_func == null)
-			_restoreBindings_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "restoreBindings", "(Lorg/json/JSONArray;)V", true);
+			_restoreBindings_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "restoreBindings", "(Lorg/json/JSONArray;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		_restoreBindings_func(a);
@@ -51,7 +51,7 @@ class HpManager
 	public static function loginOld():Void
 	{
 		if (_loginOld_func == null)
-			_loginOld_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "loginOld", "()V", true);
+			_loginOld_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "loginOld", "()V", true);
 		var a = new Array<Dynamic>();
 		_loginOld_func(a);
 	}
@@ -62,7 +62,7 @@ class HpManager
 	public static function bind(arg0:String):Void
 	{
 		if (_bind_func == null)
-			_bind_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "bind", "(Ljava/lang/String;)V", true);
+			_bind_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "bind", "(Ljava/lang/String;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		_bind_func(a);
@@ -74,7 +74,7 @@ class HpManager
 	public static function getPublicTimeline(arg0:Int, arg1:Int, arg2:Float, arg3:Dynamic /*org.haxe.nme.HaxeObject*/):Void
 	{
 		if (_getPublicTimeline_func == null)
-			_getPublicTimeline_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getPublicTimeline", "(IIJLorg/haxe/nme/HaxeObject;)V", true);
+			_getPublicTimeline_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "getPublicTimeline", "(IIJLorg/haxe/nme/HaxeObject;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);
@@ -89,7 +89,7 @@ class HpManager
 	public static function getHomeTimeline(arg0:Int, arg1:Int, arg2:Float, arg3:Dynamic /*org.haxe.nme.HaxeObject*/):Void
 	{
 		if (_getHomeTimeline_func == null)
-			_getHomeTimeline_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getHomeTimeline", "(IIJLorg/haxe/nme/HaxeObject;)V", true);
+			_getHomeTimeline_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "getHomeTimeline", "(IIJLorg/haxe/nme/HaxeObject;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);
@@ -104,7 +104,7 @@ class HpManager
 	public static function getUserTimeline(arg0:String, arg1:Int, arg2:Int, arg3:Float, arg4:Dynamic /*org.haxe.nme.HaxeObject*/):Void
 	{
 		if (_getUserTimeline_func == null)
-			_getUserTimeline_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getUserTimeline", "(Ljava/lang/String;IIJLorg/haxe/nme/HaxeObject;)V", true);
+			_getUserTimeline_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "getUserTimeline", "(Ljava/lang/String;IIJLorg/haxe/nme/HaxeObject;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);
@@ -120,7 +120,7 @@ class HpManager
 	public static function getUserInfo(arg0:String, arg1:Dynamic /*org.haxe.nme.HaxeObject*/):Void
 	{
 		if (_getUserInfo_func == null)
-			_getUserInfo_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getUserInfo", "(Ljava/lang/String;Lorg/haxe/nme/HaxeObject;)V", true);
+			_getUserInfo_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "getUserInfo", "(Ljava/lang/String;Lorg/haxe/nme/HaxeObject;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);
@@ -133,7 +133,7 @@ class HpManager
 	public static function postStatus(arg0:Array<String>, arg1:String, arg2:String, arg3:String, arg4:String, arg5:String, arg6:String, arg7:Dynamic /*org.haxe.nme.HaxeObject*/):Void
 	{
 		if (_postStatus_func == null)
-			_postStatus_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "postStatus", "([Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/haxe/nme/HaxeObject;)V", true);
+			_postStatus_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "postStatus", "([Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/haxe/nme/HaxeObject;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);
@@ -152,7 +152,7 @@ class HpManager
 	public static function getAccessToken():Dynamic
 	{
 		if (_getAccessToken_func == null)
-			_getAccessToken_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getAccessToken", "()Lcom/harryphoto/api/HpAccessToken;", true);
+			_getAccessToken_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "getAccessToken", "()Lcom/harryphoto/api/HpAccessToken;", true);
 		var a = new Array<Dynamic>();
 		return _getAccessToken_func(a);
 	}
@@ -163,7 +163,7 @@ class HpManager
 	public static function getTokenAsJson():String
 	{
 		if (_getTokenAsJson_func == null)
-			_getTokenAsJson_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getTokenAsJson", "()Ljava/lang/String;", true);
+			_getTokenAsJson_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "getTokenAsJson", "()Ljava/lang/String;", true);
 		var a = new Array<Dynamic>();
 		return _getTokenAsJson_func(a);
 	}
@@ -174,7 +174,7 @@ class HpManager
 	public static function setAccessToken(arg0:Dynamic /*com.harryphoto.api.HpAccessToken*/):Void
 	{
 		if (_setAccessToken_func == null)
-			_setAccessToken_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "setAccessToken", "(Lcom/harryphoto/api/HpAccessToken;)V", true);
+			_setAccessToken_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "setAccessToken", "(Lcom/harryphoto/api/HpAccessToken;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		_setAccessToken_func(a);
@@ -186,7 +186,7 @@ class HpManager
 	public static function saveAccessToken():Void
 	{
 		if (_saveAccessToken_func == null)
-			_saveAccessToken_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "saveAccessToken", "()V", true);
+			_saveAccessToken_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "saveAccessToken", "()V", true);
 		var a = new Array<Dynamic>();
 		_saveAccessToken_func(a);
 	}
@@ -197,7 +197,7 @@ class HpManager
 	public static function logout():Void
 	{
 		if (_logout_func == null)
-			_logout_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "logout", "()V", true);
+			_logout_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "logout", "()V", true);
 		var a = new Array<Dynamic>();
 		_logout_func(a);
 	}
@@ -208,7 +208,7 @@ class HpManager
 	public static function onActivityResult(arg0:Dynamic /*android.app.Activity*/, arg1:Int, arg2:Int, arg3:Dynamic /*android.content.Intent*/):Void
 	{
 		if (_onActivityResult_func == null)
-			_onActivityResult_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "onActivityResult", "(Landroid/app/Activity;IILandroid/content/Intent;)V", true);
+			_onActivityResult_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "onActivityResult", "(Landroid/app/Activity;IILandroid/content/Intent;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);
@@ -223,7 +223,7 @@ class HpManager
 	public static function getBinding(arg0:Dynamic /*com.harryphoto.bind.Binding$Type*/):Dynamic
 	{
 		if (_getBinding_func == null)
-			_getBinding_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getBinding", "(Lcom/harryphoto/bind/Binding$Type;)Lcom/harryphoto/bind/Binding;", true);
+			_getBinding_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "getBinding", "(Lcom/harryphoto/bind/Binding$Type;)Lcom/harryphoto/bind/Binding;", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		return _getBinding_func(a);
@@ -235,7 +235,7 @@ class HpManager
 	public static function hasBinding(arg0:String):Bool
 	{
 		if (_hasBinding_func == null)
-			_hasBinding_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "hasBinding", "(Ljava/lang/String;)Z", true);
+			_hasBinding_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "hasBinding", "(Ljava/lang/String;)Z", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		return _hasBinding_func(a);
@@ -247,7 +247,7 @@ class HpManager
 	public static function isBindingEnabled(arg0:String):Bool
 	{
 		if (_isBindingEnabled_func == null)
-			_isBindingEnabled_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "isBindingEnabled", "(Ljava/lang/String;)Z", true);
+			_isBindingEnabled_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "isBindingEnabled", "(Ljava/lang/String;)Z", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		return _isBindingEnabled_func(a);
@@ -259,7 +259,7 @@ class HpManager
 	public static function setBindingEnabled(arg0:String, arg1:Bool):Void
 	{
 		if (_setBindingEnabled_func == null)
-			_setBindingEnabled_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "setBindingEnabled", "(Ljava/lang/String;Z)V", true);
+			_setBindingEnabled_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "setBindingEnabled", "(Ljava/lang/String;Z)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);
@@ -272,7 +272,7 @@ class HpManager
 	public static function isBindingSessionValid(arg0:String):Bool
 	{
 		if (_isBindingSessionValid_func == null)
-			_isBindingSessionValid_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "isBindingSessionValid", "(Ljava/lang/String;)Z", true);
+			_isBindingSessionValid_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "isBindingSessionValid", "(Ljava/lang/String;)Z", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		return _isBindingSessionValid_func(a);
@@ -284,7 +284,7 @@ class HpManager
 	public static function startAuth(arg0:String, arg1:Dynamic /*org.haxe.nme.HaxeObject*/):Void
 	{
 		if (_startAuth_func == null)
-			_startAuth_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "startAuth", "(Ljava/lang/String;Lorg/haxe/nme/HaxeObject;)V", true);
+			_startAuth_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "startAuth", "(Ljava/lang/String;Lorg/haxe/nme/HaxeObject;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);
@@ -297,7 +297,7 @@ class HpManager
 	public static function getImageUrl(arg0:String):String
 	{
 		if (_getImageUrl_func == null)
-			_getImageUrl_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getImageUrl", "(Ljava/lang/String;)Ljava/lang/String;", true);
+			_getImageUrl_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "getImageUrl", "(Ljava/lang/String;)Ljava/lang/String;", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		return _getImageUrl_func(a);
@@ -309,7 +309,7 @@ class HpManager
 	public static function addBinding(arg0:Dynamic /*com.harryphoto.bind.Binding*/):Void
 	{
 		if (_addBinding_func == null)
-			_addBinding_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "addBinding", "(Lcom/harryphoto/bind/Binding;)V", true);
+			_addBinding_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "addBinding", "(Lcom/harryphoto/bind/Binding;)V", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		_addBinding_func(a);
@@ -321,7 +321,7 @@ class HpManager
 	public static function createBinding(arg0:Dynamic /*com.harryphoto.bind.Binding$Type*/):Dynamic
 	{
 		if (_createBinding_func == null)
-			_createBinding_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "createBinding", "(Lcom/harryphoto/bind/Binding$Type;)Lcom/harryphoto/bind/Binding;", true);
+			_createBinding_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "createBinding", "(Lcom/harryphoto/bind/Binding$Type;)Lcom/harryphoto/bind/Binding;", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		return _createBinding_func(a);
@@ -333,7 +333,7 @@ class HpManager
 	public static function getCandidate():Dynamic
 	{
 		if (_getCandidate_func == null)
-			_getCandidate_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "getCandidate", "()Lcom/harryphoto/bind/Binding;", true);
+			_getCandidate_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "getCandidate", "()Lcom/harryphoto/bind/Binding;", true);
 		var a = new Array<Dynamic>();
 		return _getCandidate_func(a);
 	}
@@ -344,7 +344,7 @@ class HpManager
 	public static function createBinding1(arg0:Dynamic /*com.harryphoto.bind.Binding$Type*/, arg1:Array<String>, arg2:String):Dynamic
 	{
 		if (_createBinding1_func == null)
-			_createBinding1_func = nme.JNI.createStaticMethod("com/weiplus/client/HpManager", "createBinding", "(Lcom/harryphoto/bind/Binding$Type;[Ljava/lang/String;)Lcom/harryphoto/bind/Binding;", true);
+			_createBinding1_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "createBinding", "(Lcom/harryphoto/bind/Binding$Type;[Ljava/lang/String;)Lcom/harryphoto/bind/Binding;", true);
 		var a = new Array<Dynamic>();
 		a.push(arg0);
 		a.push(arg1);

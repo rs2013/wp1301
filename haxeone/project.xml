@@ -4,9 +4,9 @@
 	<meta title="哈利波图" package="com.weiplus.client" version="1.1.0" company="迈吉客科技（上海）有限公司" />
 	<app file="harryphoto" main="com.weiplus.client.Main" />
 	
-    <window fps="30" background="0xffffff" hardware="true" width="540" height="800" orientation="portrait" resizable="false" if="desktop" />
+    <window fps="30" background="0x22334455" hardware="true" width="540" height="800" depthBuffer="true" orientation="portrait" resizable="false" if="desktop" />
     <window fps="30" background="0xffffff" hardware="true" width="540" height="800" orientation="portrait" resizable="false" if="flash" />
-    <window fps="30" background="0xffffff" hardware="true" width="0" height="0" orientation="portrait" resizable="false" if="android" />
+    <window fps="30" background="0x00000000" hardware="true" width="0" height="0" depthBuffer="true" orientation="portrait" resizable="false" if="android" />
 <!--          fullscreen="true" -->
 
     <set name="BUILD_DIR" value="bin" />
@@ -28,6 +28,7 @@
     <haxelib name="actuate" />
     <haxelib name="spritesheet" />
     <haxelib name="format" />
+    <haxelib name="stablexui" />
     <haxelib name="rox-i18n" />
     <compilerflag name="--macro com.roxstudio.i18n.I18n.locale('global')" />
     <compilerflag name="--macro com.roxstudio.i18n.I18n.assets('res/i18n')" />
@@ -39,19 +40,24 @@
     <assets path="eng" include="*" unless="flash" />
     <assets path="res" include="*" exclude="icon/*.*" />
 
+<!--
 	<section if="android">
         <java path="../android/src" />
+-->
         <!--<assets path="../android/libs" rename="libs" />
         <assets path="../android/assets" rename="assets" />
         <assets path="../android/res" rename="res" />-->
         <!--<include path="../android/haxe_include.nmml" />-->
-        <!--template path="javasrc/com/weiplus/client/HaxeStub.java" rename="src/com/weiplus/client/HaxeStub.java"  /-->
+<!--
         <template path="javasrc/com/weiplus/client/MainActivity.java" rename="src/com/weiplus/client/MainActivity.java"  />
-        <!--template path="src/org/haxe/nme/GameActivity.java" if="android" /-->
         <template path="javasrc/org/haxe/nme/MainView.java" rename="src/org/haxe/nme/MainView.java" />
         <template path="javasrc/org/haxe/nme/GameActivity.java" rename="src/org/haxe/nme/GameActivity.java" />
         <template path="AndroidManifest.xml" />
     </section>
+-->
+    <template path="templates" />
+    
+    <android target-sdk-version="10"/>
 
     <certificate path="D:\work\ws_haxe\wp1301\haxeone\appmagics.keystore"
                  alias="appmagics"

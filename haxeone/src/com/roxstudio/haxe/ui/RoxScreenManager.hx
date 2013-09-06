@@ -34,8 +34,8 @@ class RoxScreenManager extends Sprite {
                 var topscreen: RoxScreen = stack.first().screen;
                 if (topscreen.onBackKey()) {
                     finishScreen(topscreen, null, RoxScreen.CANCELED, null, null);
-                    e.stopPropagation();
                 }
+                e.stopPropagation();
             }
         });
     }
@@ -91,7 +91,7 @@ class RoxScreenManager extends Sprite {
                                  resultCode: Int, resultData: Dynamic,
                                  animate: RoxAnimate, ?isBeforeStart = false) {
 
-//        trace("<<finishScreen(" + screen + "," + finishToScreen + ")>>");
+//        trace("<<finishScreen(screen=" + screen + ",finishTo=" + finishToScreen + ",result=" + resultCode + ",data=" + resultData + ",anim=" + animate + ",isbefore=" + isBeforeStart);
         var top: StackItem = stack.pop();
         if (top == null || top.className != screen.className)
             throw "finishScreen: Illegal stack state or bad source screen '" + top + "'";
@@ -134,14 +134,16 @@ class RoxScreenManager extends Sprite {
 //    }
 //
     private function startAnimate(source: RoxScreen, dest: RoxScreen, anim: RoxAnimate, finish: Bool) {
+//        trace("source="+source+",dest="+dest+",anim="+anim+",finish="+finish);
         show(dest);
-        var animDone = function() { hide(source, finish); }
+        var animDone = function() { /*trace("animDone"); */hide(source, finish); }
         if (source == null || dest == null || anim.type == RoxAnimate.NONE) {
             animDone();
             return;
         }
 
         var sw = RoxApp.screenWidth, sh = RoxApp.screenHeight;
+//        trace("anim.type="+anim.type+",interval="+anim.interval+",arg="+anim.arg);
         switch (anim.type) {
             case RoxAnimate.SLIDE:
                 switch (cast(anim.arg, String)) {
@@ -174,6 +176,7 @@ class RoxScreenManager extends Sprite {
     }
 
     private function hide(screen: RoxScreen, finish: Bool) {
+//        trace(">>>hide: scr=" + screen + ",finish=" + finish + ",contains=" + contains(screen) + ",num=" + this.numChildren + ",first=" + this.getChildAt(0));
         if (screen == null) return;
         if (contains(screen)) {
             removeChild(screen);

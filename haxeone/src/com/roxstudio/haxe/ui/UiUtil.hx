@@ -1,5 +1,7 @@
 package com.roxstudio.haxe.ui;
 
+import com.roxstudio.haxe.utils.SimpleJob;
+import com.roxstudio.haxe.utils.Worker;
 import nme.events.MouseEvent;
 import nme.display.InteractiveObject;
 import nme.events.EventDispatcher;
@@ -304,6 +306,19 @@ class UiUtil {
 
     public static function delay(task: Void -> Void, ?timeInSec: Float = 0) {
         Timer.delay(task, Std.int(timeInSec * 1000));
+    }
+
+#if cpp
+    private static var uiThreadScheduler = null;
+#end
+
+    public static function runOnUiThread(task: Void -> Void) {
+#if cpp
+        if (uiThreadScheduler == null) uiThreadScheduler = new Worker();
+        uiThreadScheduler.addJob(new SimpleJob<Dynamic>(null, function(_) {}, function(_) { task(); }));
+#else
+        delay(task, 0);
+#end
     }
 
     public static function message(text: String, ?timeInSec: Float = 2.0) {

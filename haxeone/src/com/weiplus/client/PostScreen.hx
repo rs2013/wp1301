@@ -180,7 +180,7 @@ class PostScreen extends BaseScreen {
         var btn0 = shareButton("sina", "新浪微博".i18n(), "tl", "SINA_WEIBO");
         var btn1 = shareButton("tencent", "腾讯微博".i18n(), "tr", "TENCENT_WEIBO");
         var btn2 = shareButton("renren", "人人网".i18n(), "ml", "RENREN_WEIBO");
-        var btn3 = shareButton(null, "", "mr", "");
+        var btn3 = shareButton("weixin", "微信".i18n(), "mr", "WEIXIN");
 //        var btn3 = shareButton("sohu_g", "搜狐微博", "ml");
 //        var btn4 = shareButton("qqspace_g", "QQ空间", "ml");
 //        var btn5 = shareButton("twit_g", "Twitter", "mr");

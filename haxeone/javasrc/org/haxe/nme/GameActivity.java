@@ -21,6 +21,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import dalvik.system.DexClassLoader;
@@ -56,7 +57,7 @@ public class GameActivity extends Activity implements SensorEventListener
 	static SensorManager sensorManager;
 	
 	public Handler mHandler;
-	MainView mView;
+	protected MainView mView;
 	
 	private static float[] accelData = new float[3];
 	private static int bufferedDisplayOrientation = -1;
@@ -92,8 +93,8 @@ public class GameActivity extends Activity implements SensorEventListener
 		org.haxe.HXCPP.run("ApplicationMain");
 		
 		mView = new MainView(getApplication(), this);
-		setContentView(mView);
-		
+//		setContentView(mView);
+
 		sensorManager = (SensorManager)activity.getSystemService(Context.SENSOR_SERVICE);
 		
 		if (sensorManager != null)

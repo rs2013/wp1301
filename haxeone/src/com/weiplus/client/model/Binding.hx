@@ -5,6 +5,7 @@ enum Type {
     SINA_WEIBO;
     TENCENT_WEIBO;
     RENREN_WEIBO;
+    WEIXIN;
 }
 
 class Binding {
@@ -22,6 +23,8 @@ class Binding {
                 "腾讯微博";
             case RENREN_WEIBO:
                 "人人网";
+            case WEIXIN:
+                "微信";
         }
     }
 
@@ -35,6 +38,8 @@ class Binding {
                 "TENCENT_WEIBO";
             case RENREN_WEIBO:
                 "RENREN_WEIBO";
+            case WEIXIN:
+                "WEIXIN";
         }
     }
 
@@ -48,13 +53,15 @@ class Binding {
                 TENCENT_WEIBO;
             case "RENREN_WEIBO":
                 RENREN_WEIBO;
+            case "WEIXIN":
+                WEIXIN;
             default:
                 null;
         }
     }
 
     public static function allTypes() : Array<Type> {
-        return [ SINA_WEIBO, TENCENT_WEIBO, RENREN_WEIBO ];
+        return [ SINA_WEIBO, TENCENT_WEIBO, RENREN_WEIBO, WEIXIN ];
     }
 
 }

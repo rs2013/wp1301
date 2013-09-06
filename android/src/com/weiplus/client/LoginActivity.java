@@ -22,6 +22,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
+@Deprecated
 public class LoginActivity extends Activity {
 
     public static final String TAG = "LoginActivity";

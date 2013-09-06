@@ -12,14 +12,16 @@ abstract public class Binding {
         HARRYPHOTO_WEIBO,
         SINA_WEIBO, 
         TENCENT_WEIBO, 
-        RENREN_WEIBO;
+        RENREN_WEIBO,
+        WEIXIN;
         
         public String toString() {
             switch (this) {
-            case HARRYPHOTO_WEIBO: return "哈里波图";
+            case HARRYPHOTO_WEIBO: return "哈利波图";
             case SINA_WEIBO: return "新浪微博";
             case TENCENT_WEIBO: return "腾讯微博";
             case RENREN_WEIBO: return "人人网";
+            case WEIXIN: return "微信";
             }
             return "";
         }

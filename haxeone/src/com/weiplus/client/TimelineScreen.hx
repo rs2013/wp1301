@@ -1,6 +1,6 @@
 package com.weiplus.client;
 
-using com.roxstudio.i18n.I18n;
+import com.roxstudio.i18n.I18n;
 import nme.events.MouseEvent;
 import com.roxstudio.haxe.ui.UiUtil;
 import com.weiplus.client.model.Routine;
@@ -47,6 +47,7 @@ import com.weiplus.apps.jigsaw.Maker;
 import com.weiplus.apps.slidepuzzle.Maker;
 import com.weiplus.apps.swappuzzle.Maker;
 
+using com.roxstudio.i18n.I18n;
 using com.roxstudio.haxe.ui.UiUtil;
 using com.roxstudio.haxe.game.GfxUtil;
 
@@ -67,9 +68,9 @@ class TimelineScreen extends BaseScreen {
     var btnSingleCol: RoxFlowPane;
     var btnDoubleCol: RoxFlowPane;
     var btnCol: RoxFlowPane;
-    var main: Sprite;
+    public var main: Sprite;
     var mainh: Float;
-    var viewh: Float;
+    public var viewh: Float;
     var agent: RoxGestureAgent;
     var numCol: Int = 2;
     var postits: Array<Postit>;
@@ -321,6 +322,8 @@ class TimelineScreen extends BaseScreen {
                 Actuate.tween(sp1, 0.4, { scaleX: 1, scaleY: 1, alpha: 0 }).onComplete(animDone, [ sp1 ]);
             }
         }
+
+        for (p in postits) p.update();
     }
 
     private function onPlay(e: Dynamic) {
@@ -360,6 +363,7 @@ class TimelineScreen extends BaseScreen {
             case RoxGestureEvent.GESTURE_PAN:
                 var pt = RoxGestureAgent.localOffset(main, cast(e.extra));
                 main.y = UiUtil.rangeValue(main.y + pt.y, UiUtil.rangeValue(viewh - mainh - REFRESH_HEIGHT, GameUtil.IMIN, 0), REFRESH_HEIGHT);
+
                 if (main.y > 0) {
                     if (main.getChildByName("topRefresher") == null) {
                         var refresher = new Refresher("topRefresher", true);
@@ -374,6 +378,8 @@ class TimelineScreen extends BaseScreen {
                     } else if (main.y < viewh - mainh - TRIGGER_HEIGHT) {
                         cast(main.getChildByName("bottomRefresher"), Refresher).updateText();
                     }
+                } else {
+                    for (p in postits) p.update();
                 }
             case RoxGestureEvent.GESTURE_SWIPE:
                 var pt = RoxGestureAgent.localOffset(main, cast(new Point(e.extra.x * 2.0, e.extra.y * 2.0)));
@@ -385,6 +391,7 @@ class TimelineScreen extends BaseScreen {
                     main.rox_removeByName("topRefresher");
                     main.rox_removeByName("bottomRefresher");
                 }, tm);
+                UiUtil.delay(function() for (p in postits) p.update(), tm * 0.5);
             case RoxGestureEvent.GESTURE_PINCH:
                 if (compactMode) return;
 //                trace("pinch:numCol=" + numCol + ",extra=" + e.extra);
@@ -475,7 +482,7 @@ class TimelineScreen extends BaseScreen {
 //            trace(i);
             switch (i.id) {
                 case "camera":
-                    startScreen(Type.getClassName(com.weiplus.client.HarryCamera), RoxAnimate.NO_ANIMATE);
+                    startScreen(Type.getClassName(MagicCamera), {});
                     MyUtils.makerParentScreen = this.className;
                     fadeout(null);
                 default:
@@ -532,13 +539,23 @@ class TimelineScreen extends BaseScreen {
     }
 
     private function onHarry(_) {
-//        trace("onHarryCamera");
+        trace("onHarry, makerId=" + makerId);
         requestCode = 3;
-#if android
-        HaxeStub.startHarryCamera(requestCode);
-#else
-        onActive(null);
-#end
+        startScreen(Type.getClassName(MagicCamera), 223);
+//#if android
+//        HaxeStub.startHarryCamera(requestCode);
+//#else
+//        onActive(null);
+//#end
+    }
+
+    override public function onScreenResult(requestCode: Int, resultCode: Int, resultData: Dynamic) {
+        trace("onScreenResult,resultCode=" + resultCode+",data="+resultData+",makerId="+makerId);
+        if (requestCode == 223 && resultCode == RoxScreen.OK) {
+            var bmd: BitmapData = cast resultData;
+            startScreen("com.weiplus.apps." + makerId + ".Maker", bmd);
+            MyUtils.makerParentScreen = this.className;
+        }
     }
 
     private function onCamera(_) {

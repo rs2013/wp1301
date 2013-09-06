@@ -1,5 +1,8 @@
 package com.weiplus.client;
 
+import ru.stablex.ui.widgets.Floating;
+import ru.stablex.ui.UIBuilder;
+using com.roxstudio.haxe.ui.DipUtil;
 using com.roxstudio.i18n.I18n;
 import com.roxstudio.haxe.ui.RoxScreen;
 import nme.geom.Point;
@@ -19,6 +22,8 @@ class PublicScreen extends TimelineScreen {
     private var refreshing: Bool = false;
     private var btnLogin: Sprite;
 
+    private var dialog: Floating;
+
     public function new() {
         super();
         this.screenTabIndex = 1;
@@ -28,6 +33,12 @@ class PublicScreen extends TimelineScreen {
         hasBack = false;
         super.onCreate();
         removeTitleButton(btnCol);
+        dialog = cast UIBuilder.buildFn("ui/confirm_dialog.xml")({
+                    title: "Message!", message: "This is a test!",
+                    okButtonText: "CONFIRM", cancelButtonText: "CANCEL",
+                    onOk: function() { trace("ok clicked"); } }
+                );
+
     }
 
     override private function buttonPanel() : Sprite {
@@ -39,6 +50,10 @@ class PublicScreen extends TimelineScreen {
         btnLogin = UiUtil.button(UiUtil.TOP_LEFT, null, "登录哈利波图".i18n(), 0xFFFFFF, 40 * d2rScale, null, doLogin);
         btnpanel.addChild(btnLogin.rox_move((screenWidth - btnLogin.width) / 2, (h - btnLogin.height) / 2  - h));
         return btnpanel;
+    }
+
+    override public function onDestroy() {
+        dialog.free();
     }
 
 //    private function doLogin1(_) {
@@ -53,6 +68,7 @@ class PublicScreen extends TimelineScreen {
         var p = btnLogin.localToGlobal(new Point(0, 0));
         var fromRect = new Rectangle(p.x, p.y, btnLogin.width, btnLogin.height);
         startScreen(Type.getClassName(LoginScreen), new RoxAnimate(RoxAnimate.ZOOM_IN, fromRect), 12345);
+//        dialog.show();
     }
 
     override private function refresh(append: Bool) {

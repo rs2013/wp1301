@@ -28,6 +28,7 @@ class ShareSetting extends BaseScreen {
         { id: "SINA_WEIBO", icon: "res/icon_sina.png", name: "新浪微博".i18n(), type: 3, data: on("SINA_WEIBO") },
         { id: "TENCENT_WEIBO", icon: "res/icon_tencent.png", name: "腾讯微博".i18n(), type: 3, data: on("TENCENT_WEIBO") },
         { id: "RENREN_WEIBO", icon: "res/icon_renren.png", name: "人人网".i18n(), type: 3, data: on("RENREN_WEIBO") },
+        { id: "WEIXIN", icon: "res/icon_weixin.png", name: "微信".i18n(), type: 3, data: on("WEIXIN") },
         ];
         var list = MyUtils.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
             var text = "登录中".i18n();

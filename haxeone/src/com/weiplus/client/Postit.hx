@@ -49,10 +49,97 @@ class Postit extends Sprite {
     private var w: Float;
     private var mode: Int;
 
+    private static var idCount = 1;
+    private var head: Sprite;
+    private var imh: Float;
+    private var shown: Bool = false;
+
     public function new(inStatus: Status, width: Float, mode: Int) {
         super();
         status = inStatus;
         setWidth(width, mode);
+        this.name = "postit_" + (idCount++);
+        addEventListener(Event.REMOVED_FROM_STAGE, free);
+    }
+
+    public function update() {
+        var timelineScreen: TimelineScreen = cast parentScreen();
+        if (timelineScreen == null) return;
+        var visible = !(this.y + this.height + timelineScreen.main.y < 0 || this.y + timelineScreen.main.y > timelineScreen.viewh);
+//        trace("update postit "+this.name+":y="+this.y+",h="+this.height+",mainy="+timelineScreen.main.y+",viewh="+timelineScreen.viewh+",visible="+visible+",shown="+shown);
+        if (shown && visible || !shown && !visible) {
+            return;
+        } else if (shown && !visible) {
+            ResKeeper.disposeBundle(this.name);
+            shown = false;
+            return;
+        }
+        if (head != null) {
+            MyUtils.asyncImage(status.user.profileImage, function(img: BitmapData) {
+                if (img == null || img.width == 0) img = ResKeeper.getAssetImage("res/no_avatar.png");
+                var headSize = UiUtil.rangeValue(width * 0.12, 30, 60);
+                head.graphics.clear();
+                head.graphics.rox_drawRegion(img, 0, 0, headSize, headSize);
+            }, this.name);
+        }
+        var appdata = status.appData;
+        if (appdata != null && appdata.width > 0 && appdata.height > 0 && appdata.image != null) {
+            MyUtils.asyncImage(appdata.image, function(image: BitmapData) {
+                UiUtil.rox_removeByName(this, MyUtils.LOADING_ANIM_NAME);
+                if (image != null && image.width > 0) {
+//                    var bmd = new BitmapData(Std.int(w), Std.int(h), true, 0);
+//                trace(">>>>>>>>>>>>>>>>>data="+imgLdr.data);
+//                    bmd.draw(image, , true);
+                    var r = 6;
+                    if (mode == COMPACT) {
+                        graphics.rox_drawRegionRound(image, 0, 0, w, imh, r);
+                    } else if (imageScale == 1 && imageOffset > 0) {
+                        var bmp = new Bitmap(image);
+                        addChild(bmp.rox_move(imageOffset, 0));
+                    } else {
+                        imageScale = this.w / image.width;
+                        graphics.beginBitmapFill(image, new Matrix(imageScale, 0, 0, imageScale, imageOffset, 0), false, true);
+                        graphics.moveTo(0, r);
+                        graphics.curveTo(0, 0, r, 0);
+                        graphics.lineTo(w - r, 0);
+                        graphics.curveTo(w, 0, w, r);
+                        graphics.lineTo(w, imh);
+                        graphics.lineTo(0, imh);
+                        graphics.lineTo(0, r);
+                        graphics.endFill();
+                    }
+                    if (appdata.type != null && appdata.type != "" && appdata.type != AppData.IMAGE) {
+                        var playButton = UiUtil.button("res/btn_play.png", onPlay);
+//                    trace("imw=" + imw + ",appdata.w="+appdata.width+",scale="+(imw/640));
+                        playButton.rox_scale(w / 640);
+                        playButton.rox_move((w - playButton.width) / 2, (imh - playButton.height) / 2);
+                        addChild(playButton);
+                    } else {
+                        var button = new Sprite();
+                        button.graphics.rox_fillRect(0x01FFFFFF, 0, 0, w, imh);
+                        var agent = new RoxGestureAgent(button);
+                        agent.swipeTimeout = 0;
+                        button.addEventListener(RoxGestureEvent.GESTURE_TAP, function(_) {
+                            parentScreen().startScreen(Type.getClassName(PictureScreen), image);
+                        });
+                        addChild(button);
+                    }
+//                trace("im="+imw+","+imh+",scale="+imageScale+",offset="+imageOffset);
+                } else {
+                    var placeholder = UiUtil.staticText("载入失败".i18n());
+                    addChild(placeholder.rox_move((w - placeholder.width) / 2, (imh - placeholder.height) / 2));
+                }
+            }, this.name);
+            var anim = MyUtils.getLoadingAnim("载入中".i18n());
+            addChild(anim.rox_move(w / 2, imh / 2));
+        }
+        shown = true;
+    }
+
+    private function free(_) {
+        shown = false;
+        ResKeeper.disposeBundle(this.name);
+//        removeEventListener(Event.REMOVED_FROM_STAGE, free);
     }
 
     public function setWidth(width: Float, mode: Int) {
@@ -64,7 +151,8 @@ class Postit extends Sprite {
         var fontsize = width * FONT_SIZE_RATIO;
         if (fontsize < MIN_FONT_SIZE) fontsize = MIN_FONT_SIZE;
         var appdata = status.appData;
-        var imh = 0.0, liney = -1.0;
+        imh = 0.0;
+        var liney = -1.0;
         var layout: RoxNinePatchData = null;
         if (appdata != null) {
             var imw = appdata.width;
@@ -89,14 +177,14 @@ class Postit extends Sprite {
             liney = h;
             h += 2 + margin;
 
-            var head: Sprite = new Sprite();
+            head = new Sprite();
             var headSize = UiUtil.rangeValue(width * 0.12, 30, 60);
             head.graphics.rox_fillRect(0xFFFFFFFF, 0, 0, headSize, headSize);
-            MyUtils.asyncImage(status.user.profileImage, function(img: BitmapData) {
-                if (img == null || img.width == 0) img = ResKeeper.getAssetImage("res/no_avatar.png");
-                head.graphics.clear();
-                head.graphics.rox_drawRegion(img, 0, 0, headSize, headSize);
-            });
+//            MyUtils.asyncImage(status.user.profileImage, function(img: BitmapData) {
+//                if (img == null || img.width == 0) img = ResKeeper.getAssetImage("res/no_avatar.png");
+//                head.graphics.clear();
+//                head.graphics.rox_drawRegion(img, 0, 0, headSize, headSize);
+//            });
             var avbg = UiUtil.ninePatch("res/avatar_bg.9.png");
             userAvatar = new RoxFlowPane([ head ], avbg, function(_) {
                 parentScreen().startScreen(Type.getClassName(UserScreen), status.user.id);
@@ -130,55 +218,56 @@ class Postit extends Sprite {
         GfxUtil.rox_fillRoundRect(graphics, 0xFFFFFFFF, 0, 0, width, h, 6);
         if (liney > 0) GfxUtil.rox_line(graphics, 2, 0xFFE6E6E6, 10, liney, width - 10, liney);
 
-        if (appdata != null && appdata.width > 0 && appdata.height > 0 && appdata.image != null) {
-            MyUtils.asyncImage(appdata.image, function(image: BitmapData) {
-                UiUtil.rox_removeByName(this, MyUtils.LOADING_ANIM_NAME);
-                if (image != null && image.width > 0) {
-//                    var bmd = new BitmapData(Std.int(w), Std.int(h), true, 0);
-//                trace(">>>>>>>>>>>>>>>>>data="+imgLdr.data);
-//                    bmd.draw(image, , true);
-                    var r = 6;
-                    if (mode == COMPACT) {
-                        graphics.rox_drawRegionRound(image, 0, 0, w, imh, r);
-                    } else if (imageScale == 1 && imageOffset > 0) {
-                        var bmp = new Bitmap(image);
-                        addChild(bmp.rox_move(imageOffset, 0));
-                    } else {
-                        graphics.beginBitmapFill(image, new Matrix(imageScale, 0, 0, imageScale, imageOffset, 0), false, true);
-                        graphics.moveTo(0, r);
-                        graphics.curveTo(0, 0, r, 0);
-                        graphics.lineTo(w - r, 0);
-                        graphics.curveTo(w, 0, w, r);
-                        graphics.lineTo(w, imh);
-                        graphics.lineTo(0, imh);
-                        graphics.lineTo(0, r);
-                        graphics.endFill();
-                    }
-                    if (appdata.type != null && appdata.type != "" && appdata.type != AppData.IMAGE) {
-                        var playButton = UiUtil.button("res/btn_play.png", onPlay);
-//                    trace("imw=" + imw + ",appdata.w="+appdata.width+",scale="+(imw/640));
-                        playButton.rox_scale(w / 640);
-                        playButton.rox_move((w - playButton.width) / 2, (imh - playButton.height) / 2);
-                        addChild(playButton);
-                    } else {
-                        var button = new Sprite();
-                        button.graphics.rox_fillRect(0x01FFFFFF, 0, 0, w, imh);
-                        var agent = new RoxGestureAgent(button);
-                        agent.swipeTimeout = 0;
-                        button.addEventListener(RoxGestureEvent.GESTURE_TAP, function(_) {
-                            parentScreen().startScreen(Type.getClassName(PictureScreen), image);
-                        });
-                        addChild(button);
-                    }
-//                trace("im="+imw+","+imh+",scale="+imageScale+",offset="+imageOffset);
-                } else {
-                    var placeholder = UiUtil.staticText("载入失败".i18n());
-                    addChild(placeholder.rox_move((w - placeholder.width) / 2, (imh - placeholder.height) / 2));
-                }
-            });
-            var anim = MyUtils.getLoadingAnim("载入中".i18n());
-            addChild(anim.rox_move(w / 2, imh / 2));
-        }
+//        if (appdata != null && appdata.width > 0 && appdata.height > 0 && appdata.image != null) {
+//            MyUtils.asyncImage(appdata.image, function(image: BitmapData) {
+//                UiUtil.rox_removeByName(this, MyUtils.LOADING_ANIM_NAME);
+//                if (image != null && image.width > 0) {
+////                    var bmd = new BitmapData(Std.int(w), Std.int(h), true, 0);
+////                trace(">>>>>>>>>>>>>>>>>data="+imgLdr.data);
+////                    bmd.draw(image, , true);
+//                    var r = 6;
+//                    if (mode == COMPACT) {
+//                        graphics.rox_drawRegionRound(image, 0, 0, w, imh, r);
+//                    } else if (imageScale == 1 && imageOffset > 0) {
+//                        var bmp = new Bitmap(image);
+//                        addChild(bmp.rox_move(imageOffset, 0));
+//                    } else {
+//                        imageScale = this.w / image.width;
+//                        graphics.beginBitmapFill(image, new Matrix(imageScale, 0, 0, imageScale, imageOffset, 0), false, true);
+//                        graphics.moveTo(0, r);
+//                        graphics.curveTo(0, 0, r, 0);
+//                        graphics.lineTo(w - r, 0);
+//                        graphics.curveTo(w, 0, w, r);
+//                        graphics.lineTo(w, imh);
+//                        graphics.lineTo(0, imh);
+//                        graphics.lineTo(0, r);
+//                        graphics.endFill();
+//                    }
+//                    if (appdata.type != null && appdata.type != "" && appdata.type != AppData.IMAGE) {
+//                        var playButton = UiUtil.button("res/btn_play.png", onPlay);
+////                    trace("imw=" + imw + ",appdata.w="+appdata.width+",scale="+(imw/640));
+//                        playButton.rox_scale(w / 640);
+//                        playButton.rox_move((w - playButton.width) / 2, (imh - playButton.height) / 2);
+//                        addChild(playButton);
+//                    } else {
+//                        var button = new Sprite();
+//                        button.graphics.rox_fillRect(0x01FFFFFF, 0, 0, w, imh);
+//                        var agent = new RoxGestureAgent(button);
+//                        agent.swipeTimeout = 0;
+//                        button.addEventListener(RoxGestureEvent.GESTURE_TAP, function(_) {
+//                            parentScreen().startScreen(Type.getClassName(PictureScreen), image);
+//                        });
+//                        addChild(button);
+//                    }
+////                trace("im="+imw+","+imh+",scale="+imageScale+",offset="+imageOffset);
+//                } else {
+//                    var placeholder = UiUtil.staticText("载入失败".i18n());
+//                    addChild(placeholder.rox_move((w - placeholder.width) / 2, (imh - placeholder.height) / 2));
+//                }
+//            });
+//            var anim = MyUtils.getLoadingAnim("载入中".i18n());
+//            addChild(anim.rox_move(w / 2, imh / 2));
+//        }
     }
 
     private function onPlay(e) {

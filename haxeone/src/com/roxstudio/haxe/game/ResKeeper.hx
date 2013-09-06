@@ -29,6 +29,8 @@ private typedef IntHash<T> = Map<Int, T>;
 class ResKeeper {
 
     public static inline var DEFAULT_BUNDLE = "default";
+    public static inline var ASSETS_PROT = "assets://";
+    public static inline var FILE_PROT = "file://";
 
     public static var currentBundle(default, set_currentBundle): String;
 
@@ -56,16 +58,17 @@ class ResKeeper {
 
     public static function disposeBundle(bundleId: String) {
 #if debug
-        var buf = new StringBuf();
-        for (gid in bundles.keys()) {
-            buf.add("BUNDLE(" + gid + ")=[");
-            for (s in bundles.get(gid)) {
-                buf.add(s);
-                buf.add(",");
-            }
-            buf.add("],");
-        }
-        trace(">>>>disposing '" + bundleId + "' :{{ " + buf + " }}");
+//        var buf = new StringBuf();
+//        for (gid in bundles.keys()) {
+//            buf.add("BUNDLE(" + gid + ")=[");
+//            for (s in bundles.get(gid)) {
+//                buf.add(s);
+//                buf.add(",");
+//            }
+//            buf.add("],");
+//        }
+//        trace(">>>>disposing '" + bundleId + "' :{{ " + buf + " }}");
+        trace(">>>>ResKeeper: disposing '" + bundleId + "'");
 #end
         var arr = bundles.get(bundleId);
         if (arr == null) return;
@@ -110,11 +113,11 @@ class ResKeeper {
     * asset: id-prefix "assets://", e.g.: "assets://res/image.jpg"
     **/
     public static function getAssetImage(path: String, ?bundleId: String) : BitmapData {
-        var bmd: BitmapData = cast(get("assets://" + path));
+        var bmd: BitmapData = cast(get(ASSETS_PROT + path));
         if (bmd == null) {
             bmd = loadAssetImage(path);
             if (bmd != null) {
-                add("assets://" + path, bmd, bundleId);
+                add(ASSETS_PROT + path, bmd, bundleId);
             } else {
                 throw "Asset image " + path + " not exist.";
             }
@@ -123,11 +126,11 @@ class ResKeeper {
     }
 
     public static function getAssetFont(path: String, ?bundleId: String) : Font {
-        var font: Font = cast(get("assets://" + path));
+        var font: Font = cast(get(ASSETS_PROT + path));
         if (font == null) {
             font = loadAssetFont(path);
             if (font != null) {
-                add("assets://" + path, font, bundleId);
+                add(ASSETS_PROT + path, font, bundleId);
             } else {
                 throw "Asset font " + path + " not exist.";
             }
@@ -136,11 +139,11 @@ class ResKeeper {
     }
 
     public static function getAssetData(path: String, ?bundleId: String) : ByteArray {
-        var data: ByteArray = cast(get("assets://" + path));
+        var data: ByteArray = cast(get(ASSETS_PROT + path));
         if (data == null) {
             data = loadAssetData(path);
             if (data != null) {
-                add("assets://" + path, data, bundleId);
+                add(ASSETS_PROT + path, data, bundleId);
             } else {
                 throw "Asset data " + path + " not exist.";
             }
@@ -149,11 +152,11 @@ class ResKeeper {
     }
 
     public static function getAssetText(path: String, ?bundleId: String) : String {
-        var text: String = cast(get("assets://" + path));
+        var text: String = cast(get(ASSETS_PROT + path));
         if (text == null) {
             text = loadAssetText(path);
             if (text != null) {
-                add("assets://" + path, text, bundleId);
+                add(ASSETS_PROT + path, text, bundleId);
             } else {
                 throw "Asset text " + path + " not exist.";
             }
@@ -162,11 +165,11 @@ class ResKeeper {
     }
 
     public static function getAssetSound(path: String, ?bundleId: String) : Sound {
-        var snd: Sound = cast(get("assets://" + path));
+        var snd: Sound = cast(get(ASSETS_PROT + path));
         if (snd == null) {
             snd = loadAssetSound(path);
             if (snd != null) {
-                add("assets://" + path, snd, bundleId);
+                add(ASSETS_PROT + path, snd, bundleId);
             } else {
                 throw "Asset sound " + path + " not exist.";
             }
@@ -257,10 +260,10 @@ class ResKeeper {
 #if windows
         path = path.replace("\\", "/");
         if (path.length <= 3 || path.substr(1, 2) != ":/") path = FileSystem.fullPath(path);
-        return "file:///" + path.replace("\\", "/");
+        return FILE_PROT + "/" + path.replace("\\", "/");
 #else
         if (!path.startsWith("/")) path = FileSystem.fullPath(path);
-        return "file://" + path;
+        return FILE_PROT + path;
 #end
     }
 
@@ -301,6 +304,24 @@ class ResKeeper {
             bmp.setPixels(rect, newbuf);
         }
         return bmp;
+    }
+
+    public static function createArImage(bmd: BitmapData) : BitmapData {
+        var imgw = Std.int(bmd.width / 2);
+        var img = new BitmapData(imgw, bmd.height, true, 0);
+        var alpha = new BitmapData(imgw, bmd.height, true, 0);
+        img.copyPixels(bmd, new Rectangle(0, 0, imgw, bmd.height), new Point(0, 0));
+        alpha.copyPixels(bmd, new Rectangle(imgw, 0, imgw, bmd.height), new Point(0, 0));
+        img.copyChannel(alpha, new Rectangle(0, 0, imgw, alpha.height), new Point(0, 0), BitmapDataChannel.RED, BitmapDataChannel.ALPHA);
+        alpha.dispose();
+        return img;
+    }
+
+    public static function pngToJpg(bmd: BitmapData) : BitmapData {
+        var img = new BitmapData(bmd.width * 2, bmd.height, false, 0);
+        img.copyPixels(bmd, new Rectangle(0, 0, bmd.width, bmd.height), new Point(0, 0));
+        img.copyChannel(bmd, new Rectangle(0, 0, bmd.width, bmd.height), new Point(bmd.width, 0), BitmapDataChannel.ALPHA, BitmapDataChannel.RED);
+        return img;
     }
 
     public static inline function loadAssetFont(path: String) : Font {

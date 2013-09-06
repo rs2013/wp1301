@@ -1,6 +1,11 @@
 package com.weiplus.client;
 
 //import com.weiplus.client.TestMakerScreen;
+import com.roxstudio.haxe.ui.SxAdapter;
+import com.roxstudio.haxe.ui.DipUtil;
+import flash.system.Capabilities;
+import com.roxstudio.i18n.I18n;
+import ru.stablex.ui.UIBuilder;
 import Lambda;
 using com.roxstudio.i18n.I18n;
 import nme.events.Event;
@@ -21,6 +26,8 @@ import nme.Lib;
 //import com.weiplus.client.Postit;
 //import com.weiplus.client.PostitScreen;
 
+using com.roxstudio.haxe.ui.DipUtil;
+
 class Main {
 
     public function new() {
@@ -29,7 +36,13 @@ class Main {
     static public function main() {
 //        trace("before init");
         I18n.init();
-        var loc = nme.system.Capabilities.language;
+//        UIBuilder.regClass("com.weiplus.client.HaxeCamera");
+        UIBuilder.saveCodeTo("ui_gencode");
+        UIBuilder.regClass("com.weiplus.client.Main");
+        UIBuilder.init("ui/defaults.xml");
+        SxAdapter.setupAssets();
+        DipUtil.init(640);
+        var loc = Capabilities.language;
         trace("lang=" + loc);
         if (StringTools.startsWith(loc, "zh")) {
             loc = "default";
@@ -51,6 +64,7 @@ class Main {
 //        m.startRootScreen(Type.getClassName(TestCurve));
 //        m.startRootScreen(Type.getClassName(com.roxstudio.haxe.hxquery.Test));
         m.startRootScreen(Type.getClassName(Splash));
+//        m.startRootScreen(Type.getClassName(TestCamera));
 
 //        trace("screen started");
 //        var st = new Status();
@@ -73,10 +87,19 @@ class Main {
 //        fps.y = 10;
 //        fps.mouseEnabled = false;
 //        RoxApp.stage.addChild(fps);
+        flash.Lib.current.stage.opaqueBackground = 0xFF000000;
     }
 
-    public static inline function fontName() {
-        return #if android '/system/fonts/DroidSansFallback.ttf' #else 'Microsoft YaHei' #end;
+    public static inline function getFont() : String {
+#if android
+        return "/system/fonts/DroidSansFallback.ttf";
+#else
+        return "Microsoft YaHei";
+#end
     }
 
+//    public static inline function fontName() {
+//        return #if android '/system/fonts/DroidSansFallback.ttf' #else 'Microsoft YaHei' #end;
+//    }
+//
 }

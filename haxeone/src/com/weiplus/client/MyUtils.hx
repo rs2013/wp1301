@@ -135,6 +135,7 @@ class MyUtils {
             return;
         }
         var path = IMAGE_CACHE_DIR + "/" + StringTools.urlEncode(url);
+//        trace("asyncImage: path=" + path + ",exists=" + sys.FileSystem.exists(path));
         if (sys.FileSystem.exists(path)) {
             GameUtil.worker.addJob(new com.roxstudio.haxe.utils.SimpleJob<Array<BitmapData>>([], function(d: Array<BitmapData>) {
                 d[0] = ResKeeper.loadLocalImage(path);

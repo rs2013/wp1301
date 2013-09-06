@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import com.roxstudio.haxe.ui.RoxScreen;
 using com.roxstudio.i18n.I18n;
 import com.weiplus.client.MyUtils;
 import nme.display.Shape;
@@ -52,11 +53,24 @@ class SettingScreen extends BaseScreen {
         yoff += list.height + spacing;
 
         arr = [];
-        arr.push({ id: "logoff", icon: null, name: "注销登录".i18n(), type: 2, data: null });
+        if (HpApi.instance.isDefault()) {
+            arr.push({ id: "logon", icon: null, name: "更换登录账户".i18n(), type: 2, data: null });
+        } else {
+            arr.push({ id: "logoff", icon: null, name: "注销当前账户".i18n(), type: 2, data: null });
+        }
         var list = MyUtils.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
-            MyUtils.logout();
-            startScreen(Type.getClassName(PublicScreen), CLEAR);
-            UiUtil.message("你已经登出".i18n());
+            switch (i.id) {
+            case "logon":
+                MyUtils.logout();
+                startScreen(Type.getClassName(LoginScreen), 12346);
+            case "logoff":
+                MyUtils.logout();
+#if (android && !testin)
+                HpManager.login(); // use default account
+#end
+                startScreen(Type.getClassName(HomeScreen), CLEAR);
+//                UiUtil.message("你已经登出".i18n());
+            }
             return true;
         });
         content.addChild(list.rox_move(spacing, yoff));
@@ -65,6 +79,13 @@ class SettingScreen extends BaseScreen {
 
     override public function onNewRequest(_) {
 //        trace("SettingScreen started, time=" + (haxe.Timer.stamp() - starttm));
+    }
+
+    override public function onScreenResult(requestCode: Int, resultCode: Int, resultData: Dynamic) {
+//        trace("publicscreen.onScreenResult:request=" + requestCode + ",result=" + resultCode + ",data=" + resultData);
+        if (requestCode == 12346 && resultCode == RoxScreen.OK) {
+            UiUtil.delay(function() { startScreen(Type.getClassName(HomeScreen), CLEAR); });
+        }
     }
 
 }
