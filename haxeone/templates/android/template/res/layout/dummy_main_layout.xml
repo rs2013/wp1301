@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/txtMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Fake NME MainActivity"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+<!-- 
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go Back" />
+
+    <Button
+        android:id="@+id/btnPicture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Take a Picture &amp; Back" />
+
+    <Button
+        android:id="@+id/btnMagic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Make a Magic &amp; Back" />
+
+    <Button
+        android:id="@+id/btnPlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Play a Magic &amp; Back" />
+ -->
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login" />
+
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Logout" />
+
+    <Button
+        android:id="@+id/btnPublicTimeline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Public Timeline" />
+
+    <Button
+        android:id="@+id/btnUserTimeline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="User Timeline" />
+
+    <Button
+        android:id="@+id/btnPost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Post" />
+
+    <Button
+        android:id="@+id/btnPostFile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Post File" />
+
+    <Button
+        android:id="@+id/btnPostImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Post Image" />
+
+    <Button
+        android:id="@+id/btnCamera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start Camera" />
+
+</LinearLayout>

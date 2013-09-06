@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+    <TextView 
+        android:id="@+id/my_photo_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <ImageView 
+        android:id="@+id/my_photo_image"
+        android:layout_below="@id/my_photo_date"
+        android:contentDescription="@string/contentDescription_my_photos"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/my_photos_item_height"
+        android:scaleType="fitXY"/>
+</RelativeLayout>

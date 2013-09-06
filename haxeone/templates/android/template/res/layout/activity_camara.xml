@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <FrameLayout
+        android:id="@+id/main_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/fitting_view"
+            android:contentDescription="@string/contentDescription_ring_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:scaleType="matrix" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/category_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/category_title"
+                android:paddingLeft="20dp"
+                android:paddingBottom="10dp"
+                android:textColor="#559DC4"
+                android:textSize="30sp" />
+            <GridView
+                android:id="@+id/categorys"
+                android:layout_below="@id/category_title"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:verticalSpacing="5dp"
+                android:horizontalSpacing="5dp"
+                android:stretchMode="columnWidth"
+                android:numColumns="3">
+            </GridView>
+        </RelativeLayout>
+    </FrameLayout>
+    <include layout="@layout/bottom_bar"
+        android:id="@+id/bottom_bar"
+        android:layout_gravity="bottom" />
+</RelativeLayout>
