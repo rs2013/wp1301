@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Widget id="'HaxeCamera'" w="flash.Lib.current.stage.stageWidth" h="flash.Lib.current.stage.stageHeight">
+
+    <Widget id="'CameraPreview'" widthPt="100" heightPt="100" visible="false">
+        <Bmp id="'CameraPreviewBmp'"/>
+    </Widget>
+
+    <Widget id="'CameraCanvas'" widthPt="100" heightPt="100">
+        <!--<Widget defaults="ArObject"/>-->
+        <VBox id="'ArObjectMenu'" w="(240).dp()" autoHeight="true" padding="(15).dp()" childPadding="(5).dp()"
+              skin:Paint-color="0x0000FF" skin:Paint-alpha="0.4" skin:Paint-border="2"
+              visible="false">
+            <Button defaults="'ArObjectMenuButtons'" text="'移除'.i18n()"
+                    on-click="
+                    #CameraCanvas.removeChild(currentAr.parent);
+                    #ArObjectMenu.visible = false;
+                    "/>
+            <Button defaults="'ArObjectMenuButtons'" text="'翻转'.i18n()"
+                    on-click="
+                    currentAr.scaleX = -currentAr.scaleX;
+                    var dx = currentAr.width * Math.cos(currentAr.rotation * Math.PI / 180);
+                    currentAr.parent.x += currentAr.scaleX < 0 ? dx : -dx;
+                    updateBounds(cast currentAr.parent);
+                    "/>
+<!--
+            <Button defaults="'ArObjectMenuButtons'" text="'放大'.i18n()"
+                    on-click="
+                    currentAr.scaleX += currentAr.scaleX > 0 ? 0.1 : -0.1;
+                    currentAr.scaleY += 0.1;
+                    updateBounds(cast currentAr.parent);
+                    "/>
+            <Button defaults="'ArObjectMenuButtons'" text="'缩小'.i18n()"
+                    on-click="
+                    currentAr.scaleX -= currentAr.scaleX > 0 ? 0.1 : -0.1;
+                    currentAr.scaleY -= 0.1;
+                    updateBounds(cast currentAr.parent);
+                    "/>
+            <Button defaults="'ArObjectMenuButtons'" text="'旋转'.i18n()"
+                    on-click="
+                    currentAr.rotation += 5;
+                    updateBounds(cast currentAr.parent);
+                    "/>
+            <Button defaults="'ArObjectMenuButtons'" text="'反转'.i18n()"
+                    on-click="
+                    currentAr.rotation -= 5;
+                    updateBounds(cast currentAr.parent);
+                    "/>
+-->
+            <Button defaults="'ArObjectMenuButtons'" text="'完成'.i18n()"
+                    on-click="
+                    #ArObjectMenu.visible = false;
+                    "/>
+        </VBox>
+    </Widget>
+
+    <VBox id="'CameraFrame'" widthPt="100" heightPt="100">
+
+        <Widget widthPt="100" h="(82).dp()">
+            <StateButton id="'btnFlash'"
+                    left="(18).dp()"
+                    ico-src="'res/icon_camera_flash.png'.dpScale()"
+                    defaults="'CameraTopButtons'"
+                    on-click="switchFlashMode();" />
+            <Button id="'btnSwitch'"
+                    left="(250).dp()"
+                    text="''" ico-src="'res/icon_camera_switch.png'.dpScale()"
+                    defaults="'CameraTopButtons'"
+                    visible="##if android HaxeCamera.getNumberOfCameras() > 1 ? true : false ##else true ##end"
+                    on-click="switchCamera();"/>
+            <Button
+                    left="(482).dp()"
+                    text="''"
+                    ico-src="'res/icon_camera_close.png'.dpScale()"
+                    defaults="'CameraTopButtons'"
+                    on-click="this.finish(RoxScreen.CANCELED);"/>
+        </Widget>
+        <Widget widthPt="100" h="(DipUtil.stageHeightDp - 190).dp()">
+<!--
+            <Scroll widthPt="100" heightPt="100"
+                    hScroll="false" hBar="null" vBar="null"
+                    visible="false">
+                <VBox id="'arList'" widthPt="100" autoHeight="true">
+-->
+                    <!--<HBox defaults="'ArRows'" >
+                        <Button defaults="'ArButtons'"/>
+                    </HBox>-->
+<!--
+                </VBox>
+            </Scroll>
+-->
+            <Scroll widthPt="100" top="(DipUtil.stageHeightDp - 370).dp()" h="(180).dp()" vScroll="false" hBar="null" vBar="null">
+                <HBox id="'folderList'" autoWidth="true" h="(180).dp()" padding="(10).dp()" childPadding="(10).dp()" skin:Paint-color="0" skin:Paint-alpha="0.3">
+                    <!--<Button defaults="'ArFolderButtons'" text="'folder'" />-->
+                </HBox>
+            </Scroll>
+        </Widget>
+
+        <Widget widthPt="100" h="(108).dp()" skin:Paint-border="0" skin:Paint-color="0" skin:Paint-alpha="0.2" >
+            <Button id="'btnSnap'" text="''"
+                    left="(206).dp()" top="(13).dp()" w="(228).dp()" h="(82).dp()"
+                    skin:Img-src="'res/btn_camera_snap.png'.dpScale()"
+                    on-click="doSnap();"/>
+        </Widget>
+    </VBox>
+
+    <Widget id="'CameraFrame2'" widthPt="100" heightPt="100" visible="false">
+        <Widget widthPt="100" top="(DipUtil.stageHeightDp - 108).dp()" h="(108).dp()" skin:Paint-border="0" skin:Paint-color="0" skin:Paint-alpha="0.2" >
+            <Button id="'btnSnapOk'"
+                    defaults="'CameraBottomButtons'"
+                    text="'确认'.i18n()"
+                    left="(120).dp()"
+                    visible="true"
+                    skin:Img-src="'res/btn_camera_ok.png'.dpScale()"
+                    on-click="confirmSnap();" />
+            <Button id="'btnSnapCancel'"
+                    defaults="'CameraBottomButtons'"
+                    text="'取消'.i18n()"
+                    left="(374).dp()"
+                    visible="true"
+                    skin:Img-src="'res/btn_camera_cancel.png'.dpScale()"
+                    on-click="cancelSnap();"/>
+        </Widget>
+    </Widget>
+
+</Widget>
