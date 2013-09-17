@@ -108,6 +108,9 @@ class PostScreen extends BaseScreen {
         input.text = status.appData.type == "image" ?
             "我用#哈利波图#拍了一张有趣的照片，快来看看吧！".i18n() :
             "我用#哈利波图#制作了一个很酷的游戏，快来玩吧！".i18n();
+        if (status.user != null && status.text != null) { // it's retweet
+            input.text = "//@" + status.user.name + " " + status.text;
+        }
         var rect: Rectangle = if (image.width == image.height) {
             null;
         } else {
@@ -241,7 +244,8 @@ class PostScreen extends BaseScreen {
     private function shareButton(icon: String, name: String, bg: String, type: String) : RoxFlowPane {
         var bg = UiUtil.ninePatch("res/btn_share_" + bg + ".9.png");
 #if (android && !testin)
-        var valid = type != "" && HpManager.isBindingSessionValid(type) && useBinds.get(type);
+        var valid = (!HpApi.instance.isDefault() || type == "WEIXIN")
+            && type != "" && HpManager.isBindingSessionValid(type) && useBinds.get(type);
 //        trace("type=" + type + ",hasBinding=" + HpManager.hasBinding(type) + ",isValid=" + HpManager.isBindingSessionValid(type));
 #else
         var valid = true;
@@ -267,6 +271,10 @@ class PostScreen extends BaseScreen {
         var text = "登录中".i18n();
 #if (android && !testin)
         var type = e.target.name;
+        if (type != "WEIXIN" && HpApi.instance.isDefault()) {
+            startScreen(Type.getClassName(LoginScreen), 12346);
+            return;
+        }
         if (HpManager.isBindingSessionValid(type)) {
             useBinds.set(type, !useBinds.get(type));
             resetSharePanel();

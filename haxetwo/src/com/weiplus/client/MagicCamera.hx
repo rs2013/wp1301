@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import com.roxstudio.haxe.gesture.RoxGestureAgent;
 import ru.stablex.ui.widgets.Scroll;
 import com.weiplus.client.TimelineScreen;
 import sys.io.File;
@@ -59,8 +60,9 @@ class MagicCamera extends MakerScreen {
 
     private static inline var ALBUM_DIR = "/sdcard/DCIM/MagicCamera";
     private var currentCid = -1;
-    private var currentAr: Sprite;
+    private var currentAr: Widget;
     private var getBmd: Bool;
+    private var requestCode = -1;
 
     public function new() {
         super();
@@ -71,8 +73,38 @@ class MagicCamera extends MakerScreen {
     override public function createContent(height: Float) : Sprite {
         content = UIBuilder.buildFn("ui/haxe_camera.xml")();
 
+        var arBoxCtrl = UIBuilder.get("ArBoxCtrl");
+        var agent = new RoxGestureAgent(arBoxCtrl, RoxGestureAgent.GESTURE_CAPTURE);
+        arBoxCtrl.addEventListener(RoxGestureEvent.GESTURE_PAN, function(e: RoxGestureEvent) {
+            if (currentAr == null) return;
+            var pt: Point = cast e.extra;
+            var obj: Sprite = cast currentAr.getChildAt(0);
+            var rect = obj.getRect(flash.Lib.current.stage);
+            var center = new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
+            var opt = new Point(e.stageX, e.stageY);
+            var oang = Math.atan2(opt.y - center.y, opt.x - center.x);
+            var ang = Math.atan2(pt.y, pt.x);
+            var delta = (ang - oang + Math.PI * 2) % (Math.PI * 2);
+//            if (delta > Math.PI * 0.25 && delta < Math.PI * 0.75 || delta > Math.PI * 1.25 && delta < Math.PI * 1.75) { // rotate
+                var sdist = pt.length * Math.sin(delta);
+                var angle = Math.atan2(sdist, Point.distance(center, opt));
+                var evt = new RoxGestureEvent(RoxGestureEvent.GESTURE_ROTATION, 0, 0, center.x, center.y, 0, null, angle);
+//                trace("rot:c="+center+",delta="+delta+",dist="+dist+",angle="+angle);
+                handleEvent(evt, currentAr);
+//            } else { // scale
+                var cdist = pt.length * Math.cos(delta);
+                var co = Point.distance(center, opt);
+                var scale = (cdist + co) / co;
+                var evt = new RoxGestureEvent(RoxGestureEvent.GESTURE_PINCH, 0, 0, center.x, center.y, 0, null, scale);
+//                trace("scl:c="+center+",delta="+delta+",dist="+dist+",scale="+scale);
+                handleEvent(evt, currentAr);
+//            }
+        });
+
         showFolder();
-        trace("content created");
+
+        this.addEventListener(Event.ACTIVATE, onActive);
+
         return content;
     }
 
@@ -101,17 +133,17 @@ class MagicCamera extends MakerScreen {
 
     override public function onBackKey() {
         trace("onBackKey: currentCid="+currentCid+",frame2.visible="+UIBuilder.get("CameraFrame2").visible);
-        if (UIBuilder.get("CameraFrame2").visible) { // cancel snap
-            trace("onBackKey: to cancel snap");
-            cancelSnap();
-            return false;
-        } else if (currentCid >= 0) {
+        if (currentCid >= 0) {
             var bundleId = "ar_folder_" + currentCid;
             ResKeeper.disposeBundle(bundleId);
             currentCid = -1;
 //            UIBuilder.get("folderList").parent.visible = true;
 //            UIBuilder.get("arList").parent.visible = false;
             showFolder();
+            return false;
+        } else if (UIBuilder.get("CameraFrame2").visible) { // cancel snap
+//            trace("onBackKey: to cancel snap");
+            cancelSnap();
             return false;
         }
         return true;
@@ -216,12 +248,14 @@ class MagicCamera extends MakerScreen {
                     obj.left += (-bmd.width / 2) * DipUtil.dpFactor;
                     obj.userData = bmd;
                     var agent = new RoxGestureAgent(obj);
-                    obj.addEventListener(MouseEvent.MOUSE_DOWN, function(_) { trace("mouse down"); });
-                    obj.addEventListener(RoxGestureEvent.GESTURE_ROTATION, handleEvent);
-                    obj.addEventListener(RoxGestureEvent.GESTURE_PINCH, handleEvent);
-                    obj.addEventListener(RoxGestureEvent.GESTURE_PAN, handleEvent);
-                    obj.addEventListener(RoxGestureEvent.GESTURE_LONG_PRESS, handleEvent);
-//                    obj.addEventListener(MouseEvent.MOUSE_DOWN, function(_) { Dnd.drag(obj); });
+                    obj.addEventListener(RoxGestureEvent.GESTURE_ROTATION, handleEvent.bind(_, null));
+                    obj.addEventListener(RoxGestureEvent.GESTURE_PINCH, handleEvent.bind(_, null));
+                    obj.addEventListener(RoxGestureEvent.GESTURE_PAN, handleEvent.bind(_, null));
+//                    obj.addEventListener(RoxGestureEvent.GESTURE_LONG_PRESS, handleEvent);
+                    sp.addEventListener(MouseEvent.MOUSE_DOWN, function(e) {
+                        currentAr = e.target.parent;
+                        updateArBox();
+                    });
 //                    obj.addEventListener(DndEvent.DROP, function(e) { e.drop(); });
                     canvas.addChild(obj);
                 });
@@ -253,21 +287,35 @@ class MagicCamera extends MakerScreen {
         ResKeeper.add("cache:" + filename, data, ResKeeper.DEFAULT_BUNDLE);
     }
 
-    private function handleEvent(e: RoxGestureEvent) {
-//        trace(">>>t=" + e.target.name+",o="+owner.name+",e="+e);
-        var obj: Widget = cast(e.target);
+    private function updateArBox() {
+        var arbox: Widget = UIBuilder.getAs("ArBox", Widget);
+        var obj: Sprite = cast currentAr.getChildAt(0);
+        var rect = obj.getRect(flash.Lib.current.stage);
+        arbox.visible = true;
+        arbox.left = rect.x;
+        arbox.top = rect.y;
+        arbox.w = rect.width;
+        arbox.h = rect.height;
+        var parent = arbox.parent;
+        parent.swapChildren(currentAr, parent.getChildAt(parent.numChildren - 2));
+        parent.swapChildren(arbox, parent.getChildAt(parent.numChildren - 1));
+    }
+
+    private function handleEvent(e: RoxGestureEvent, obj: Widget) {
+        if (obj == null) obj = cast(e.target);
+//        trace(">>>t=" + e.target+",e="+e+",def=" + obj.defaults);
         if (obj.defaults != "ArObject") return;
-        var canvas = UIBuilder.get("CameraCanvas");
-        if (canvas.numChildren > 1) canvas.swapChildren(obj, canvas.getChildAt(canvas.numChildren - 1));
         var sp: Sprite = cast obj.getChildAt(0);
 //        trace("sp=" + sp + ",obj=" + obj + ",def=" + obj.defaults);
-        var menu = UIBuilder.get("ArObjectMenu");
-        menu.visible = false;
+//        var menu = UIBuilder.get("ArObjectMenu");
+//        menu.visible = false;
+        currentAr = obj;
         switch (e.type) {
             case RoxGestureEvent.GESTURE_PAN:
                 var pt: Point = cast(e.extra);
                 obj.x += pt.x;
                 obj.y += pt.y;
+
             case RoxGestureEvent.GESTURE_PINCH:
                 var scale: Float = e.extra;
                 var dx = obj.x - e.stageX, dy = obj.y - e.stageY;
@@ -299,14 +347,15 @@ class MagicCamera extends MakerScreen {
                 obj.y = newpos.y;
 //                var angle: Float = e.extra;
 //                sp.rotation += 180 / Math.PI * angle;
-            case RoxGestureEvent.GESTURE_LONG_PRESS:
-                menu.visible = true;
-                canvas.swapChildren(menu, canvas.getChildAt(canvas.numChildren - 1));
-                if (e.stageX < screenWidth / 2) { menu.left = e.stageX; } else { menu.left = e.stageX - menu.w; }
-                if (e.stageY < screenHeight / 2) { menu.top = e.stageY; } else { menu.top = e.stageY - menu.h; }
-                currentAr = sp;
+//            case RoxGestureEvent.GESTURE_LONG_PRESS:
+//                menu.visible = true;
+//                canvas.swapChildren(menu, canvas.getChildAt(canvas.numChildren - 1));
+//                if (e.stageX < screenWidth / 2) { menu.left = e.stageX; } else { menu.left = e.stageX - menu.w; }
+//                if (e.stageY < screenHeight / 2) { menu.top = e.stageY; } else { menu.top = e.stageY - menu.h; }
+//                currentAr = sp;
         }
-        updateBounds(obj);
+        updateArBox();
+//        updateBounds(obj);
     }
 
     private function updateBounds(obj: Widget) {
@@ -321,7 +370,6 @@ class MagicCamera extends MakerScreen {
     override public function drawBackground() { // suppress drawing default background
     }
 
-
     override public function onShown() {
         trace("onShown");
         var frame = UIBuilder.get("CameraFrame2");
@@ -334,6 +382,13 @@ class MagicCamera extends MakerScreen {
         HaxeCamera.openCamera(camId, this, "cameraOpened");
 #else
         cameraOpened("ok", null);
+#end
+    }
+
+    private inline function reopenCamera() {
+#if android
+        flash.Lib.current.stage.opaqueBackground = 0x00000000;
+        HaxeCamera.openCamera(HaxeCamera.getCurrentCameraId(), this, "dummy");
 #end
     }
 
@@ -408,7 +463,7 @@ class MagicCamera extends MakerScreen {
 //        thread1 = cpp.vm.Thread.current();
 #end
 
-        UIBuilder.get("ArObjectMenu").visible = false;
+        UIBuilder.get("ArBox").visible = false;
 #if android
         if (!sys.FileSystem.exists(ALBUM_DIR)) com.roxstudio.haxe.io.FileUtil.mkdirs(ALBUM_DIR);
         var name = "IMG_" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
@@ -477,7 +532,7 @@ class MagicCamera extends MakerScreen {
         bmd.copyPixels(origbmd, new Rectangle(0, 0, origbmd.width, origbmd.height), new Point(0, 0));
         for (i in 0...canvas.numChildren) {
             var arobj = cast(canvas.getChildAt(i), Widget);
-            if (arobj.id == "ArObjectMenu") continue;
+            if (arobj.defaults != "ArObject") continue;
             var arsp = arobj.getChildAt(0);
             var arbmd: BitmapData = cast arobj.userData;
             var arscalex = arsp.scaleX / scale, arscaley = arsp.scaleY / scale;
@@ -516,7 +571,47 @@ class MagicCamera extends MakerScreen {
         UIBuilder.get("CameraFrame").visible = true;
         UIBuilder.get("CameraPreview").visible = false;
         UIBuilder.get("CameraFrame2").visible = false;
-        onShown();
+        reopenCamera();
+    }
+
+    private function onLocal() {
+        requestCode = 1;
+        onHidden();
+#if android
+        HaxeStub.startGetContent(requestCode, "image/*");
+#else
+        onActive(null);
+#end
+    }
+
+    private function onActive(_) {
+        if (requestCode < 0) {
+            return;
+        }
+#if android
+        var s = HaxeStub.getResult(requestCode);
+        var json: Dynamic = haxe.Json.parse(s);
+        if (untyped json.resultCode != "ok") {
+            reopenCamera();
+            return;
+        }
+        var path = untyped json.intentDataPath;
+        var bmd = ResKeeper.loadLocalImage(path);
+#else
+        var path = "res/8.jpg";
+        var bmd = ResKeeper.loadAssetImage(path);
+#end
+        requestCode = -1;
+        UIBuilder.get("CameraFrame").visible = false;
+        UIBuilder.get("CameraPreview").visible = true;
+        var bmp: Bmp = UIBuilder.getAs("CameraPreviewBmp", Bmp);
+        bmp.bitmapData = bmd;
+        bmp.userData = path;
+        bmp.smooth = true;
+        bmp.scaleX = bmp.scaleY = screenWidth / bmd.width;
+        bmp.top = (screenHeight - (bmd.height * bmp.scaleX)) / 2;
+        bmp.refresh();
+        UIBuilder.get("CameraFrame2").visible = true;
     }
 
 }

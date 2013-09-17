@@ -109,7 +109,7 @@ class Postit extends Sprite {
                         graphics.lineTo(0, r);
                         graphics.endFill();
                     }
-                    if (appdata.type != null && appdata.type != "" && appdata.type != AppData.IMAGE) {
+                    if (isGame()) {
                         var playButton = UiUtil.button("res/btn_play.png", onPlay);
 //                    trace("imw=" + imw + ",appdata.w="+appdata.width+",scale="+(imw/640));
                         playButton.rox_scale(w / 640);
@@ -121,7 +121,7 @@ class Postit extends Sprite {
                         var agent = new RoxGestureAgent(button);
                         agent.swipeTimeout = 0;
                         button.addEventListener(RoxGestureEvent.GESTURE_TAP, function(_) {
-                            parentScreen().startScreen(Type.getClassName(PictureScreen), image);
+                            parentScreen().startScreen(Type.getClassName(PictureScreen), {status: status, image: image });
                         });
                         addChild(button);
                     }
@@ -171,7 +171,8 @@ class Postit extends Sprite {
             var bub = UiUtil.bitmap("res/icon_bubble.png");
             layout = new RoxNinePatchData(new Rectangle(margin, 0, 20, 20), null, null, new Rectangle(0, 0, 20 + 2 * margin, 20 + margin));
             var txt = status.user.id == HpApi.instance.uid || status.mark <= 100 ? status.text : "此条微博已经被设置为私有";
-            var text = UiUtil.staticText(txt, 0, fontsize, true, width - bub.width - 4 - 2 * layout.contentGrid.x);
+            var texth: Null<Float> = mode == FULL ? null : fontsize * 2.8;
+            var text = UiUtil.staticText(txt, 0, fontsize, true, width - bub.width - 4 - 2 * layout.contentGrid.x, texth);
             var imageLabel = new RoxFlowPane([ bub, text ], new RoxNinePatch(layout), UiUtil.TOP, [ 4 ]);
             addChild(imageLabel.rox_move(0, h));
             h += imageLabel.height;
@@ -201,7 +202,7 @@ class Postit extends Sprite {
             h += hlayout.height;
         }
 
-        if (mode == FULL) {
+        if (mode == FULL && !HpApi.instance.isDefault()) {
             var arr: Array<DisplayObject> = [];
             var praisebtn = UiUtil.button(UiUtil.TOP_LEFT, status.praised ? "res/icon_praised.png" : "res/icon_praise.png",
                 "赞(".i18n() + status.praiseCount + ")", 0, fontsize + 2, "res/btn_grey.9.png", onButton);
@@ -214,7 +215,10 @@ class Postit extends Sprite {
 //            var morebtn = UiUtil.button(UiUtil.TOP_LEFT, "res/icon_more.png",
 //                    null, "res/btn_grey.9.png", onButton);
 //            morebtn.name = "more_" + status.id;
-            if (!HpApi.instance.isDefault() && status.user.id == HpApi.instance.uid) {
+            var repostbtn = UiUtil.button(UiUtil.TOP_LEFT, null, "转发".i18n(), 0, fontsize + 2, "res/btn_grey.9.png", onButton);
+            repostbtn.name = "repost_" + status.id;
+            arr.push(repostbtn);
+            if (status.user.id == HpApi.instance.uid) {
                 var deletebtn = UiUtil.button(UiUtil.TOP_LEFT, null,
                 "删除".i18n(), 0, fontsize + 2, "res/btn_grey.9.png", onButton);
                 deletebtn.name = "delete_" + status.id;
@@ -319,10 +323,26 @@ class Postit extends Sprite {
                             UiUtil.message("网络错误，ex=".i18n() + data);
                     }
                 });
-            case "more":
+            case "repost":
+                if (isGame()) {
+                    parentScreen().startScreen(Type.getClassName(GameRetweetScreen), status);
+                } else { // is image
+                    MyUtils.asyncImage(status.appData.image, function(image: BitmapData) {
+                        parentScreen().startScreen(Type.getClassName(RetweetScreen), {
+                            status: status,
+                            image: { bmd: image, path: null },
+                            data: null
+                        });
+                    }, this.name);
+                }
         }
 
 //#end
+    }
+
+    private inline function isGame() {
+        var type = status.appData.type;
+        return type != null && type != "" && type != AppData.IMAGE;
     }
 
     private inline function parentScreen() : RoxScreen {

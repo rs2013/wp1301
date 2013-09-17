@@ -62,8 +62,8 @@ class RoxScreenManager extends Sprite {
 
 //        trace(">>startScreen(" + source + "," + screenClassName + "," + finishToScreen + ")<<");
 //        starttm = haxe.Timer.stamp();
-        if (source != null && stack.first().className != source.className)
-            throw "startScreen: Illegal stack state or bad source screen '" + source + "'";
+        if (source != null && (stack.isEmpty() || stack.first().className != source.className))
+            throw "startScreen: Illegal stack state or bad source screen '" + source + "', stack=" + stack;
 //        trace("StartScreen.afterSnap, time=" + (haxe.Timer.stamp() - starttm));
         if (finishToScreen != null) {
             finishScreen(source, finishToScreen, RoxScreen.CANCELED, null, RoxAnimate.NO_ANIMATE, true);

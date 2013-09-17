@@ -92,6 +92,11 @@ class PlayScreen extends BaseScreen {
         var btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回".i18n(), 0xFFFFFF, titleFontSize, "res/btn_dark.9.png", function(_) { finish(RoxScreen.OK); } );
         addTitleButton(btnBack, UiUtil.LEFT);
 
+        var btnRepost = UiUtil.button(UiUtil.TOP_LEFT, null, "求助".i18n(), 0xFFFFFF, titleFontSize, "res/btn_dark.9.png", function(_) {
+            startScreen(Type.getClassName(GameRetweetScreen), status);
+        } );
+        addTitleButton(btnRepost, UiUtil.RIGHT);
+
         addEventListener(Event.DEACTIVATE, onDeactive);
 
     }
@@ -116,12 +121,12 @@ class PlayScreen extends BaseScreen {
             loadUrl(appData.url);
         }
         var mask = new Sprite();
-        mask.graphics.rox_fillRect(0x77000000, 0, 0, viewWidth, viewHeight);
+        mask.graphics.rox_fillRect(0x77000000, 0, 0, screenWidth, screenHeight);
         var loading = MyUtils.getLoadingAnim("载入中".i18n());
-        loading.rox_move(viewWidth / 2, viewHeight / 2);
+        loading.rox_move(screenWidth / 2, screenHeight / 2);
         mask.addChild(loading);
         mask.name = "loadingMask";
-        frontLayer.addChild(mask);
+        this.addChild(mask);
     }
 
     override public function onShown() {
@@ -303,7 +308,7 @@ class PlayScreen extends BaseScreen {
             File.saveBytes(filepath, zipdata.rox_toBytes());
             ResKeeper.disposeBundle("playscreen_temp_bundle");
 #end
-            frontLayer.rox_removeByName("loadingMask"); // remove mask
+            this.rox_removeByName("loadingMask"); // remove mask
             onStart(getSavedData());
         } );
     }
@@ -322,7 +327,7 @@ class PlayScreen extends BaseScreen {
         var fileurl = FileUtil.fileUrl(CACHE_DIR + "/" + dirName + "/" + ZIPDATA_NAME + ".zip");
         var preloader = new Preloader([ fileurl ], [ ZIPDATA_NAME ], true);
         preloader.addEventListener(Event.COMPLETE, function(_) {
-            frontLayer.rox_removeByName("loadingMask"); // remove mask
+            this.rox_removeByName("loadingMask"); // remove mask
             onStart(getSavedData());
         } );
 #end

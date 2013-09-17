@@ -1,5 +1,7 @@
 package com.weiplus.client;
 
+import com.roxstudio.haxe.ui.UiUtil;
+import flash.display.Sprite;
 using com.roxstudio.i18n.I18n;
 import Reflect;
 import nme.net.SharedObject;
@@ -33,8 +35,15 @@ class HomeScreen extends TimelineScreen {
 
     override public function onCreate() {
         hasBack = false;
+        title = new Sprite();
+        title.addChild(UiUtil.staticText("哈利波图".i18n(), 0xFFFFFF, titleFontSize * 1.2));
         super.onCreate();
         doSwitch(null);
+        if (HpApi.instance.isDefault()) {
+            UiUtil.delay(function() {
+                startScreen(Type.getClassName(SelectedScreen), null);
+            });
+        }
     }
 
     override public function refresh(append: Bool) {

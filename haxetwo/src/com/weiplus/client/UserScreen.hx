@@ -113,7 +113,7 @@ class UserScreen extends TimelineScreen {
         }
         sp.graphics.rox_drawRegionRound(ResKeeper.getAssetImage("res/no_avatar.png"), spacing, spacing, 60, 60);
         sp.graphics.rox_drawRoundRect(3, 0xFFFFFFFF, spacing - 1, spacing - 1, 62, 62);
-        if (HpApi.instance.uid != user.id) {
+        if (HpApi.instance.uid != user.id && !HpApi.instance.isDefault()) {
             var cmd = (user.friendship & 1) != 0 ? "delete" : "create";
             var txt = cmd == "create" ? "添加关注".i18n() : "取消关注".i18n();
             var btn: RoxFlowPane = UiUtil.button(UiUtil.TOP_LEFT, null, txt, 0xFFFFFF, titleFontSize * 0.7, "res/btn_common.9.png", function(e: Dynamic) {

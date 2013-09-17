@@ -43,6 +43,7 @@ class Main {
 //        UIBuilder.regClass("com.weiplus.client.HaxeCamera");
         UIBuilder.saveCodeTo("ui_gencode");
         UIBuilder.regClass("com.weiplus.client.Main");
+        UIBuilder.regClass("com.weiplus.client.ArBox");
         UIBuilder.init("ui/defaults.xml");
         SxAdapter.setupAssets();
         DipUtil.init(640);

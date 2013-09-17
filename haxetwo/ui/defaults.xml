@@ -32,8 +32,11 @@
             format-size      = "(28).dp()"
             format-color     = "0xFFFFFF"
             top="(21).dp()"
-            w="(146).dp()"
+            autoWidth="true"
             h="(66).dp()"
+            paddingLeft="10.dp()"
+            paddingRight="10.dp()"
+            childPadding="10.dp()"
             ico-src="';create(' + (45).dp() + ',' + (45).dp() + ')'"
         />
         <ArFolderButtons
@@ -92,6 +95,12 @@
             h="0"
             left="(320).dp()"
             top="(DipUtil.stageHeightDp / 2).dp()"
+        />
+        <ArBox
+            left="0"
+            top="0"
+            skin:ArBox-borderColor="0xFFFFFF"
+            skin:ArBox-border="3.dp()"
         />
     </Widget>
 

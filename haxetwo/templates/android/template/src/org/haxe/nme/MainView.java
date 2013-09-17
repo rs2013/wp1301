@@ -574,6 +574,16 @@ public class MainView extends GLSurfaceView {
 		return result;
 		
 	}
+
+    @Override
+    public void onPause() {
+
+    }
+
+    @Override
+    public void onResume() {
+
+    }
 	
 	
 	
