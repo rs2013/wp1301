@@ -575,18 +575,6 @@ public class MainView extends GLSurfaceView {
 		
 	}
 
-    @Override
-    public void onPause() {
-
-    }
-
-    @Override
-    public void onResume() {
-
-    }
-	
-	
-	
 	
 	private static class Renderer implements GLSurfaceView.Renderer {
 		

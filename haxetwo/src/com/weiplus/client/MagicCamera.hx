@@ -575,8 +575,7 @@ class MagicCamera extends MakerScreen {
     }
 
     private function onLocal() {
-        requestCode = 1;
-        onHidden();
+        requestCode = 11;
 #if android
         HaxeStub.startGetContent(requestCode, "image/*");
 #else
@@ -585,14 +584,18 @@ class MagicCamera extends MakerScreen {
     }
 
     private function onActive(_) {
+        var str = HaxeStub.getResult(requestCode);
+
         if (requestCode < 0) {
             return;
         }
 #if android
         var s = HaxeStub.getResult(requestCode);
         var json: Dynamic = haxe.Json.parse(s);
+        trace("onActive, resultCode=" + json.resultCode);
         if (untyped json.resultCode != "ok") {
-            reopenCamera();
+            requestCode = -1;
+//            reopenCamera();
             return;
         }
         var path = untyped json.intentDataPath;
@@ -601,7 +604,18 @@ class MagicCamera extends MakerScreen {
         var path = "res/8.jpg";
         var bmd = ResKeeper.loadAssetImage(path);
 #end
+        if (bmd.width * bmd.height > 1000000) { // too large
+            var ratio = Math.sqrt(1000000 / (bmd.width * bmd.height));
+            trace("w="+bmd.width+",h="+bmd.height+",ratio="+ratio);
+            var newbmd = new BitmapData(Std.int(bmd.width * ratio), Std.int(bmd.height * ratio), true, 0);
+            newbmd.copyPixels(bmd, new Rectangle(0, 0, bmd.width, bmd.height), new Point(0, 0));
+            bmd.dispose();
+            bmd = newbmd;
+        }
+
         requestCode = -1;
+        onHidden();
+
         UIBuilder.get("CameraFrame").visible = false;
         UIBuilder.get("CameraPreview").visible = true;
         var bmp: Bmp = UIBuilder.getAs("CameraPreviewBmp", Bmp);

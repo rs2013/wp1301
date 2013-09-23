@@ -26,7 +26,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.widget.RelativeLayout;
 
-public class MainActivity extends org.haxe.nme.GameActivity {
+public class MainActivity extends org.haxe.nme.GameActivity implements SurfaceHolder.Callback {
     
     public CamInfo camInfo;
 
@@ -39,6 +39,7 @@ public class MainActivity extends org.haxe.nme.GameActivity {
     private boolean cameraReady = false;
     
     private Comparator<Size> areaComp = new Comparator<Size>() {
+        
         @Override
         public int compare(Size lhs, Size rhs) {
             return rhs.width * rhs.height - lhs.width * lhs.height;
@@ -48,16 +49,21 @@ public class MainActivity extends org.haxe.nme.GameActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate");
+        getWindow().setFormat(PixelFormat.TRANSLUCENT);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         blank = new SurfaceView(this);
         SurfaceHolder holder = blank.getHolder();
         holder.addCallback(new SurfaceHolder.Callback() {
-            @Override public void surfaceDestroyed(SurfaceHolder holder) { }
+            @Override 
+            public void surfaceDestroyed(SurfaceHolder holder) { }
 
-            @Override public void surfaceCreated(SurfaceHolder holder) { }
+            @Override 
+            public void surfaceCreated(SurfaceHolder holder) { }
 
-            @Override public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            @Override 
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
                 Log.i(TAG, "blank surfaceChanged: w=" + width+",h="+height);
             }
         });
@@ -65,51 +71,119 @@ public class MainActivity extends org.haxe.nme.GameActivity {
         preview = new SurfaceView(this);
         holder = preview.getHolder();
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        holder.addCallback(new SurfaceHolder.Callback() {
-            @Override public void surfaceDestroyed(SurfaceHolder holder) {
-                if (!cameraReady) return;
-                try {
-                    camInfo.camera.stopPreview();
-                    camInfo.camera.release();
-                } catch (Exception e) { }
-            }
-
-            @Override public void surfaceCreated(SurfaceHolder holder) { }
-
-            @Override public void surfaceChanged(final SurfaceHolder holder, int format, final int width, final int height) {
-                Log.i(TAG, "preview surfaceChanged: w=" + width+",h="+height);
-                if (!cameraReady) {
-                    new Thread() {
-                        @Override public void run() {
-                            initCameras(holder, height, width);// width/height reversed for portrait mode
-                        }
-                    }.start();
-                    return;
-                }
-                if (camInfo.isOpen) camInfo.camera.startPreview();
-//                if (width > 1) {
-//                    camInfo.camera.startPreview();
-//                    switchSurface(camInfo.cameraId);
-//                }
-            }
-        });
-
+        holder.addCallback(this);
+        
         previewFrame = new RelativeLayout(this);
-        Display display = getWindowManager().getDefaultDisplay();
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(display.getWidth(), display.getHeight());
-        params.leftMargin = 0;
-        params.topMargin = 0;
-        previewFrame.addView(preview, params);
-        params = new RelativeLayout.LayoutParams(1, 1);
-        params.leftMargin = 0;
-        params.topMargin = 0;
-        previewFrame.addView(blank, params);
+        
+        previewFrame.addView(blank, new LayoutParams(1, 1));
+        previewFrame.addView(preview, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
         
         setContentView(previewFrame, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
         addContentView(mView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
         
     }
     
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume");
+        com.umeng.analytics.MobclickAgent.onResume(this);
+        if (!cameraReady) {
+            return;
+        }
+        
+        previewFrame.removeView(preview);
+        preview = new SurfaceView(this);
+        SurfaceHolder holder = preview.getHolder();
+        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        holder.addCallback(this);
+        RelativeLayout.LayoutParams params = null;
+        if (camInfo.isOpen) {
+            CamParam cp = camInfo.params[camInfo.cameraId];
+            params = new RelativeLayout.LayoutParams(cp.viewWidth, cp.viewHeight);
+            params.leftMargin = 0;
+            params.topMargin = cp.viewTopMargin;
+        } else {
+            params = new RelativeLayout.LayoutParams(1, 1);
+        }
+        previewFrame.addView(preview, params);
+        
+        ((ViewGroup) mView.getParent()).removeView(mView);
+        addContentView(mView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+        mView.setFocusable(true);
+        mView.setFocusableInTouchMode(true);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause");
+        com.umeng.analytics.MobclickAgent.onPause(this);
+        if (cameraReady) {
+            camInfo.camera.stopPreview();
+            camInfo.camera.release();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.i(TAG, "onActivityResult: code=" + requestCode + ",result=" + resultCode + ",data=" + data);
+        super.onActivityResult(requestCode, resultCode, data);
+        if (HpManager.getCandidate() != null) HpManager.getCandidate().onActivityResult(this, requestCode, resultCode, data);
+        HaxeStub.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override 
+    public void surfaceDestroyed(SurfaceHolder holder) {
+    }
+
+    @Override 
+    public void surfaceCreated(SurfaceHolder holder) {
+        Log.i(TAG, "preview surfaceChanged: cameraReady=" + cameraReady);
+        if (!cameraReady) {
+            return;
+        }
+        innerOpen(camInfo.cameraId);
+    }
+
+    @Override 
+    public void surfaceChanged(final SurfaceHolder holder, int format, final int width, final int height) {
+        Log.i(TAG, "preview surfaceChanged: w=" + width+",h="+height);
+        if (!cameraReady) {
+            new Thread() {
+                @Override public void run() {
+                    initCameras(holder, height, width);// width/height reversed for portrait mode
+                }
+            }.start();
+            return;
+        }
+        camInfo.camera.startPreview();
+    }
+    
+    public void openCamera(int cameraId) {
+        if (!cameraReady) return;
+        Log.i(TAG, "openCamera " + cameraId + ": current=" + camInfo.cameraId);
+        if (camInfo.cameraId != cameraId) { // switch camera
+            camInfo.camera.stopPreview();
+            camInfo.camera.release();
+            
+            innerOpen(cameraId);
+            camInfo.cameraId = cameraId;
+        }
+        try {
+            camInfo.camera.startPreview();
+        } catch (Exception ex) {
+            Log.e(TAG, "openCamera, startPreview failed, ex=" + ex);
+        }
+        switchSurface(cameraId);
+    }
+    
+    public void closeCamera() {
+        if (!cameraReady) return;
+        Log.i(TAG, "closeCamera " + camInfo.cameraId);
+        switchSurface(-1);
+    }
+
     /**
      * NOTE: in this method, w must always great than h
      * @param w: pixel distance of the longer side 
@@ -191,7 +265,7 @@ public class MainActivity extends org.haxe.nme.GameActivity {
         }
         
         camInfo.cameraId = 0;
-        if (!innerOpen(0)) return;
+        innerOpen(0);
         
         this.runOnUiThread(new Runnable() {
             @Override public void run() {
@@ -201,32 +275,12 @@ public class MainActivity extends org.haxe.nme.GameActivity {
         cameraReady = true;
     }
     
-    public void openCamera(int cameraId) {
-        if (!cameraReady) return;
-        Log.i(TAG, "openCamera " + cameraId + ": current=" + camInfo.cameraId);
-        if (camInfo.cameraId != cameraId) { // switch camera
-            camInfo.camera.stopPreview();
-            camInfo.camera.release();
-            
-            if (!innerOpen(cameraId)) return;
-        }
-        camInfo.camera.startPreview();
-        switchSurface(cameraId);
-        camInfo.cameraId = cameraId;
-        camInfo.isOpen = true;
-    }
-    
-    public void closeCamera() {
-        if (!cameraReady) return;
-        Log.i(TAG, "closeCamera " + camInfo.cameraId);
-        camInfo.camera.stopPreview();
-        switchSurface(-1);
-        camInfo.isOpen = false;
-    }
-
     private void switchSurface(int cameraId) {
         if (!cameraReady) return;
-        Log.i(TAG, "switchSurface " + cameraId);
+        Log.i(TAG, "switchSurface " + cameraId + ",isopen=" + camInfo.isOpen);
+//        if (camInfo.isOpen && cameraId >= 0 || !camInfo.isOpen && cameraId == -1) {
+//            return;
+//        }
         SurfaceView open = cameraId >= 0 ? preview : blank;
         SurfaceView close = cameraId >= 0 ? blank : preview;
         CamParam cp = cameraId >= 0 ? camInfo.params[cameraId] : null;
@@ -247,15 +301,17 @@ public class MainActivity extends org.haxe.nme.GameActivity {
         
         mView.setFocusable(true);
         mView.setFocusableInTouchMode(true);
+        
+        camInfo.isOpen = cameraId >= 0 ? true : false;
     }
     
-    private boolean innerOpen(int cameraId) {
+    private void innerOpen(int cameraId) {
         Log.i(TAG, "innerOpen: " + cameraId);
         try {
             camInfo.camera = Camera.open(cameraId);
         } catch (Exception ex) {
             Log.e(TAG, "innerOpen: camera in use, ex=" + ex);
-            return false;
+            return;
         }
         camInfo.camera.setParameters(camInfo.params[cameraId].params);
         camInfo.camera.setDisplayOrientation(camInfo.params[cameraId].rotation);
@@ -263,9 +319,7 @@ public class MainActivity extends org.haxe.nme.GameActivity {
             camInfo.camera.setPreviewDisplay(preview.getHolder());
         } catch (IOException e) {
             Log.e(TAG, "openCamera " + cameraId + ", open camera failed, ex=" + e);
-            return false;
         }
-        return true;
     }
 
     /**
@@ -311,46 +365,6 @@ public class MainActivity extends org.haxe.nme.GameActivity {
         d1 = d1 * d1;
         d2 = d2 * d2;
         return d1 < d2 ? -1 : d1 > d2 ? 1 : 0;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.i("MainActivity", "onResume");
-        com.umeng.analytics.MobclickAgent.onResume(this);
-        if (cameraReady) {
-            this.runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-                    innerOpen(camInfo.cameraId);
-                    if (camInfo.isOpen) {
-                        camInfo.camera.startPreview();
-                        switchSurface(camInfo.cameraId);
-                    }
-                }
-                
-            });
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.i("MainActivity", "onPause");
-        com.umeng.analytics.MobclickAgent.onPause(this);
-        if (cameraReady) {
-            if (camInfo.isOpen) camInfo.camera.stopPreview();
-            camInfo.camera.release();
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i("MainActivity", "onActivityResult: code=" + requestCode + ",result=" + resultCode + ",data=" + data);
-        super.onActivityResult(requestCode, resultCode, data);
-        if (HpManager.getCandidate() != null) HpManager.getCandidate().onActivityResult(this, requestCode, resultCode, data);
-        HaxeStub.onActivityResult(requestCode, resultCode, data);
     }
 
 }
