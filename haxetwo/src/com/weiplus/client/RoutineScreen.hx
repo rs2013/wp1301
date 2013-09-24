@@ -371,8 +371,7 @@ class RoutineScreen extends BaseScreen {
     override public function onScreenResult(requestCode: Int, resultCode: Int, resultData: Dynamic) {
         trace("onScreenResult,resultCode=" + resultCode+",data="+resultData+",makerId="+makerId);
         if (requestCode == 223 && resultCode == RoxScreen.OK) {
-            var bmd: BitmapData = cast resultData;
-            startScreen("com.weiplus.apps." + makerId + ".Maker", bmd);
+            startScreen("com.weiplus.apps." + makerId + ".Maker", null, null, 1, resultData);
             MyUtils.makerParentScreen = this.className;
         }
     }

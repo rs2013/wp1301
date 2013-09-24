@@ -24,22 +24,35 @@ class HaxeStub
 		a.push(arg2);
 		_startActivity_func(a);
 	}
-	
-	
-	private static var _startImageCapture_func:Dynamic;
 
-	public static function startImageCapture(arg0:Int, arg1:String):Void
-	{
-		if (_startImageCapture_func == null)
-			_startImageCapture_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startImageCapture", "(ILjava/lang/String;)V", true);
-		var a = new Array<Dynamic>();
-		a.push(arg0);
-		a.push(arg1);
-		_startImageCapture_func(a);
-	}
-	
-	
-	private static var _startHarryCamera_func:Dynamic;
+
+    private static var _startImageCapture_func:Dynamic;
+
+    public static function startImageCapture(arg0:Int, arg1:String):Void
+    {
+        if (_startImageCapture_func == null)
+            _startImageCapture_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startImageCapture", "(ILjava/lang/String;)V", true);
+        var a = new Array<Dynamic>();
+        a.push(arg0);
+        a.push(arg1);
+        _startImageCapture_func(a);
+    }
+
+
+    private static var _startBrowser_func:Dynamic;
+
+    public static function startBrowser(arg0:Int, arg1:String):Void
+    {
+        if (_startBrowser_func == null)
+            _startBrowser_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "startBrowser", "(ILjava/lang/String;)V", true);
+        var a = new Array<Dynamic>();
+        a.push(arg0);
+        a.push(arg1);
+        _startBrowser_func(a);
+    }
+
+
+    private static var _startHarryCamera_func:Dynamic;
 
 	public static function startHarryCamera(arg0:Int):Void
 	{

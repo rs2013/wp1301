@@ -380,7 +380,7 @@ class TimelineScreen extends BaseScreen {
                         cast(main.getChildByName("bottomRefresher"), Refresher).updateText();
                     }
                 } else {
-                    for (p in postits) p.update();
+//                    for (p in postits) p.update();
                 }
             case RoxGestureEvent.GESTURE_SWIPE:
                 var pt = RoxGestureAgent.localOffset(main, cast(new Point(e.extra.x * 2.0, e.extra.y * 2.0)));
@@ -392,7 +392,7 @@ class TimelineScreen extends BaseScreen {
                     main.rox_removeByName("topRefresher");
                     main.rox_removeByName("bottomRefresher");
                 }, tm);
-                UiUtil.delay(function() for (p in postits) p.update(), tm * 0.5);
+                UiUtil.delay(function() { for (p in postits) p.update(); }, tm * 0.5);
             case RoxGestureEvent.GESTURE_PINCH:
                 if (compactMode) return;
 //                trace("pinch:numCol=" + numCol + ",extra=" + e.extra);
@@ -561,8 +561,8 @@ class TimelineScreen extends BaseScreen {
     override public function onScreenResult(requestCode: Int, resultCode: Int, resultData: Dynamic) {
         trace("onScreenResult,resultCode=" + resultCode+",data="+resultData+",makerId="+makerId);
         if (requestCode == 223 && resultCode == RoxScreen.OK) {
-            var bmd: BitmapData = cast resultData;
-            startScreen("com.weiplus.apps." + makerId + ".Maker", bmd);
+            trace("resultdata=" + resultData);
+            startScreen("com.weiplus.apps." + makerId + ".Maker", null, null, 1, resultData);
             MyUtils.makerParentScreen = this.className;
         } else if (requestCode == 12346 && resultCode == RoxScreen.OK) {
             UiUtil.delay(finish.bind(SCREEN(Type.getClassName(HomeScreen)), null, RoxScreen.CANCELED, null));

@@ -42,7 +42,7 @@ class Maker extends SimpleMaker {
         }
         img = new BitmapData(w, w, true, 0);
         img.draw(shape);
-        this.image = { path: null, bmd: img };
+        this.image = { path: null, bmd: img, tags: imageTags };
         var appdata: AppData = status.appData;
         appdata.width = w;
         appdata.height = w;

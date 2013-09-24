@@ -55,6 +55,7 @@ using com.roxstudio.haxe.game.GfxUtil;
 using com.roxstudio.haxe.ui.UiUtil;
 using com.roxstudio.haxe.ui.DipUtil;
 using com.roxstudio.i18n.I18n;
+using StringTools;
 
 class MagicCamera extends MakerScreen {
 
@@ -86,19 +87,60 @@ class MagicCamera extends MakerScreen {
             var ang = Math.atan2(pt.y, pt.x);
             var delta = (ang - oang + Math.PI * 2) % (Math.PI * 2);
 //            if (delta > Math.PI * 0.25 && delta < Math.PI * 0.75 || delta > Math.PI * 1.25 && delta < Math.PI * 1.75) { // rotate
-                var sdist = pt.length * Math.sin(delta);
-                var angle = Math.atan2(sdist, Point.distance(center, opt));
-                var evt = new RoxGestureEvent(RoxGestureEvent.GESTURE_ROTATION, 0, 0, center.x, center.y, 0, null, angle);
+            var sdist = pt.length * Math.sin(delta);
+            var angle = Math.atan2(sdist, Point.distance(center, opt));
+            var evt = new RoxGestureEvent(RoxGestureEvent.GESTURE_ROTATION, 0, 0, center.x, center.y, 0, null, angle);
 //                trace("rot:c="+center+",delta="+delta+",dist="+dist+",angle="+angle);
-                handleEvent(evt, currentAr);
+            handleEvent(evt, currentAr);
 //            } else { // scale
-                var cdist = pt.length * Math.cos(delta);
-                var co = Point.distance(center, opt);
-                var scale = (cdist + co) / co;
-                var evt = new RoxGestureEvent(RoxGestureEvent.GESTURE_PINCH, 0, 0, center.x, center.y, 0, null, scale);
+            var cdist = pt.length * Math.cos(delta);
+            var co = Point.distance(center, opt);
+            var scale = (cdist + co) / co;
+            var evt = new RoxGestureEvent(RoxGestureEvent.GESTURE_PINCH, 0, 0, center.x, center.y, 0, null, scale);
 //                trace("scl:c="+center+",delta="+delta+",dist="+dist+",scale="+scale);
-                handleEvent(evt, currentAr);
+            handleEvent(evt, currentAr);
 //            }
+        });
+
+        var cropBox = UIBuilder.get("CropBox");
+        agent = new RoxGestureAgent(cropBox);
+        cropBox.addEventListener(RoxGestureEvent.GESTURE_PAN, function(e: RoxGestureEvent) {
+            if (e.target != cropBox) {
+                return; // discard bubbled event
+            }
+//            trace("cropbox pan=" + e.extra);
+            var pt: Point = cast e.extra;
+            var box = UIBuilder.get("CropBox");
+            if (!box.visible) return;
+
+            var bmp: Bmp = UIBuilder.getAs("CameraPreviewBmp", Bmp);
+            var bmpw = bmp.bitmapData.width * bmp.scaleX;
+            var bmph = bmp.bitmapData.height * bmp.scaleY;
+            box.left += pt.x;
+            if (box.left < 0) box.left = 0;
+            if (box.left > bmpw - box.w) box.left = bmpw - box.w;
+            box.top += pt.y;
+            if (box.top < bmp.top) box.top = bmp.top;
+            if (box.top > bmp.top + bmph - box.h) box.top = bmp.top + bmph - box.h;
+        });
+
+        var cropCtrl = UIBuilder.get("CropBoxCtrl");
+        agent = new RoxGestureAgent(cropCtrl, RoxGestureAgent.GESTURE_CAPTURE);
+        cropCtrl.addEventListener(RoxGestureEvent.GESTURE_PAN, function(e: RoxGestureEvent) {
+//            trace("cropCtrl pan=" + e.extra);
+            var pt: Point = cast e.extra;
+            var box = UIBuilder.get("CropBox");
+            if (!box.visible) return;
+
+            var bmp: Bmp = UIBuilder.getAs("CameraPreviewBmp", Bmp);
+            var bmpw = bmp.bitmapData.width * bmp.scaleX;
+            var bmph = bmp.bitmapData.height * bmp.scaleY;
+            box.w += pt.x;
+            if (box.w < bmpw / 2) box.w = bmpw / 2;
+            if (box.w > bmpw - box.left) box.w = bmpw - box.left;
+            box.h += pt.y;
+            if (box.h < bmph / 2) box.h = bmph / 2;
+            if (box.h > bmp.top + bmph - box.top) box.h = bmp.top + bmph - box.top;
         });
 
         showFolder();
@@ -159,8 +201,22 @@ class MagicCamera extends MakerScreen {
         if (updateCacheOnly) return;
 
         var folderList: HBox = UIBuilder.getAs("folderList", HBox);
-        if (folderList == null) return; // screen freed
+        if (folderList == null || folderList.destroyed) return; // screen freed
         folderList.rox_removeAll();
+
+        var localbtn: Button = UIBuilder.create(Button, { defaults: "ArFolderButtons" });
+        localbtn.ico = new Bmp();
+        localbtn.ico.bitmapData = BmdUtil.transform(ResKeeper.getAssetImage("res/icon_local_album.png"), "resize", [ (100).dp(), (100).dp(), BmdUtil.RESIZE_USE_MARGIN ]);
+        localbtn.addEventListener(MouseEvent.CLICK, function(_) {
+            requestCode = 12;
+#if android
+            HaxeStub.startGetContent(requestCode, "image/*");
+#else
+            onActive(null);
+#end
+        });
+        localbtn.refresh();
+        folderList.addChild(localbtn);
 
         for (c in cast(data.catalogs.records, Array<Dynamic>)) {
 //            w="(140).dp()" h="(140).dp()" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'folder'" />
@@ -187,6 +243,7 @@ class MagicCamera extends MakerScreen {
                     trace("load AR folder failed, id=" + c.id + ",url=" + c.icon);
                     return;
                 }
+                if (folder.destroyed) return;
                 folder.ico = new Bmp();
                 folder.ico.bitmapData = BmdUtil.transform(bmd, "resize", [ (132).dp(), (132).dp(), BmdUtil.RESIZE_USE_MARGIN ]);
                 folder.refresh();
@@ -207,7 +264,7 @@ class MagicCamera extends MakerScreen {
         if (updateCacheOnly) return;
 
         var folderList: HBox = UIBuilder.getAs("folderList", HBox);
-        if (folderList == null) return; // screen freed
+        if (folderList == null || folderList.destroyed) return; // screen freed
         folderList.rox_removeAll();
         var canvas = UIBuilder.get("CameraCanvas");
 
@@ -227,38 +284,38 @@ class MagicCamera extends MakerScreen {
 //            w="(140).dp()" h="(140).dp()" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'folder'" />
             var btn: Button = UIBuilder.create(Button, {
                 defaults: "ArFolderButtons",
-                text: "",
-                userData: { id: c.id, url: c.image }
+                text: ""
             });
+            var descr: String = c.description;
+            var arr: Array<String> = descr != null ? descr.split(" ") : [];
+            var tags: Array<String> = [];
+            var goType = 0, goUrl = "";
+            for (s in arr) {
+                var low = s.toLowerCase();
+                if (low.startsWith("url:")) {
+                    goType = 1;
+                    goUrl = s.substr(4).trim();
+                    tags.push(goUrl);
+                } else if (low.startsWith("shop:")) {
+                    goType = 2;
+                    goUrl = s.substr(5).trim();
+                    tags.push(goUrl);
+                } else if (low.startsWith("@")) {
+                    tags.push(s);
+                }
+            }
+            btn.userData = { id: c.id, url: c.image, goType: goType, goUrl: goUrl, tags: tags };
+
             var bundleId = "ar_folder_" + currentCid;
             MyUtils.asyncArImage(c.image, function(bmd) {
                 if (bmd == null || bmd.width == 0) {
                     trace("load AR failed, id=" + c.id + ",url=" + c.image);
                     return;
                 }
+                if (btn.destroyed) return;
                 btn.ico = new Bmp();
                 btn.ico.bitmapData = BmdUtil.transform(bmd, "resize", [ (132).dp(), (132).dp(), BmdUtil.RESIZE_USE_MARGIN ]);
-                btn.addEventListener(MouseEvent.CLICK, function(_) {
-                    var sp = new Sprite();
-                    sp.graphics.rox_drawRegion(bmd, null, 0, 0);
-                    sp.rox_scale(DipUtil.dpFactor);
-                    var obj: Widget = UIBuilder.create(Widget, { defaults: "ArObject" });
-                    obj.addChild(sp);
-                    obj.top += (-bmd.height / 2) * DipUtil.dpFactor;
-                    obj.left += (-bmd.width / 2) * DipUtil.dpFactor;
-                    obj.userData = bmd;
-                    var agent = new RoxGestureAgent(obj);
-                    obj.addEventListener(RoxGestureEvent.GESTURE_ROTATION, handleEvent.bind(_, null));
-                    obj.addEventListener(RoxGestureEvent.GESTURE_PINCH, handleEvent.bind(_, null));
-                    obj.addEventListener(RoxGestureEvent.GESTURE_PAN, handleEvent.bind(_, null));
-//                    obj.addEventListener(RoxGestureEvent.GESTURE_LONG_PRESS, handleEvent);
-                    sp.addEventListener(MouseEvent.MOUSE_DOWN, function(e) {
-                        currentAr = e.target.parent;
-                        updateArBox();
-                    });
-//                    obj.addEventListener(DndEvent.DROP, function(e) { e.drop(); });
-                    canvas.addChild(obj);
-                });
+                btn.addEventListener(MouseEvent.CLICK, addAr.bind(_, canvas, bmd, btn.userData));
                 btn.refresh();
             }, bundleId);
             folderList.addChild(btn);
@@ -267,6 +324,36 @@ class MagicCamera extends MakerScreen {
         scroll.tweenStop();
         scroll.scrollX = 0;
 
+    }
+
+    private function addAr(_, canvas: Widget, bmd: BitmapData, userData: Dynamic) {
+        var sp = new Sprite();
+        sp.graphics.rox_drawRegion(bmd, null, 0, 0);
+        var maxw = 580;
+        var maxh = DipUtil.stageHeightDp - 400;
+        var wr = maxw / bmd.width, hr = maxh / bmd.height;
+        var r = Math.min(1, Math.min(wr, hr));
+        sp.rox_scale(DipUtil.dpFactor * r);
+//        trace("bmd="+bmd.width+","+bmd.height+",mh="+maxh+",wr="+wr+",hr="+hr+",r="+r);
+        var obj: Widget = UIBuilder.create(Widget, { defaults: "ArObject" });
+        obj.addChild(sp);
+        obj.top += (-bmd.height / 2) * DipUtil.dpFactor;
+        obj.left += (-bmd.width / 2) * DipUtil.dpFactor;
+        obj.userData = userData;
+        obj.userData.bmd = bmd;
+        var agent = new RoxGestureAgent(obj);
+        obj.addEventListener(RoxGestureEvent.GESTURE_ROTATION, handleEvent.bind(_, null));
+        obj.addEventListener(RoxGestureEvent.GESTURE_PINCH, handleEvent.bind(_, null));
+        obj.addEventListener(RoxGestureEvent.GESTURE_PAN, handleEvent.bind(_, null));
+//                    obj.addEventListener(RoxGestureEvent.GESTURE_LONG_PRESS, handleEvent);
+        sp.addEventListener(MouseEvent.MOUSE_DOWN, function(e) {
+            currentAr = e.target.parent;
+            updateArBox();
+        });
+//                    obj.addEventListener(DndEvent.DROP, function(e) { e.drop(); });
+        canvas.addChild(obj);
+        currentAr = obj;
+        updateArBox();
     }
 
     private function restoreCache(filename: String) : Dynamic {
@@ -296,6 +383,13 @@ class MagicCamera extends MakerScreen {
         arbox.top = rect.y;
         arbox.w = rect.width;
         arbox.h = rect.height;
+
+        var arboxInfo: Button = UIBuilder.getAs("ArBoxInfo", Button);
+        arboxInfo.visible = currentAr.userData.goType != 0;
+        cast(arboxInfo.skin, Img).src = currentAr.userData.goType == 1 ? "res/ar_obj_inf.png".dpScale() : "res/ar_obj_buy.png".dpScale();
+//        trace("gotype=" + currentAr.userData.goType + ",skin.src="+ cast(arboxInfo.skin, Img).src);
+        arboxInfo.refresh();
+
         var parent = arbox.parent;
         parent.swapChildren(currentAr, parent.getChildAt(parent.numChildren - 2));
         parent.swapChildren(arbox, parent.getChildAt(parent.numChildren - 1));
@@ -358,15 +452,6 @@ class MagicCamera extends MakerScreen {
 //        updateBounds(obj);
     }
 
-    private function updateBounds(obj: Widget) {
-//        var bound: Shape = obj.numChildren > 1 ? cast(obj.getChildAt(obj.numChildren - 1), Shape) : new Shape();
-//        var rect = obj.getChildAt(0).getRect(flash.Lib.current.stage);
-//        trace("rect=" + rect.x + "," + rect.y+","+rect.width+","+rect.height);
-//        bound.graphics.clear();
-//        bound.graphics.rox_drawRect(2, 0xFFFFFFFF, rect.x - obj.x, rect.y - obj.y, rect.width, rect.height);
-//        obj.addChild(bound);
-    }
-
     override public function drawBackground() { // suppress drawing default background
     }
 
@@ -417,21 +502,21 @@ class MagicCamera extends MakerScreen {
         var modeNames = [ "auto" => "自动".i18n(), "on" => "开启".i18n(), "off" => "关闭".i18n() ];
         var modes: Array<String> = #if android HaxeCamera.getFlashModes() #else [ "auto", "on", "off" ] #end;
         var btn: StateButton = UIBuilder.getAs('btnFlash', StateButton);
-        trace("btnFlash=" +  btn + ",visible=" + btn.visible + ",modes=" + modes);
+//        trace("btnFlash=" +  btn + ",visible=" + btn.visible + ",modes=" + modes);
         if (modes.length > 1) {
             btn.order = modes;
-            trace("modes=" + modes);
+//            trace("modes=" + modes);
 //            btn.states = new ru.stablex.DynamicList(BtnState);
             for (m in btn.order) {
                 btn.states.resolve(m).text = modeNames.get(m);
-                trace("m=" + m + ",txt=" + btn.states.resolve(m).text);
+//                trace("m=" + m + ",txt=" + btn.states.resolve(m).text);
             }
             btn.state = modes[0];
             btn.visible = true;
         } else {
             btn.visible = false;
         }
-        trace("btnFlash=" +  btn + ",visible=" + btn.visible + ",state=" + btn.state);
+//        trace("btnFlash=" +  btn + ",visible=" + btn.visible + ",state=" + btn.state);
 //#if android
 //        HaxeCamera.openCamera(HaxeCamera.getCurrentCameraId(), this, "dummy"); // ensure camera is opened
 //#end
@@ -517,6 +602,7 @@ class MagicCamera extends MakerScreen {
         bmp.top = (screenHeight - (bmd.height * bmp.scaleX)) / 2;
         bmp.refresh();
         UIBuilder.get("CameraFrame2").visible = true;
+        UIBuilder.get("CropButton").visible = true;
         trace("end snapped");
     }
 
@@ -527,14 +613,20 @@ class MagicCamera extends MakerScreen {
         var scale = bmp.scaleX;
         var offy = bmp.top / scale;
         var canvas = UIBuilder.get("CameraCanvas");
-        trace("bmd: scale="+scale+",offy="+offy);
+//        trace("bmd: scale="+scale+",offy="+offy);
         var bmd = new BitmapData(origbmd.width, origbmd.height, true, 0);
         bmd.copyPixels(origbmd, new Rectangle(0, 0, origbmd.width, origbmd.height), new Point(0, 0));
+
+        var tags = new Map<String, Int>();
+
         for (i in 0...canvas.numChildren) {
             var arobj = cast(canvas.getChildAt(i), Widget);
             if (arobj.defaults != "ArObject") continue;
+            var tt: Array<String> = arobj.userData.tags;
+            for (t in tt) tags.set(t, 1);
+
             var arsp = arobj.getChildAt(0);
-            var arbmd: BitmapData = cast arobj.userData;
+            var arbmd: BitmapData = cast arobj.userData.bmd;
             var arscalex = arsp.scaleX / scale, arscaley = arsp.scaleY / scale;
             var arangle = arscalex > 0 ? arsp.rotation : -arsp.rotation;
             var dx = arobj.left / scale;
@@ -546,15 +638,33 @@ class MagicCamera extends MakerScreen {
             trace("ar["+i+"]: arscx=" + arsp.scaleX + ",arscale="+arscalex+","+arscaley+",arangle="+arangle+",dx="+dx+",dy="+dy);
             bmd.draw(arbmd, mat, true);
         }
+
+        var cropbox = UIBuilder.get("CropBox");
+        if (cropbox.visible) {
+            trace("do crop");
+            var cx = cropbox.left / scale, cy = cropbox.top / scale - offy, cw = cropbox.w / scale, ch = cropbox.h / scale;
+            if (cx < 0) cx = 0;
+            if (cy < 0) cy = 0;
+            if (cw > bmd.width - cx) cw = bmd.width - cx;
+            if (ch > bmd.height - cy) ch = bmd.height - cy;
+            trace("crop=" + cx +"," + cy +"," + cw +"," + ch);
+            var newbmd = new BitmapData(Std.int(cw), Std.int(ch), true, 0);
+            newbmd.copyPixels(bmd, new Rectangle(cx, cy, cw, ch), new Point(0, 0));
+            bmd.dispose();
+            bmd = newbmd;
+        }
 //#if cpp
 //        var name = "bbb_" + Std.random(10000) + ".jpg";
 //        sys.io.File.saveBytes(#if android "/sdcard/" + name #else name #end, GameUtil.encodeJpeg(bmd));
 //#end
+        var tagsArr: Array<String> = [];
+        for (t in tags.keys()) tagsArr.push(t);
+
+        image = { path: null, bmd: bmd, tags: tagsArr };
         if (getBmd) {
-            finish(RoxAnimate.NO_ANIMATE, RoxScreen.OK, bmd);
+            finish(RoxAnimate.NO_ANIMATE, RoxScreen.OK, image);
             trace("MagicCamera finish: OK");
         } else {
-            image = { path: null, bmd: bmd };
             var appdata: AppData = status.appData;
             appdata.width = image.bmd.width;
             appdata.height = image.bmd.height;
@@ -571,6 +681,9 @@ class MagicCamera extends MakerScreen {
         UIBuilder.get("CameraFrame").visible = true;
         UIBuilder.get("CameraPreview").visible = false;
         UIBuilder.get("CameraFrame2").visible = false;
+        UIBuilder.get("CropButton").visible = false;
+        UIBuilder.get("CropBox").visible = false;
+        UIBuilder.get("ArSelect").visible = true;
         reopenCamera();
     }
 
@@ -584,15 +697,17 @@ class MagicCamera extends MakerScreen {
     }
 
     private function onActive(_) {
-        var str = HaxeStub.getResult(requestCode);
-
+#if android
+        trace("onActive, requestCode=" + requestCode + ",resultData=" + HaxeStub.getResult(requestCode));
+#else
+        trace("onActive, requestCode=" + requestCode);
+#end
         if (requestCode < 0) {
             return;
         }
 #if android
         var s = HaxeStub.getResult(requestCode);
         var json: Dynamic = haxe.Json.parse(s);
-        trace("onActive, resultCode=" + json.resultCode);
         if (untyped json.resultCode != "ok") {
             requestCode = -1;
 //            reopenCamera();
@@ -606,26 +721,49 @@ class MagicCamera extends MakerScreen {
 #end
         if (bmd.width * bmd.height > 1000000) { // too large
             var ratio = Math.sqrt(1000000 / (bmd.width * bmd.height));
-            trace("w="+bmd.width+",h="+bmd.height+",ratio="+ratio);
             var newbmd = new BitmapData(Std.int(bmd.width * ratio), Std.int(bmd.height * ratio), true, 0);
             newbmd.copyPixels(bmd, new Rectangle(0, 0, bmd.width, bmd.height), new Point(0, 0));
             bmd.dispose();
             bmd = newbmd;
         }
+        switch (requestCode) {
+        case 11:
 
+            onHidden();
+
+            UIBuilder.get("CameraFrame").visible = false;
+            UIBuilder.get("CameraPreview").visible = true;
+            var bmp: Bmp = UIBuilder.getAs("CameraPreviewBmp", Bmp);
+            bmp.bitmapData = bmd;
+            bmp.userData = path;
+            bmp.smooth = true;
+            bmp.scaleX = bmp.scaleY = screenWidth / bmd.width;
+            bmp.top = (screenHeight - (bmd.height * bmp.scaleX)) / 2;
+            bmp.refresh();
+            UIBuilder.get("CameraFrame2").visible = true;
+            UIBuilder.get("CropButton").visible = true;
+        case 12:
+            var tags: Array<String> = [];
+            addAr(null, UIBuilder.get("CameraCanvas"), bmd, { goType: 0, goUrl: "", tags: tags });
+        }
         requestCode = -1;
-        onHidden();
+    }
 
-        UIBuilder.get("CameraFrame").visible = false;
-        UIBuilder.get("CameraPreview").visible = true;
+    private function openBrowser(url: String) {
+        trace("openBrowser: " + url);
+#if android
+        HaxeStub.startBrowser(10, url);
+#end
+    }
+
+    private function resetCropBox() {
         var bmp: Bmp = UIBuilder.getAs("CameraPreviewBmp", Bmp);
-        bmp.bitmapData = bmd;
-        bmp.userData = path;
-        bmp.smooth = true;
-        bmp.scaleX = bmp.scaleY = screenWidth / bmd.width;
-        bmp.top = (screenHeight - (bmd.height * bmp.scaleX)) / 2;
-        bmp.refresh();
-        UIBuilder.get("CameraFrame2").visible = true;
+        var cropBox = UIBuilder.get("CropBox");
+        cropBox.top = bmp.top + (40).dp();
+        cropBox.left = (40).dp();
+        cropBox.w = (560).dp();
+        cropBox.h = (bmp.bitmapData.height * bmp.scaleY) - (80).dp();
+
     }
 
 }

@@ -41,6 +41,7 @@ class PostScreen extends BaseScreen {
     var input: TextField;
     var main: Sprite;
     var useBinds: Hash<Bool>;
+    private var tagStr = "";
 
     override public function onCreate() {
         title = new Sprite();
@@ -105,9 +106,13 @@ class PostScreen extends BaseScreen {
         image = makerData.image.bmd;
         data = makerData.data;
 //        trace("PostScreen: image.w=" + image.width + ",h=" + image.height);
-        input.text = status.appData.type == "image" ?
-            "我用#哈利波图#拍了一张有趣的照片，快来看看吧！".i18n() :
-            "我用#哈利波图#制作了一个很酷的游戏，快来玩吧！".i18n();
+        var tags: Array<String> = makerData.image.tags;
+        tagStr = "";
+
+        if (tags != null) {
+            for (s in tags) tagStr += " " + s;
+        }
+        input.text = "#哈利波图#".i18n();
         if (status.user != null && status.text != null) { // it's retweet
             input.text = "//@" + status.user.name + " " + status.text;
         }
@@ -152,7 +157,7 @@ class PostScreen extends BaseScreen {
         if (HpApi.instance.isDefault()) {
             var dialog: Floating = null;
             dialog = cast UIBuilder.buildFn("ui/confirm_dialog.xml")( {
-                    title: "登录哈利波图".i18n(), message: "您尚未登录，您可以使用自己常用的社交账户登录后发布，或者直接使用哈利波图公共账户继续发布。".i18n(),
+                    title: "登录哈利波图".i18n(), message: "请登录或使用公共账户继续。".i18n(),
                     okButtonText: "登录".i18n(), cancelButtonText: "继续".i18n(),
                     onOk: function() { startScreen(Type.getClassName(LoginScreen), 12346); dialog.free(); },
                     onCancel: function() { dialog.free(); startPost(); }
@@ -176,7 +181,7 @@ class PostScreen extends BaseScreen {
         for (t in useBinds.keys()) {
             if (useBinds.get(t)) types.push(t);
         }
-        HpManager.postStatus(types, input.text, imgPath, status.appData.type, zipPath, "", "", this);
+        HpManager.postStatus(types, input.text + tagStr, imgPath, status.appData.type, zipPath, "", "", this);
 #else
         onApiCallback("statuses_create", "ok", "");
 #end

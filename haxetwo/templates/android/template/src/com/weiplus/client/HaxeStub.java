@@ -106,8 +106,22 @@ public class HaxeStub {
             }
         });
     }
-    
-//    public static void startHarryCamera(final int requestCode) {
+
+    public static void startBrowser(final int requestCode, final String url) {
+        Log.i(TAG, "startBrowser " + url);
+        final Activity activity = MainActivity.getInstance();
+        activity.runOnUiThread(new Runnable() {
+            @Override public void run() {
+                Intent intent = new Intent();
+                intent.setAction("android.intent.action.VIEW");
+                Uri content_url = Uri.parse(url);
+                intent.setData(content_url);
+                activity.startActivity(intent);
+            }
+        });
+    }
+
+    //    public static void startHarryCamera(final int requestCode) {
 //        Log.i(TAG, "startHarryCamera");
 //        final Activity activity = MainActivity.getInstance(); 
 //        activity.runOnUiThread(new Runnable() {

@@ -60,7 +60,7 @@ class Maker extends SimpleMaker {
         shape.graphics.rox_drawRegion(ResKeeper.loadAssetImage("res/jigsaw_mask.png"), 0, 0, w, w);
         img = new BitmapData(w, w, true, 0);
         img.draw(shape);
-        this.image = { path: null, bmd: img };
+        this.image = { path: null, bmd: img, tags: imageTags };
         var appdata: AppData = status.appData;
         appdata.width = w;
         appdata.height = w;

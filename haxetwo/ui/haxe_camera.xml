@@ -8,7 +8,6 @@
 
     <Widget id="'CameraCanvas'" widthPt="100" heightPt="100" skin:Paint-color="0" skin:Paint-alpha="0.01"
             on-click="
-            trace('target='+event.target+',this='+$this);
             if (event.target != $this) return; currentAr = null; #ArBox.visible = false;
             ">
         <!--<Widget defaults="ArObject"/>-->
@@ -19,6 +18,11 @@
                     #CameraCanvas.removeChild(currentAr);
                     #ArBox.visible = false;
                     "/>
+            <Button id="'ArBoxInfo'"
+                    skin:Img-src="'res/ar_obj_buy.png'.dpScale()" right="-30.dp()" top="-30.dp()" visible="false"
+                    on-click="
+                    openBrowser(currentAr.userData.goUrl);
+                    "/>
             <Button skin:Img-src="'res/ar_obj_mir.png'.dpScale()" left="-30.dp()" bottom="-30.dp()"
                     on-click="
                     var obj = cast(currentAr.getChildAt(0), Sprite);
@@ -27,7 +31,8 @@
                     currentAr.x += obj.scaleX < 0 ? dx : -dx;
                     updateArBox();
                     "/>
-            <Button id="'ArBoxCtrl'" skin:Img-src="'res/ar_obj_rot.png'.dpScale()" right="-40.dp()" bottom="-40.dp()" />
+            <Button id="'ArBoxCtrl'"
+                    skin:Img-src="'res/ar_obj_rot.png'.dpScale()" right="-40.dp()" bottom="-40.dp()" />
         </Widget>
         <!--
                 <VBox id="'ArObjectMenu'" w="(240).dp()" autoHeight="true" padding="(15).dp()" childPadding="(5).dp()"
@@ -100,7 +105,7 @@
         <Widget bottom="0" widthPt="100" h="(110).dp()" skin:Img-src="'res/camera_bottom.png'.dpScale()" >
             <Button id="'btnLocal'" text="''"
                     left="50.dp()" top="22.dp()" w="100.dp()" h="66.dp()"
-                    ico-src="'res/btn_camera_album.png'.dpScale()"
+                    ico:LazyBmp-src="'res/btn_camera_album.png'.dpScale()"
                     on-click="trace('open album'); onLocal();"
                     />
             <Button id="'btnSnap'" text="''"
@@ -132,7 +137,31 @@
 
     <Widget id="'CameraFrame3'" widthPt="100" heightPt="100">
 
-        <Scroll bottom="110.dp()" widthPt="100" h="(180).dp()" vScroll="false" hBar="null" vBar="null">
+        <Button id="'CropButton'" text="'裁剪'.i18n()" defaults="'CameraTopButtons'" visible="false"
+                top="10.dp()" right="20.dp()"
+                on-click="
+                #CropButton.visible = false;
+                #CropBox.visible = true;
+                #ArSelect.visible = false;
+                currentAr = null;
+                #ArBox.visible = false;
+                resetCropBox();
+                "/>
+
+        <Widget id="'CropBox'" visible="false"
+                skin:ArBox-borderColor="0x00FF00" skin:ArBox-border="5.dp()" skin:ArBox-color="0xFFFFFF" skin:ArBox-alpha="0.2"
+                left="100" top="100" w="200" h="200">
+            <Button skin:Img-src="'res/ar_obj_del.png'.dpScale()" left="-30.dp()" top="-30.dp()"
+                    on-click="
+                    #CropButton.visible = true;
+                    #CropBox.visible = false;
+                    #ArSelect.visible = true;
+                    "/>
+            <Button id="'CropBoxCtrl'"
+                    skin:Img-src="'res/ar_obj_rot.png'.dpScale()" right="-40.dp()" bottom="-40.dp()" />
+        </Widget>
+
+        <Scroll id="'ArSelect'" bottom="110.dp()" widthPt="100" h="(180).dp()" vScroll="false" hBar="null" vBar="null">
             <HBox id="'folderList'" autoWidth="true" h="(180).dp()" padding="(10).dp()" skin:Paint-color="0" skin:Paint-alpha="0.3">
                 <!--<Button defaults="'ArFolderButtons'" text="'folder'" />-->
             </HBox>

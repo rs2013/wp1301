@@ -27,6 +27,7 @@ import nme.text.TextField;
 
 using com.roxstudio.haxe.game.GfxUtil;
 using com.roxstudio.haxe.ui.UiUtil;
+using StringTools;
 
 class Postit extends Sprite {
 
@@ -54,6 +55,8 @@ class Postit extends Sprite {
     private var head: Sprite;
     private var imh: Float;
     private var shown: Bool = false;
+
+    private static var ptnUrl = ~/http[s]?:\/\/[^ $]+/i;
 
     public function new(inStatus: Status, width: Float, mode: Int) {
         super();
@@ -170,7 +173,12 @@ class Postit extends Sprite {
             h += margin;
             var bub = UiUtil.bitmap("res/icon_bubble.png");
             layout = new RoxNinePatchData(new Rectangle(margin, 0, 20, 20), null, null, new Rectangle(0, 0, 20 + 2 * margin, 20 + margin));
-            var txt = status.user.id == HpApi.instance.uid || status.mark <= 100 ? status.text : "此条微博已经被设置为私有";
+            var txt: String = status.user.id == HpApi.instance.uid || status.mark <= 100 ? status.text : "此条微博已经被设置为私有";
+            if (ptnUrl.match(txt)) {
+                trace("remove before: " + txt);
+                txt = ptnUrl.replace(txt, "");
+                trace("remove after: " + txt);
+            }
             var texth: Null<Float> = mode == FULL ? null : fontsize * 2.8;
             var text = UiUtil.staticText(txt, 0, fontsize, true, width - bub.width - 4 - 2 * layout.contentGrid.x, texth);
             var imageLabel = new RoxFlowPane([ bub, text ], new RoxNinePatch(layout), UiUtil.TOP, [ 4 ]);

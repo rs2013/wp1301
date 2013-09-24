@@ -44,6 +44,7 @@ class Main {
         UIBuilder.saveCodeTo("ui_gencode");
         UIBuilder.regClass("com.weiplus.client.Main");
         UIBuilder.regClass("com.weiplus.client.ArBox");
+        UIBuilder.regClass("com.weiplus.client.LazyBmp");
         UIBuilder.init("ui/defaults.xml");
         SxAdapter.setupAssets();
         DipUtil.init(640);

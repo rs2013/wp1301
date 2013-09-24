@@ -30,7 +30,7 @@ class MakerScreen extends BaseScreen {
 
     public var btnNextStep: RoxFlowPane;
     public var status: Status;
-    public var image: { var bmd: BitmapData; var path: String; }; // appData.image
+    public var image: { bmd: BitmapData, path: String, tags: Array<String> }; // appData.image
     public var data: Dynamic; // to be stored in the zip with filename "data.json", the image members will be encoded to jpeg format
 
 #if android

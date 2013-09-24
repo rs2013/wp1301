@@ -1,9 +1,8 @@
 package com.weiplus.client;
 
-import com.roxstudio.haxe.ui.DipUtil;
+import ru.stablex.ui.skins.Paint;
 import flash.geom.Point;
 import flash.display.Graphics;
-import ru.stablex.ui.skins.Rect;
 import ru.stablex.ui.widgets.Widget;
 
 
@@ -11,7 +10,7 @@ import ru.stablex.ui.widgets.Widget;
 * Fill widget with color
 *
 */
-class ArBox extends Rect {
+class ArBox extends Paint {
 
     private static inline var DASH_LEN = 6;
 
@@ -21,6 +20,12 @@ class ArBox extends Rect {
 
 //if size is wrong, draw nothing
         if( width <= 0 || height <= 0 ) return;
+
+        if( this.color >= 0 ){
+            w.graphics.beginFill(this.color, this.alpha);
+            w.graphics.drawRect(this.paddingLeft, this.paddingTop, width, height);
+            w.graphics.endFill();
+        }
 
         var border = Math.max(this.border, 1);
         w.graphics.lineStyle(border, this.borderColor, this.borderAlpha);
@@ -49,4 +54,4 @@ class ArBox extends Rect {
             g.lineTo(x2, y2);
         }
     }
-}//class Paint
+}

@@ -35,6 +35,7 @@ class SimpleMaker extends MakerScreen {
     private var level: Int = 0;
     private var preview: Sprite;
     private var snapPath: String;
+    private var imageTags: Array<String>;
 
     override public function createContent(height: Float) : Sprite {
         content = super.createContent(height);
@@ -79,7 +80,9 @@ class SimpleMaker extends MakerScreen {
 //    }
 //
     override public function onNewRequest(inData: Dynamic) {
-        var bmd: BitmapData = cast inData;
+        trace("indata=" + inData);
+        var bmd: BitmapData = inData.bmd;
+        imageTags = inData.tags;
         var stdbmd = new BitmapData(SIDELEN, SIDELEN, true, 0);
         untyped data.image = stdbmd;
         var sc: Float = GameUtil.max(SIDELEN / bmd.width, SIDELEN / bmd.height);
