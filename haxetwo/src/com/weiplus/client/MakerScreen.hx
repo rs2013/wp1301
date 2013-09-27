@@ -63,7 +63,7 @@ class MakerScreen extends BaseScreen {
         GameUtil.worker.addJob(new SimpleJob<Dynamic>(null, packData, function(_) {
             removeChildAt(numChildren - 1);
             startScreen(Type.getClassName(PostScreen), makerData());
-            trace("onNextStep: makerData=" + makerData());
+//            trace("onNextStep: makerData=" + makerData());
         } ));
 //        UiUtil.delay(function() {
 //            packData(null);

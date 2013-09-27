@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import com.weiplus.client.MyUtils;
 import com.roxstudio.haxe.ui.SxAdapter;
 import com.weiplus.client.model.AppData;
 import com.roxstudio.haxe.ui.RoxScreen;
@@ -26,12 +27,7 @@ using com.roxstudio.haxe.ui.UiUtil;
 
 class PictureScreen extends BaseScreen {
 
-    public static inline var IMAGE_SAVE_DIR =
-#if android
-        "/sdcard/DCIM/HarryPhoto";
-#else
-        "DCIM";
-#end
+    public static inline var ALBUM_DIR = MyUtils.ALBUM_DIR;
 
     private var status: Status;
     private var bitmapData: BitmapData;
@@ -46,10 +42,17 @@ class PictureScreen extends BaseScreen {
             var text2 = "保存中".i18n();
 #if cpp
             MyUtils.asyncOperation({}, function(_) {
-                FileUtil.mkdirs(IMAGE_SAVE_DIR);
-                var bytes = GameUtil.encodeJpeg(bitmapData);
-                var name = "" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
-                sys.io.File.saveBytes(IMAGE_SAVE_DIR + "/" + name, bytes);
+                FileUtil.mkdirs(ALBUM_DIR);
+                var path = MyUtils.IMAGE_CACHE_DIR + "/" + StringTools.urlEncode(status.appData.image);
+                trace("PictureScreen: path=" + path + ",exists=" + sys.FileSystem.exists(path));
+                var savePath = ALBUM_DIR + "/" + "HP_SAVE_" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
+                if (sys.FileSystem.exists(path)) {
+                    trace("copy from " + path + " to " + savePath);
+                    sys.io.File.copy(path, savePath);
+                } else {
+                    var bytes = GameUtil.encodeJpeg(bitmapData);
+                    sys.io.File.saveBytes(savePath, bytes);
+                }
             }, function(_) {
                 UiUtil.message(text1);
             }, text2);
@@ -66,6 +69,15 @@ class PictureScreen extends BaseScreen {
     override public function onNewRequest(data: Dynamic) {
         status = data.status;
         bitmapData = cast data.image;
+#if cpp
+        if (!isGame()) {
+            var path = MyUtils.IMAGE_CACHE_DIR + "/" + StringTools.urlEncode(status.appData.image);
+            trace("PictureScreen.onNewRequest: path=" + path + ",exists=" + sys.FileSystem.exists(path));
+            if (sys.FileSystem.exists(path)) {
+                bitmapData = ResKeeper.loadLocalImage(path);
+            }
+        }
+#end
         var sc: Float = Math.min(screenWidth / bitmapData.width, (screenHeight - titleBar.height) / bitmapData.height);
         var offx = (screenWidth - bitmapData.width * sc) / 2, offy = (screenHeight - titleBar.height - bitmapData.height * sc) / 2;
         var sp = new Sprite();
@@ -97,6 +109,9 @@ class PictureScreen extends BaseScreen {
         var repostbtn = UiUtil.button(UiUtil.TOP_LEFT, null, "转发".i18n(), 0, fontsize, "res/btn_grey.9.png", onButton);
         repostbtn.name = "repost_" + status.id;
         arr.push(repostbtn);
+        var magicbtn = UiUtil.button(UiUtil.TOP_LEFT, null, "魔法！".i18n(), 0, fontsize, "res/btn_grey.9.png", onButton);
+        magicbtn.name = "magic_" + status.id;
+        arr.push(magicbtn);
         if (status.user.id == HpApi.instance.uid) {
             var deletebtn = UiUtil.button(UiUtil.TOP_LEFT, null,
             "删除".i18n(), 0, fontsize, "res/btn_grey.9.png", onButton);
@@ -148,14 +163,22 @@ class PictureScreen extends BaseScreen {
                 if (isGame()) {
                     startScreen(Type.getClassName(GameRetweetScreen), status);
                 } else { // is image
-                    MyUtils.asyncImage(status.appData.image, function(image: BitmapData) {
-                        startScreen(Type.getClassName(RetweetScreen), {
+                    var path = null;
+#if cpp
+                    var tmppath = MyUtils.IMAGE_CACHE_DIR + "/" + StringTools.urlEncode(status.appData.image);
+                    trace("PictureScreen.retweet: path=" + tmppath + ",exists=" + sys.FileSystem.exists(tmppath));
+                    if (sys.FileSystem.exists(tmppath)) path = tmppath;
+#end
+                    var tags: Array<String> = [];
+                    startScreen(Type.getClassName(RetweetScreen), {
                         status: status,
-                        image: { bmd: image, path: null },
+                        image: { bmd: bitmapData, path: path, tags: tags },
                         data: null
-                        });
                     });
                 }
+            case "magic":
+                startScreen(Type.getClassName(MagicCamera), { operation: 3, bmd: bitmapData });
+
         }
 
     }

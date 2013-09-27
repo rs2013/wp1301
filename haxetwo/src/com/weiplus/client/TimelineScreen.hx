@@ -54,7 +54,7 @@ using com.roxstudio.haxe.game.GfxUtil;
 
 class TimelineScreen extends BaseScreen {
 
-    private static inline var ALBUM_DIR = "/sdcard/DCIM/Camera";
+    private static inline var ALBUM_DIR = MyUtils.ALBUM_DIR;
 
     public static inline var SPACING_RATIO = 1 / 40;
     private static inline var REFRESH_HEIGHT = 150;
@@ -491,7 +491,7 @@ class TimelineScreen extends BaseScreen {
 //            trace(i);
             switch (i.id) {
                 case "camera":
-                    startScreen(Type.getClassName(MagicCamera), {});
+                    startScreen(Type.getClassName(MagicCamera), { operation: 1 });
                     MyUtils.makerParentScreen = this.className;
                     fadeout(null);
                 default:
@@ -550,7 +550,7 @@ class TimelineScreen extends BaseScreen {
     private function onHarry(_) {
         trace("onHarry, makerId=" + makerId);
         requestCode = 3;
-        startScreen(Type.getClassName(MagicCamera), 223);
+        startScreen(Type.getClassName(MagicCamera), 223, { operation: 2 });
 //#if android
 //        HaxeStub.startHarryCamera(requestCode);
 //#else
@@ -574,7 +574,7 @@ class TimelineScreen extends BaseScreen {
         requestCode = 1;
 #if android
         if (!sys.FileSystem.exists(ALBUM_DIR)) com.roxstudio.haxe.io.FileUtil.mkdirs(ALBUM_DIR);
-        var name = "harryphoto_" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
+        var name = "HP_SYS_" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
         snapPath = ALBUM_DIR + "/" + name;
         HaxeStub.startImageCapture(requestCode, snapPath);
 #else
@@ -584,8 +584,6 @@ class TimelineScreen extends BaseScreen {
 
     private function onLocal(_) {
 //        trace("onlocal");
-//        if (!FileSystem.exists(ALBUM_DIR)) FileUtil.mkdirs(ALBUM_DIR);
-//        var name = "" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
         requestCode = 2;
 #if android
         HaxeStub.startGetContent(requestCode, "image/*");

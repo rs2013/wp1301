@@ -28,7 +28,7 @@ using StringTools;
 
 class RoutineScreen extends BaseScreen {
 
-    private static inline var ALBUM_DIR = "/sdcard/DCIM/Camera";
+    private static inline var ALBUM_DIR = MyUtils.ALBUM_DIR;
 
     private static inline var REFRESH_HEIGHT = 100;
     private static inline var TRIGGER_HEIGHT = 60;
@@ -300,7 +300,7 @@ class RoutineScreen extends BaseScreen {
 //            trace(i);
             switch (i.id) {
                 case "camera":
-                    startScreen(Type.getClassName(MagicCamera), {});
+                    startScreen(Type.getClassName(MagicCamera), { operation: 1 });
                     MyUtils.makerParentScreen = this.className;
                     fadeout(null);
                 default:
@@ -360,7 +360,7 @@ class RoutineScreen extends BaseScreen {
     private function onHarry(_) {
         trace("onHarry, makerId=" + makerId);
         requestCode = 3;
-        startScreen(Type.getClassName(MagicCamera), 223);
+        startScreen(Type.getClassName(MagicCamera), 223, { operation: 2 });
 //#if android
 //        HaxeStub.startHarryCamera(requestCode);
 //#else
@@ -381,7 +381,7 @@ class RoutineScreen extends BaseScreen {
         requestCode = 1;
 #if android
         if (!sys.FileSystem.exists(ALBUM_DIR)) com.roxstudio.haxe.io.FileUtil.mkdirs(ALBUM_DIR);
-        var name = "harryphoto_" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
+        var name = "HP_SYS_" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
         snapPath = ALBUM_DIR + "/" + name;
         HaxeStub.startImageCapture(requestCode, snapPath);
 #else
@@ -391,8 +391,6 @@ class RoutineScreen extends BaseScreen {
 
     private function onLocal(_) {
 //        trace("onlocal");
-//        if (!FileSystem.exists(ALBUM_DIR)) FileUtil.mkdirs(ALBUM_DIR);
-//        var name = "" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
         requestCode = 2;
 #if android
         HaxeStub.startGetContent(requestCode, "image/*");

@@ -117,7 +117,7 @@
     </Widget>
 
     <Widget id="'CameraFrame2'" widthPt="100" heightPt="100" visible="false">
-        <Widget bottom="0" widthPt="100" h="(110).dp()" skin:Paint-border="0" skin:Paint-color="0" skin:Paint-alpha="0.2" >
+        <Widget bottom="0" widthPt="100" h="(110).dp()" skin:Img-src="'res/camera_bottom.png'.dpScale()" >
             <Button id="'btnSnapCancel'"
                     defaults="'CameraBottomButtons'"
                     text="'取消'.i18n()"
@@ -161,8 +161,10 @@
                     skin:Img-src="'res/ar_obj_rot.png'.dpScale()" right="-40.dp()" bottom="-40.dp()" />
         </Widget>
 
-        <Scroll id="'ArSelect'" bottom="110.dp()" widthPt="100" h="(180).dp()" vScroll="false" hBar="null" vBar="null">
-            <HBox id="'folderList'" autoWidth="true" h="(180).dp()" padding="(10).dp()" skin:Paint-color="0" skin:Paint-alpha="0.3">
+        <Scroll id="'ArSelect'" bottom="110.dp()" widthPt="100" h="(180).dp()"
+                vScroll="false" hBar="null" vBar="null"
+                skin:Paint-color="0" skin:Paint-alpha="0.4">
+            <HBox id="'folderList'" autoWidth="true" h="(180).dp()" padding="(10).dp()">
                 <!--<Button defaults="'ArFolderButtons'" text="'folder'" />-->
             </HBox>
         </Scroll>

@@ -42,7 +42,16 @@ class MyUtils {
 #else
     "ar_cache";
 #end
+
+    public static inline var ALBUM_DIR =
+#if android
+        "/sdcard/DCIM/MagicCamera";
+#else
+        "DCIM/MagicCamera";
+#end
+
     public static inline var LOADING_ANIM_NAME = "MyUtils.loadingAnim";
+    public static inline var WAITING_NAME = "MyUtils.waiting";
     public static var makerParentScreen;
 
     public function new() {
@@ -71,6 +80,20 @@ class MyUtils {
 //        sp.addChild(prog);
         sp.addChild(txt.rox_move(-txt.width / 2, -txt.height / 2 + 39));
         return sp;
+    }
+
+    public static function showWaiting(label: String, ?parent: Sprite) {
+        var stage = flash.Lib.current.stage;
+        var mask = new Sprite();
+        mask.graphics.rox_fillRect(0x77000000, 0, 0, stage.stageWidth, stage.stageHeight);
+        var loading = MyUtils.getLoadingAnim(label).rox_move(stage.stageWidth / 2, stage.stageHeight / 2);
+        mask.addChild(loading);
+        mask.name = WAITING_NAME;
+        stage.addChild(mask);
+    }
+
+    public static function hideWaiting() {
+        UiUtil.rox_removeByName(flash.Lib.current.stage, WAITING_NAME);
     }
 
 #if cpp

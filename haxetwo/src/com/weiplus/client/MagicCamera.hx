@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import com.roxstudio.haxe.utils.SimpleJob;
 import com.roxstudio.haxe.gesture.RoxGestureAgent;
 import ru.stablex.ui.widgets.Scroll;
 import com.weiplus.client.TimelineScreen;
@@ -59,10 +60,12 @@ using StringTools;
 
 class MagicCamera extends MakerScreen {
 
-    private static inline var ALBUM_DIR = "/sdcard/DCIM/MagicCamera";
+    private static inline var ALBUM_DIR = MyUtils.ALBUM_DIR;
+
     private var currentCid = -1;
     private var currentAr: Widget;
-    private var getBmd: Bool;
+    private var operation: Int;
+    private var inputBmd: BitmapData = null;
     private var requestCode = -1;
 
     public function new() {
@@ -151,7 +154,12 @@ class MagicCamera extends MakerScreen {
     }
 
     override public function onNewRequest(data: Dynamic) {
-        getBmd = data == null;
+        operation = data.operation;
+        if (operation == 3) { // edit pic only
+            requestCode = 11;
+            inputBmd = data.bmd;
+            onActive(null);
+        }
     }
 
     private function showFolder() {
@@ -183,6 +191,8 @@ class MagicCamera extends MakerScreen {
 //            UIBuilder.get("arList").parent.visible = false;
             showFolder();
             return false;
+        } else if (operation == 3) {
+            return true;
         } else if (UIBuilder.get("CameraFrame2").visible) { // cancel snap
 //            trace("onBackKey: to cancel snap");
             cancelSnap();
@@ -320,6 +330,14 @@ class MagicCamera extends MakerScreen {
             }, bundleId);
             folderList.addChild(btn);
         }
+
+        if (folderList.numChildren < 5) { // make sure it's longer than hscroll
+            for (i in folderList.numChildren...5) {
+                var btn: Button = UIBuilder.create(Button, { defaults: "ArFolderButtons" });
+                folderList.addChild(btn);
+            }
+        }
+
         var scroll: Scroll = cast folderList.parent;
         scroll.tweenStop();
         scroll.scrollX = 0;
@@ -551,7 +569,7 @@ class MagicCamera extends MakerScreen {
         UIBuilder.get("ArBox").visible = false;
 #if android
         if (!sys.FileSystem.exists(ALBUM_DIR)) com.roxstudio.haxe.io.FileUtil.mkdirs(ALBUM_DIR);
-        var name = "IMG_" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
+        var name = "HP_MC_" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
         var snapPath = ALBUM_DIR + "/" + name;
         HaxeCamera.snap(snapPath, this, "snapped");
 #else
@@ -660,24 +678,46 @@ class MagicCamera extends MakerScreen {
         var tagsArr: Array<String> = [];
         for (t in tags.keys()) tagsArr.push(t);
 
+        MyUtils.showWaiting("保存中".i18n());
+        // save to local album
         image = { path: null, bmd: bmd, tags: tagsArr };
-        if (getBmd) {
-            finish(RoxAnimate.NO_ANIMATE, RoxScreen.OK, image);
-            trace("MagicCamera finish: OK");
-        } else {
-            var appdata: AppData = status.appData;
-            appdata.width = image.bmd.width;
-            appdata.height = image.bmd.height;
-            appdata.type = "image";
-            onHidden();
-            onNextStep();
-            trace("MagicCamera nextStep");
+        var onComplete = function(imgInfo: Dynamic) {
+            if (operation == 2) {
+                finish(RoxAnimate.NO_ANIMATE, RoxScreen.OK, imgInfo);
+                trace("MagicCamera finish: OK");
+            } else { // 1 or 3
+                var appdata: AppData = status.appData;
+                appdata.width = imgInfo.bmd.width;
+                appdata.height = imgInfo.bmd.height;
+                appdata.type = "image";
+                onHidden();
+                trace("MagicCamera nextStep");
+                onNextStep();
+            }
         }
-
+#if cpp
+        GameUtil.worker.addJob(new SimpleJob<Dynamic>(image, function(imgInfo) {
+            com.roxstudio.haxe.io.FileUtil.mkdirs(ALBUM_DIR);
+            var path = ALBUM_DIR + "/HP_AR_" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
+            trace("MagicCamera: start saving image to " + path);
+            File.saveBytes(path, GameUtil.encodeJpeg(bmd));
+            imgInfo.path = path;
+//            trace("image saved, type=\"" + status.appData.type + "\"");
+        }, function(imgInfo) {
+            MyUtils.hideWaiting();
+            onComplete(imgInfo);
+        } ));
+#else
+        onComplete(image);
+#end
         trace("end confirmSnap");
     }
 
     private function cancelSnap() {
+        if (operation == 3) {
+            finish(RoxScreen.CANCELED);
+            return;
+        }
         UIBuilder.get("CameraFrame").visible = true;
         UIBuilder.get("CameraPreview").visible = false;
         UIBuilder.get("CameraFrame2").visible = false;
@@ -705,24 +745,29 @@ class MagicCamera extends MakerScreen {
         if (requestCode < 0) {
             return;
         }
+        var bmd: BitmapData = null;
+        if (requestCode == 11 && operation == 3) {
+            bmd = inputBmd;
+        } else {
 #if android
-        var s = HaxeStub.getResult(requestCode);
-        var json: Dynamic = haxe.Json.parse(s);
-        if (untyped json.resultCode != "ok") {
-            requestCode = -1;
-//            reopenCamera();
-            return;
-        }
-        var path = untyped json.intentDataPath;
-        var bmd = ResKeeper.loadLocalImage(path);
+            var s = HaxeStub.getResult(requestCode);
+            var json: Dynamic = haxe.Json.parse(s);
+            if (untyped json.resultCode != "ok") {
+                requestCode = -1;
+//                reopenCamera();
+                return;
+            }
+            var path = untyped json.intentDataPath;
+            bmd = ResKeeper.loadLocalImage(path);
 #else
-        var path = "res/8.jpg";
-        var bmd = ResKeeper.loadAssetImage(path);
+            var path = "res/8.jpg";
+            bmd = ResKeeper.loadAssetImage(path);
 #end
+        }
         if (bmd.width * bmd.height > 1000000) { // too large
             var ratio = Math.sqrt(1000000 / (bmd.width * bmd.height));
             var newbmd = new BitmapData(Std.int(bmd.width * ratio), Std.int(bmd.height * ratio), true, 0);
-            newbmd.copyPixels(bmd, new Rectangle(0, 0, bmd.width, bmd.height), new Point(0, 0));
+            newbmd.draw(bmd, new Matrix(ratio, 0, 0, ratio), true);
             bmd.dispose();
             bmd = newbmd;
         }
@@ -735,7 +780,7 @@ class MagicCamera extends MakerScreen {
             UIBuilder.get("CameraPreview").visible = true;
             var bmp: Bmp = UIBuilder.getAs("CameraPreviewBmp", Bmp);
             bmp.bitmapData = bmd;
-            bmp.userData = path;
+//            bmp.userData = path;
             bmp.smooth = true;
             bmp.scaleX = bmp.scaleY = screenWidth / bmd.width;
             bmp.top = (screenHeight - (bmd.height * bmp.scaleX)) / 2;
@@ -760,9 +805,13 @@ class MagicCamera extends MakerScreen {
         var bmp: Bmp = UIBuilder.getAs("CameraPreviewBmp", Bmp);
         var cropBox = UIBuilder.get("CropBox");
         cropBox.top = bmp.top + (40).dp();
+        if (cropBox.top < (40).dp())
+            cropBox.top = (40).dp();
         cropBox.left = (40).dp();
         cropBox.w = (560).dp();
         cropBox.h = (bmp.bitmapData.height * bmp.scaleY) - (80).dp();
+        if (cropBox.h > (DipUtil.stageHeightDp - 120).dp() - cropBox.top)
+            cropBox.h = (DipUtil.stageHeightDp - 120).dp() - cropBox.top;
 
     }
 

@@ -124,7 +124,7 @@ class Postit extends Sprite {
                         var agent = new RoxGestureAgent(button);
                         agent.swipeTimeout = 0;
                         button.addEventListener(RoxGestureEvent.GESTURE_TAP, function(_) {
-                            parentScreen().startScreen(Type.getClassName(PictureScreen), {status: status, image: image });
+                            parentScreen().startScreen(Type.getClassName(PictureScreen), { status: status, image: image });
                         });
                         addChild(button);
                     }
@@ -335,13 +335,20 @@ class Postit extends Sprite {
                 if (isGame()) {
                     parentScreen().startScreen(Type.getClassName(GameRetweetScreen), status);
                 } else { // is image
+                    var path = null;
+#if cpp
+                    var tmppath = MyUtils.IMAGE_CACHE_DIR + "/" + StringTools.urlEncode(status.appData.image);
+                    trace("PictureScreen.retweet: path=" + tmppath + ",exists=" + sys.FileSystem.exists(tmppath));
+                    if (sys.FileSystem.exists(tmppath)) path = tmppath;
+#end
+                    var tags: Array<String> = [];
                     MyUtils.asyncImage(status.appData.image, function(image: BitmapData) {
                         parentScreen().startScreen(Type.getClassName(RetweetScreen), {
-                            status: status,
-                            image: { bmd: image, path: null },
-                            data: null
+                        status: status,
+                        image: { bmd: image, path: path, tags: tags },
+                        data: null
                         });
-                    }, this.name);
+                    });
                 }
         }
 

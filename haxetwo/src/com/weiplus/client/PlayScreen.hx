@@ -237,7 +237,7 @@ class PlayScreen extends BaseScreen {
             onApiCallback("autoComment", "ok", "完成游戏，用时".i18n() + timestr2(getElapsedTime()));
             if (image != null) {
                 buttonPic = UiUtil.button(UiUtil.TOP_LEFT, null, "查看原图".i18n(), 0xFFFFFF, buttonFontSize * 0.7, "res/btn_dark.9.png", function(_) {
-                    startScreen(Type.getClassName(PictureScreen), image);
+                    startScreen(Type.getClassName(PictureScreen),  {status: status, image: image });
                 });
             }
         }
@@ -267,7 +267,7 @@ class PlayScreen extends BaseScreen {
             Actuate.tween(sp, 5, { x: wd2 + r * Math.cos(idx[i]), y: hd2 + r * Math.sin(idx[i]), scaleX: 1, scaleY: 1, alpha: 0 }).delay(i * interval);
             Actuate.tween(sp, 2.5, { rotation: sp.rotation + 360 }).repeat().ease(Linear.easeNone).delay(i * interval);
         }
-        UiUtil.delay(function() { startScreen(Type.getClassName(PictureScreen), image); }, 2.2);
+        UiUtil.delay(function() { startScreen(Type.getClassName(PictureScreen),  {status: status, image: image } ); }, 2.2);
     }
 
     private function onApiCallback(apiName: String, result: String, str: String) {
