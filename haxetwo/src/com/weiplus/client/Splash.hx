@@ -1,5 +1,9 @@
 package com.weiplus.client;
 
+import nme.display.Graphics;
+import flash.display.Sprite;
+import nme.display.Tilesheet;
+import flash.display.BitmapData;
 import com.roxstudio.haxe.io.IOUtil;
 import com.roxstudio.haxe.io.FileUtil;
 import sys.io.File;
@@ -54,6 +58,35 @@ class Splash extends BaseScreen {
 //        graphics.rox_drawRegion(logo, null, (screenWidth - logo.width * d2rScale) / 2, 0.15 * screenHeight,
 //                logo.width * d2rScale, logo.height * d2rScale);
 //        trace("x=" + ((w - logo.width) / 2) + ",y=" + (0.33 * h));
+
+//        testTiles();
+    }
+
+    private function testTiles() {
+        var bdTiles:BitmapData = new BitmapData(256,128,true,0xFFFFFFFF);
+
+        var redTileRect:Rectangle = new Rectangle(0,0,128,128);
+        bdTiles.fillRect(redTileRect,0xFFFF0000);
+        var greenTileRect:Rectangle=new Rectangle(128,0,128,128);
+        bdTiles.fillRect(greenTileRect,0xFF00FF00);
+
+        var ts:Tilesheet = new Tilesheet(bdTiles);
+        ts.addTileRect(redTileRect);
+        ts.addTileRect(greenTileRect);
+
+        var container:Sprite = new Sprite();
+        addChild(container);
+        container.graphics.rox_drawRegion(ResKeeper.loadAssetImage("res/8.jpg"), 0, 0);
+
+        var TILE_BLEND_ADD   = 0x10000;
+        var TILE_BLEND_MULTIPLY   = 0x20000;
+        var TILE_BLEND_SCREEN   = 0x40000;
+
+        container.graphics.drawTiles(ts,[200.0,0.0,0.0,264.0,0.0,1.0],false,Graphics.TILE_BLEND_ADD);
+        container.graphics.drawTiles(ts,[200.0,150.0,0.0,264.0,150.0,1.0],false,TILE_BLEND_SCREEN);
+        container.graphics.drawTiles(ts,[200.0,300.0,0.0,264.0,300.0,1.0],false,TILE_BLEND_MULTIPLY);
+
+        container.graphics.drawTiles(ts,[200.0,450.0,0.0,264.0,450.0,1.0],false);
     }
 
     private function doLoad() {
