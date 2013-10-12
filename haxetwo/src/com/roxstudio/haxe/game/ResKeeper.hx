@@ -230,9 +230,10 @@ class ResKeeper {
             if (bytes == null) return null;
             var ba = IOUtil.rox_toByteArray(bytes);
             if (ba[0] == 'G'.code && ba[1] == 'I'.code && ba[2] == 'F'.code) {
-                var gifdec = new GIFDecoder();
-                gifdec.read(ba);
-                return gifdec.getFrameCount() > 0 ? gifdec.getImage().bitmapData : null;
+//                var gifdec = new GIFDecoder();
+//                gifdec.read(ba);
+//                return gifdec.getFrameCount() > 0 ? gifdec.getImage().bitmapData : null;
+                return null;
             } else {
                 return BitmapData.loadFromBytes(ba);
             }

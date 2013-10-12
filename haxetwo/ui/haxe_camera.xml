@@ -158,7 +158,7 @@
                     #ArSelect.visible = true;
                     "/>
             <Button id="'CropBoxCtrl'"
-                    skin:Img-src="'res/ar_obj_rot.png'.dpScale()" right="-40.dp()" bottom="-40.dp()" />
+                    skin:Img-src="'res/icon_crop.png'.dpScale()" right="-40.dp()" bottom="-40.dp()" />
         </Widget>
 
         <Scroll id="'ArSelect'" bottom="110.dp()" widthPt="100" h="(180).dp()"

@@ -253,17 +253,17 @@ class GameUtil {
         return output.getBytes();
     }
 
-    public static function encodeJpeg(img: BitmapData) : Bytes {
-        trace("encodeJpeg, img="+img.width+","+img.height);
-        Sys.sleep(1.2);
+    public static function encodeJpeg(img: BitmapData, ?quality = 85) : Bytes {
+//        trace("encodeJpeg, img="+img.width+","+img.height);
+//        Sys.sleep(1.2);
         var bb = img.getPixels(new Rectangle(0, 0, img.width, img.height));
-        trace("11111111111");
+//        trace("11111111111");
         var output = new BytesOutput();
         var w = new format.jpg.Writer(output);
 
-        trace("22222222222");
-        w.write({ width: img.width, height: img.height, quality: 85, pixels: bb.rox_toBytes() });
-        trace("333333333333");
+//        trace("22222222222");
+        w.write({ width: img.width, height: img.height, quality: quality, pixels: bb.rox_toBytes() });
+//        trace("333333333333");
         return output.getBytes();
     }
 

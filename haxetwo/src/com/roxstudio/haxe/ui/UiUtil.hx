@@ -144,13 +144,14 @@ class UiUtil {
 
     public static function asyncImage(url: String, onComplete: BitmapData -> Void,
                                       ?onRaw: ByteArray -> Void, ?onProgress: Float -> Float -> Void,
-                                      ?bundleId: String) {
-        var img = ResKeeper.get(url);
+                                      ?bundleId: String, ?useMemCache = true) {
+        var img: BitmapData = null;
+        if (useMemCache) img = ResKeeper.get(url);
         if (img == null) {
             var ldr = new RoxURLLoader(url, RoxURLLoader.IMAGE, function(isOk: Bool, data: Dynamic) {
                 if (isOk) {
+                    if (useMemCache) ResKeeper.add(url, data, bundleId);
                     onComplete(cast data);
-                    ResKeeper.add(url, data, bundleId);
                 } else {
                     onComplete(null);
                 }

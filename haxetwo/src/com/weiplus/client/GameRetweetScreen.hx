@@ -22,11 +22,11 @@ class GameRetweetScreen extends PlayScreen {
         image = cast(getFileData(data.image));
         var size = Reflect.hasField(data, "size") ? data.size : Std.int(image.width / data.sideLen);
 
-        var path = null;
+        var path: String = null;
 #if cpp
-        var tmppath = MyUtils.IMAGE_CACHE_DIR + "/" + StringTools.urlEncode(status.appData.image);
-        trace("GameRetweetScreen: path=" + tmppath + ",exists=" + sys.FileSystem.exists(tmppath));
-        if (sys.FileSystem.exists(tmppath)) path = tmppath;
+        if (MyUtils.localCacheExists(status.appData.image)) {
+            path = MyUtils.localCachePath(status.appData.image);
+        }
 #end
         MyUtils.asyncImage(status.appData.image, function(bmd: BitmapData) {
             var tags: Array<String> = [];

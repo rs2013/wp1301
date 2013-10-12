@@ -22,6 +22,7 @@ import com.roxstudio.haxe.game.ResKeeper;
 import nme.display.Sprite;
 import nme.display.Bitmap;
 import nme.display.BitmapData;
+import flash.geom.Matrix;
 
 using com.roxstudio.i18n.I18n;
 using com.roxstudio.haxe.game.GfxUtil;
@@ -36,11 +37,19 @@ class MyUtils {
 #else
     "image_cache";
 #end
+
     public static inline var AR_CACHE_DIR =
 #if android
         "/sdcard/.harryphoto/ar_cache";
 #else
     "ar_cache";
+#end
+
+    public static inline var CACHE_DIR =
+#if android
+        "/sdcard/.harryphoto/cache";
+#else
+    "cache";
 #end
 
     public static inline var ALBUM_DIR =
@@ -122,7 +131,7 @@ class MyUtils {
 
     public static function clearTimelineCache() {
 #if cpp
-        FileUtil.rmdir(TimelineScreen.CACHE_DIR, true);
+        FileUtil.rmdir(MyUtils.CACHE_DIR, true);
 #end
         var cacheNames = [
         "com_weiplus_client_PublicScreen.json",
@@ -161,64 +170,67 @@ class MyUtils {
         return s == null || s == "";
     }
 
-    public static function asyncArImage(url: String, onComplete: BitmapData -> Void, ?bundleId: String) {
+    public static function loadArImage(url: String) : BitmapData {
+        var bmd = ResKeeper.loadLocalImage(arCachePath(url));
+        var map: Hash<Int> = ResKeeper.get("preloadedArMap");
+        var idx = url.lastIndexOf("/");
+        if (map.exists(url.substring(idx + 1))) {
+            bmd = ResKeeper.createArImage(bmd);
+        }
+        return bmd;
+    }
+
+    public static function asyncArImage(url: String, onComplete: Bool -> Void) {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            UiUtil.delay(onComplete.bind(null));
+            trace("invalid ar url: \"" + url + "\"");
             return;
         }
 #if cpp
-        var img: BitmapData = ResKeeper.get(url);
-        if (img != null) {
-            UiUtil.delay(onComplete.bind(img));
-            return;
-        }
-        var idx = url.lastIndexOf("/");
-        var path = AR_CACHE_DIR + "/" + url.substr(idx + 1);
-        trace("asyncImage: path=" + path + ",exists=" + sys.FileSystem.exists(path));
-        if (sys.FileSystem.exists(path)) {
-            GameUtil.worker.addJob(new com.roxstudio.haxe.utils.SimpleJob<Array<BitmapData>>([], function(d: Array<BitmapData>) {
-                d[0] = ResKeeper.loadLocalImage(path);
-                var map: Hash<Int> = ResKeeper.get("preloadedArMap");
-                if (map.exists(url.substring(idx + 1))) {
-//                    trace("file " + (url.substring(idx + 1)) + " is preloaded");
-                    d[0] = ResKeeper.createArImage(d[0]);
-                } else {
-//                    trace("file " + (url.substring(idx + 1)) + " is not preloaded");
-                }
-                ResKeeper.add(url, d[0], bundleId);
-            }, function(d: Array<BitmapData>) {
-                onComplete(d[0]);
-            }));
-//            img = ResKeeper.loadLocalImage(path);
-//            ResKeeper.add(url, img, bundleId);
-//            UiUtil.delay(onComplete.bind(img));
-            return;
-        }
-        UiUtil.asyncImage(url, onComplete, function(ba: ByteArray) {
+        UiUtil.asyncImage(url, function(bmd) {
+            onComplete(bmd != null && bmd.width > 0);
+        }, function(ba: ByteArray) {
             GameUtil.worker.addJob(new com.roxstudio.haxe.utils.SimpleJob<{}>(null, function(_) {
                 FileUtil.mkdirs(AR_CACHE_DIR);
+                var path = arCachePath(url);
                 sys.io.File.saveBytes(path, IOUtil.rox_toBytes(ba));
             }, function(_) {}));
         });
-#else
-        UiUtil.asyncImage(url, onComplete, bundleId);
 #end
     }
 
-    public static function asyncImage(url: String, onComplete: BitmapData -> Void, ?bundleId: String) {
+    public static inline function arCachePath(url: String) : String {
+        var idx = url.lastIndexOf("/");
+        return AR_CACHE_DIR + "/" + url.substr(idx + 1);
+    }
+
+    public static inline function arCacheExists(url: String) : Bool {
+#if cpp
+        var path = arCachePath(url);
+        var ret = sys.FileSystem.exists(path);
+//        trace("arCache:url=" + url + ",exists=" + ret);
+        return ret;
+#else
+        return false;
+#end
+    }
+
+    public static function asyncImage(url: String, onComplete: BitmapData -> Void, ?bundleId: String, ?useMemCache = true, ?maxResolution = 0) {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
             UiUtil.delay(onComplete.bind(null));
+            trace("invalid image url: \"" + url + "\"");
             return;
         }
 #if cpp
-        var img: BitmapData = ResKeeper.get(url);
-        if (img != null) {
-            UiUtil.delay(onComplete.bind(img));
-            return;
+        var img: BitmapData = null;
+        if (useMemCache) {
+            img = ResKeeper.get(url);
+            if (img != null) {
+                UiUtil.delay(onComplete.bind(img));
+                return;
+            }
         }
-        var path = IMAGE_CACHE_DIR + "/" + StringTools.urlEncode(url);
-        trace("asyncImage: path=" + path + ",exists=" + sys.FileSystem.exists(path));
-        if (sys.FileSystem.exists(path)) {
+        var path = localCachePath(url);
+        if (localCacheExists(url)) { // in local cache
 //            GameUtil.worker.addJob(new com.roxstudio.haxe.utils.SimpleJob<Array<BitmapData>>([], function(d: Array<BitmapData>) {
 //                d[0] = ResKeeper.loadLocalImage(path);
 //                ResKeeper.add(url, d[0], bundleId);
@@ -226,18 +238,67 @@ class MyUtils {
 //                onComplete(d[0]);
 //            }));
             img = ResKeeper.loadLocalImage(path);
-            ResKeeper.add(url, img, bundleId);
+            if (useMemCache) ResKeeper.add(url, img, bundleId);
             UiUtil.delay(onComplete.bind(img));
             return;
         }
-        UiUtil.asyncImage(url, onComplete, function(ba: ByteArray) {
-            GameUtil.worker.addJob(new com.roxstudio.haxe.utils.SimpleJob<{}>(null, function(_) {
+        UiUtil.asyncImage(url, function(_) {}, function(ba: ByteArray) {
+            GameUtil.worker.addJob(
+                    new com.roxstudio.haxe.utils.SimpleJob<{ bmd: BitmapData, raw: ByteArray }>({ bmd: null, raw: ba }, function(data) {
+
+//                trace("asyncimage: onRaw, data=" + data);
                 FileUtil.mkdirs(IMAGE_CACHE_DIR);
-                sys.io.File.saveBytes(path, IOUtil.rox_toBytes(ba));
-            }, function(_) {}));
-        });
+                var ba = data.raw;
+                if (ba[0] == 'G'.code && ba[1] == 'I'.code && ba[2] == 'F'.code) { // TODO
+//                    trace("before save, path="+path+",raw.len="+ba.length);
+                    sys.io.File.saveBytes(path, IOUtil.rox_toBytes(data.raw));
+//                    trace("after save");
+                    data.bmd = null;
+                    return;
+                }
+                var img: BitmapData = BitmapData.loadFromBytes(data.raw);
+//                trace("origin: img=" + img.width+","+img.height);
+                if (img == null || img.width == 0) {
+                    data.bmd = null;
+                    return;
+                }
+                var area = img.width * img.height;
+//                trace("area="+area+",maxRes="+maxResolution);
+                if (maxResolution > 0 && area > maxResolution) { // need to shrink
+                    var ratio = Math.sqrt(maxResolution / area);
+                    var newimg = new BitmapData(Std.int(img.width * ratio), Std.int(img.height * ratio), true, 0);
+//                    trace("asyncImage.shrink:url="+url+",origin="+img.width+"/"+img.height+",scaled="+newimg.width+"/"+newimg.height+",r="+ratio);
+                    newimg.draw(img, new Matrix(ratio, 0, 0, ratio), true);
+                    data.bmd = newimg;
+                    img.dispose();
+                    sys.io.File.saveBytes(path, GameUtil.encodeJpeg(newimg));
+                } else {
+                    sys.io.File.saveBytes(path, IOUtil.rox_toBytes(data.raw));
+                    data.bmd = img;
+                }
+//                trace("done");
+            }, function(data) {
+//                trace("asyncimage: onComplete, data=" + data);
+                onComplete(data.bmd);
+            }));
+        }, bundleId, useMemCache);
 #else
-        UiUtil.asyncImage(url, onComplete, bundleId);
+        UiUtil.asyncImage(url, onComplete, bundleId, useMemCache);
+#end
+    }
+
+    public static inline function localCachePath(url: String) : String {
+        return IMAGE_CACHE_DIR + "/" + StringTools.urlEncode(url);
+    }
+
+    public static inline function localCacheExists(url: String) : Bool {
+#if cpp
+        var path = localCachePath(url);
+        var ret = sys.FileSystem.exists(path);
+//        trace("localCacheExists: url=" + url + ",exists=" + ret);
+        return ret;
+#else
+        return false;
 #end
     }
 

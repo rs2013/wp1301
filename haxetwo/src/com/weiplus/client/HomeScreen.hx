@@ -36,7 +36,7 @@ class HomeScreen extends TimelineScreen {
     override public function onCreate() {
         hasBack = false;
         title = new Sprite();
-        title.addChild(UiUtil.staticText("哈利波图".i18n(), 0xFFFFFF, titleFontSize * 1.2));
+        title.addChild(UiUtil.staticText("哈利波图(Beta)".i18n(), 0xFFFFFF, titleFontSize * 1.2));
         super.onCreate();
         doSwitch(null);
         if (HpApi.instance.isDefault()) {

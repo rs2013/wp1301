@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Floating  id="'alert_dialog'"
+           w="flash.Lib.current.stage.stageWidth" h="flash.Lib.current.stage.stageHeight"
+           skin:Paint-color="0x000000" skin:Paint-alpha="0.5"
+           on-click="if (event.target == $this) { $this.hide(); $this.free(); }"
+        >
+    <VBox w="(580).dp()" autoHeight="true"
+              left="30.dp()" on-create="$this.top = ((DipUtil.stageHeightDp - $this.h) / 2).dp();"
+              skin:Paint-border="5.dp()" skin:Paint-borderColor="0xFFFFFF"
+              skin:Paint-color="0x333333" skin:Paint-alpha="0.95" skin:Paint-corners="[ 20.dp() ]">
+
+        <Text text="@title" align="'left,middle'"
+              left="20.dp()" w="540.dp()" h="(60).dp()" format-font="$Main.getFont()" format-size="(32).dp()" format-color="0xFFFFFF"/>
+
+        <Widget left="3.dp()" w="574.dp()" h="(2).dp()" skin:Paint-color="0x888888" />
+
+        <HBox widthPt="100" autoHeight="true" padding="(20).dp()" childPadding="(20).dp()">
+            <Text w="(540).dp()" autoHeight="true" text="@message"
+                  label-wordWrap="true"
+                  format-font="$Main.getFont()" format-size="(22).dp()" format-color="0xFFFFFF" />
+        </HBox>
+
+        <Widget left="3.dp()" w="574.dp()" h="(2).dp()" skin:Paint-color="0x888888" />
+
+        <Button widthPt="100" h="(80).dp()"
+                format-font="$Main.getFont()" format-size="(30).dp()" format-color="0xFFFFFF"
+                text="@okButtonText != null ? @okButtonText : '确认'.i18n()"
+                on-click="#Floating(alert_dialog).hide(); #alert_dialog.free();"/>
+
+    </VBox>
+</Floating>

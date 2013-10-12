@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import com.weiplus.client.TimelineScreen;
 import com.roxstudio.haxe.ui.UiUtil;
 using com.roxstudio.i18n.I18n;
 import com.roxstudio.haxe.game.GameUtil;
@@ -31,6 +32,8 @@ using StringTools;
 
 class Postit extends Sprite {
 
+    public static inline var MAX_RES = 800000;
+
     public static inline var COMPACT = 1;
     public static inline var NORMAL = 2;
     public static inline var FULL = 3;
@@ -51,40 +54,33 @@ class Postit extends Sprite {
     private var w: Float;
     private var mode: Int;
 
-    private static var idCount = 1;
     private var head: Sprite;
     private var imh: Float;
-    private var shown: Bool = false;
+    private var imgLoaded: Bool = false;
+
+    private var parentScreen: TimelineScreen;
 
     private static var ptnUrl = ~/http[s]?:\/\/[^ $]+/i;
 
-    public function new(inStatus: Status, width: Float, mode: Int) {
+    public function new(parent: TimelineScreen, inStatus: Status, width: Float, mode: Int) {
         super();
-        status = inStatus;
+        this.parentScreen = parent;
+        this.status = inStatus;
+        this.name = "postit_" + status.id;
         setWidth(width, mode);
-        this.name = "postit_" + (idCount++);
-        addEventListener(Event.REMOVED_FROM_STAGE, free);
     }
 
     public function update() {
-        var timelineScreen: TimelineScreen = cast parentScreen();
-        if (timelineScreen == null) return;
-        var visible = !(this.y + this.height + timelineScreen.main.y < 0 || this.y + timelineScreen.main.y > timelineScreen.viewh);
-//        trace("update postit "+this.name+":y="+this.y+",h="+this.height+",mainy="+timelineScreen.main.y+",viewh="+timelineScreen.viewh+",visible="+visible+",shown="+shown);
-        if (shown && visible || !shown && !visible) {
-            return;
-        } else if (shown && !visible) {
-            ResKeeper.disposeBundle(this.name);
-            shown = false;
-            return;
-        }
+        var visible = !(this.y + this.height + parentScreen.main.y < 0 || this.y + parentScreen.main.y > parentScreen.viewh);
+        if (imgLoaded || !visible) return;
+//        trace("update postit "+this.name+":y="+this.y+",h="+this.height+",mainy="+parent.main.y+",viewh="+parent.viewh+",visible="+visible+",shown="+shown);
         if (head != null) {
             MyUtils.asyncImage(status.user.profileImage, function(img: BitmapData) {
                 if (img == null || img.width == 0) img = ResKeeper.getAssetImage("res/no_avatar.png");
                 var headSize = UiUtil.rangeValue(width * 0.12, 30, 60);
                 head.graphics.clear();
                 head.graphics.rox_drawRegion(img, 0, 0, headSize, headSize);
-            }, this.name);
+            }, false);
         }
         var appdata = status.appData;
         if (appdata != null && appdata.width > 0 && appdata.height > 0 && appdata.image != null) {
@@ -98,8 +94,7 @@ class Postit extends Sprite {
                     if (mode == COMPACT) {
                         graphics.rox_drawRegionRound(image, 0, 0, w, imh, r);
                     } else if (imageScale == 1 && imageOffset > 0) {
-                        var bmp = new Bitmap(image);
-                        addChild(bmp.rox_move(imageOffset, 0));
+                        graphics.rox_drawRegion(image, imageOffset, 0);
                     } else {
                         imageScale = this.w / image.width;
                         graphics.beginBitmapFill(image, new Matrix(imageScale, 0, 0, imageScale, imageOffset, 0), false, true);
@@ -124,7 +119,7 @@ class Postit extends Sprite {
                         var agent = new RoxGestureAgent(button);
                         agent.swipeTimeout = 0;
                         button.addEventListener(RoxGestureEvent.GESTURE_TAP, function(_) {
-                            parentScreen().startScreen(Type.getClassName(PictureScreen), { status: status, image: image });
+                            parentScreen.startScreen(Type.getClassName(PictureScreen), { status: status, image: image });
                         });
                         addChild(button);
                     }
@@ -133,17 +128,11 @@ class Postit extends Sprite {
                     var placeholder = UiUtil.staticText("载入失败".i18n());
                     addChild(placeholder.rox_move((w - placeholder.width) / 2, (imh - placeholder.height) / 2));
                 }
-            }, this.name);
+            }, false, MAX_RES);
             var anim = MyUtils.getLoadingAnim("载入中".i18n());
             addChild(anim.rox_move(w / 2, imh / 2));
         }
-        shown = true;
-    }
-
-    private function free(_) {
-        shown = false;
-        ResKeeper.disposeBundle(this.name);
-//        removeEventListener(Event.REMOVED_FROM_STAGE, free);
+        imgLoaded = true;
     }
 
     public function setWidth(width: Float, mode: Int) {
@@ -175,9 +164,9 @@ class Postit extends Sprite {
             layout = new RoxNinePatchData(new Rectangle(margin, 0, 20, 20), null, null, new Rectangle(0, 0, 20 + 2 * margin, 20 + margin));
             var txt: String = status.user.id == HpApi.instance.uid || status.mark <= 100 ? status.text : "此条微博已经被设置为私有";
             if (ptnUrl.match(txt)) {
-                trace("remove before: " + txt);
+//                trace("remove before: " + txt);
                 txt = ptnUrl.replace(txt, "");
-                trace("remove after: " + txt);
+//                trace("remove after: " + txt);
             }
             var texth: Null<Float> = mode == FULL ? null : fontsize * 2.8;
             var text = UiUtil.staticText(txt, 0, fontsize, true, width - bub.width - 4 - 2 * layout.contentGrid.x, texth);
@@ -197,7 +186,7 @@ class Postit extends Sprite {
 //            });
             var avbg = UiUtil.ninePatch("res/avatar_bg.9.png");
             userAvatar = new RoxFlowPane([ head ], avbg, function(_) {
-                parentScreen().startScreen(Type.getClassName(UserScreen), status.user.id);
+                parentScreen.startScreen(Type.getClassName(UserScreen), status.user.id);
             });
             userLabel = UiUtil.staticText(status.user.name, 0xFF0000, fontsize + 4, w - userAvatar.width - 2 * margin);
             var clock = UiUtil.bitmap("res/icon_time.png");
@@ -277,7 +266,7 @@ class Postit extends Sprite {
 //                        var agent = new RoxGestureAgent(button);
 //                        agent.swipeTimeout = 0;
 //                        button.addEventListener(RoxGestureEvent.GESTURE_TAP, function(_) {
-//                            parentScreen().startScreen(Type.getClassName(PictureScreen), image);
+//                            parent.startScreen(Type.getClassName(PictureScreen), image);
 //                        });
 //                        addChild(button);
 //                    }
@@ -290,6 +279,7 @@ class Postit extends Sprite {
 //            var anim = MyUtils.getLoadingAnim("载入中".i18n());
 //            addChild(anim.rox_move(w / 2, imh / 2));
 //        }
+        imgLoaded = false;
     }
 
     private function onPlay(e) {
@@ -320,12 +310,12 @@ class Postit extends Sprite {
                     }
                 });
             case "comment":
-                parentScreen().startScreen(Type.getClassName(CommentsScreen), id);
+                parentScreen.startScreen(Type.getClassName(CommentsScreen), id);
             case "delete":
                 HpApi.instance.get("/statuses/delete/" + id, {}, function(code: Int, data: Dynamic) {
                     switch (code) {
                         case 200:
-                            cast (parentScreen(), TimelineScreen).refresh(false);
+                            cast (parentScreen, TimelineScreen).refresh(false);
                             UiUtil.message("已删除".i18n());
                         default:
                             UiUtil.message("网络错误，ex=".i18n() + data);
@@ -333,17 +323,17 @@ class Postit extends Sprite {
                 });
             case "repost":
                 if (isGame()) {
-                    parentScreen().startScreen(Type.getClassName(GameRetweetScreen), status);
+                    parentScreen.startScreen(Type.getClassName(GameRetweetScreen), status);
                 } else { // is image
-                    var path = null;
+                    var path: String = null;
 #if cpp
-                    var tmppath = MyUtils.IMAGE_CACHE_DIR + "/" + StringTools.urlEncode(status.appData.image);
-                    trace("PictureScreen.retweet: path=" + tmppath + ",exists=" + sys.FileSystem.exists(tmppath));
-                    if (sys.FileSystem.exists(tmppath)) path = tmppath;
+                    if (MyUtils.localCacheExists(status.appData.image)) {
+                        path = MyUtils.localCachePath(status.appData.image);
+                    }
 #end
                     var tags: Array<String> = [];
                     MyUtils.asyncImage(status.appData.image, function(image: BitmapData) {
-                        parentScreen().startScreen(Type.getClassName(RetweetScreen), {
+                        parentScreen.startScreen(Type.getClassName(RetweetScreen), {
                         status: status,
                         image: { bmd: image, path: path, tags: tags },
                         data: null
@@ -358,14 +348,6 @@ class Postit extends Sprite {
     private inline function isGame() {
         var type = status.appData.type;
         return type != null && type != "" && type != AppData.IMAGE;
-    }
-
-    private inline function parentScreen() : RoxScreen {
-        var screen: DisplayObjectContainer = this;
-        do {
-            screen = screen.parent;
-        } while (screen != null && !Std.is(screen, RoxScreen));
-        return cast screen;
     }
 
 }

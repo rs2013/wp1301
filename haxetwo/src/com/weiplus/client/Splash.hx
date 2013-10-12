@@ -102,7 +102,7 @@ class Splash extends BaseScreen {
                 "com_weiplus_client_UserScreen.json"
         ];
         for (n in cacheNames) {
-            var s = ResKeeper.loadLocalText(TimelineScreen.CACHE_DIR + "/" + n);
+            var s = ResKeeper.loadLocalText(MyUtils.CACHE_DIR + "/" + n);
             if (s != null) ResKeeper.add("cache:" + n, s, ResKeeper.DEFAULT_BUNDLE);
         }
 #end
@@ -180,11 +180,11 @@ class Splash extends BaseScreen {
         }
 
         var dir = MyUtils.AR_CACHE_DIR;
-        if (!FileSystem.exists(dir + "/preloadedArMap.dat")) {
+        if (!FileSystem.exists(dir + "/preloadedArMap.dat")) { // first launching, do extracting
+            FileUtil.mkdirs(dir);
             var zipData = ResKeeper.loadAssetData("res/ar.zip");
             var r = new format.zip.Reader(new BytesInput(IOUtil.rox_toBytes(zipData)));
             var entries = r.read();
-            FileUtil.mkdirs(dir);
             var buf = new StringBuf();
             for (e in entries) {
                 var bytes: Bytes;

@@ -77,10 +77,13 @@ class RoxURLLoader {
             case IMAGE:
                 var iscpp = #if cpp true #else false #end;
                 if (iscpp && ba[0] == 'G'.code && ba[1] == 'I'.code && ba[2] == 'F'.code) {
-                    var gifdec = new GIFDecoder();
-                    gifdec.read(ba);
-                    var bmd = gifdec.getFrameCount() > 0 ? gifdec.getImage().bitmapData : new BitmapData(0, 0);
-                    onComplete(true, bmd);
+//                    trace("it's gif");
+//                    var gifdec = new GIFDecoder();
+//                    gifdec.read(ba);
+//                    var bmd = gifdec.getFrameCount() > 0 ? gifdec.getImage().bitmapData : new BitmapData(0, 0);
+//                    trace("gif ok");
+//                    onComplete(true, bmd);
+                    onComplete(false, null);
                 } else { // not a gif image or it's on flash target
                     var ldr = new Loader();
                     var imageDone = function(_) {

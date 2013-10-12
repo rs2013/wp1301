@@ -350,10 +350,12 @@ class RoutineScreen extends BaseScreen {
         var path = requestCode == 1 ? snapPath : untyped json.intentDataPath;
         var bmd = ResKeeper.loadLocalImage(path);
 #else
+        var path: String = null;
         var bmd = ResKeeper.loadAssetImage("res/8.jpg");
 #end
         requestCode = -1;
-        startScreen("com.weiplus.apps." + makerId + ".Maker", bmd);
+        var tags: Array<String> = [];
+        startScreen("com.weiplus.apps." + makerId + ".Maker", { path: path, bmd: bmd, imageTags: tags } );
         MyUtils.makerParentScreen = this.className;
     }
 

@@ -55,16 +55,13 @@ using com.roxstudio.haxe.game.GfxUtil;
 class TimelineScreen extends BaseScreen {
 
     private static inline var ALBUM_DIR = MyUtils.ALBUM_DIR;
+    private static inline var MAX_POSTITS = 30;
 
     public static inline var SPACING_RATIO = 1 / 40;
     private static inline var REFRESH_HEIGHT = 150;
     private static inline var TRIGGER_HEIGHT = 100;
     private static inline var FADE_TM = 0.2;
-#if android
-    public static inline var CACHE_DIR = "/sdcard/.harryphoto/cache";
-#elseif windows
-    public static inline var CACHE_DIR = "cache";
-#end
+    private static inline var CACHE_DIR = MyUtils.CACHE_DIR;
 
     var btnSingleCol: RoxFlowPane;
     var btnDoubleCol: RoxFlowPane;
@@ -217,11 +214,12 @@ class TimelineScreen extends BaseScreen {
                 status.appData.url = att.attachUrl;
                 status.appData.label = att.attachName;
             }
-            var postit = new Postit(status, postitw, compactMode ? Postit.COMPACT : numCol == 1 ? Postit.FULL : Postit.NORMAL);
+            var postit = new Postit(this, status, postitw, compactMode ? Postit.COMPACT : numCol == 1 ? Postit.FULL : Postit.NORMAL);
             postit.addEventListener(Event.SELECT, onPlay);
             postits.push(postit);
         }
         if (page != null && statuses.length > 0) page.oldestId = oldest;
+        if (postits.length > MAX_POSTITS) postits.splice(0, postits.length - MAX_POSTITS);
         update(numCol);
 //        DisplayListQuery.query.print(this.parent);
 //        trace("Postit.Sprite".find(this.parent));
@@ -540,10 +538,12 @@ class TimelineScreen extends BaseScreen {
         var path = requestCode == 1 ? snapPath : untyped json.intentDataPath;
         var bmd = ResKeeper.loadLocalImage(path);
 #else
+        var path: String = null;
         var bmd = ResKeeper.loadAssetImage("res/8.jpg");
 #end
         requestCode = -1;
-        startScreen("com.weiplus.apps." + makerId + ".Maker", bmd);
+        var tags: Array<String> = [];
+        startScreen("com.weiplus.apps." + makerId + ".Maker", { path: path, bmd: bmd, imageTags: tags } );
         MyUtils.makerParentScreen = this.className;
     }
 
