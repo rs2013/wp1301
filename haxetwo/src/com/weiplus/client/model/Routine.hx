@@ -1,5 +1,7 @@
 package com.weiplus.client.model;
 
+using com.roxstudio.i18n.I18n;
+
 class Routine {
 
     public var id: String;
@@ -16,11 +18,15 @@ class Routine {
     public function getMessage() : String {
         return switch (type) {
             case "COMMENTS_CREATE":
-                follower.name + "对您的作品发表了评论：" + digest;
+                follower.name + "对您的作品发表了评论：".i18n() + digest;
             case "STATUSES_PRAISE":
-                follower.name + "称赞了您的作品。";
+                follower.name + "称赞了您的作品。".i18n();
             case "FRIENDSHIPS_CREATE":
-                follower.name + "已开始关注您。";
+                if (follower.id == RoutineScreen.ADMIN_UID) {
+                    follower.name + ": " + digest;
+                } else {
+                    follower.name + "已开始关注您。".i18n();
+                }
             default:
                 "";
         }

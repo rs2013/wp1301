@@ -105,13 +105,18 @@
         <Widget bottom="0" widthPt="100" h="(110).dp()" skin:Img-src="'res/camera_bottom.png'.dpScale()" >
             <Button id="'btnLocal'" text="''"
                     left="50.dp()" top="22.dp()" w="100.dp()" h="66.dp()"
-                    ico:LazyBmp-src="'res/btn_camera_album.png'.dpScale()"
+                    ico:Bmp-src="'res/btn_camera_album.png'.dpScale()"
                     on-click="trace('open album'); onLocal();"
                     />
             <Button id="'btnSnap'" text="''"
                     left="(206).dp()" top="(13).dp()" w="(228).dp()" h="(82).dp()"
                     skin:Img-src="'res/btn_camera_snap.png'.dpScale()"
                     on-click="doSnap();"/>
+            <Button id="'btnUpdate'" text="''"
+                    right="50.dp()" top="22.dp()" w="100.dp()" h="66.dp()"
+                    ico:Bmp-src="'res/btn_ar_update.png'.dpScale()"
+                    on-click="updateAr();"
+                    />
         </Widget>
 
     </Widget>

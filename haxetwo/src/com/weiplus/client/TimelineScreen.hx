@@ -55,7 +55,7 @@ using com.roxstudio.haxe.game.GfxUtil;
 class TimelineScreen extends BaseScreen {
 
     private static inline var ALBUM_DIR = MyUtils.ALBUM_DIR;
-    private static inline var MAX_POSTITS = 30;
+    private static inline var MAX_POSTITS = 25;
 
     public static inline var SPACING_RATIO = 1 / 40;
     private static inline var REFRESH_HEIGHT = 150;
@@ -561,7 +561,6 @@ class TimelineScreen extends BaseScreen {
     override public function onScreenResult(requestCode: Int, resultCode: Int, resultData: Dynamic) {
         trace("onScreenResult,resultCode=" + resultCode+",data="+resultData+",makerId="+makerId);
         if (requestCode == 223 && resultCode == RoxScreen.OK) {
-            trace("resultdata=" + resultData);
             startScreen("com.weiplus.apps." + makerId + ".Maker", null, null, 1, resultData);
             MyUtils.makerParentScreen = this.className;
         } else if (requestCode == 12346 && resultCode == RoxScreen.OK) {

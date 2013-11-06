@@ -11,7 +11,6 @@ import com.roxstudio.haxe.game.GfxUtil;
 import haxe.Timer;
 import nme.text.TextFieldType;
 import com.roxstudio.haxe.net.RoxURLLoader;
-import com.roxstudio.haxe.game.ResKeeper;
 import com.roxstudio.haxe.game.GameUtil;
 import com.roxstudio.haxe.game.ResKeeper;
 import nme.display.Bitmap;

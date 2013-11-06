@@ -38,7 +38,11 @@ class SelectedScreen extends TimelineScreen {
 
     private function onComplete(code: Int, data: Dynamic) {
         refreshing = false;
-        if (code != 200) return;
+        if (code != 200) {
+            UiUtil.rox_removeByName(this, MyUtils.LOADING_ANIM_NAME);
+            UiUtil.message("发生错误: ".i18n() + "code=" + code + ",error=" + data);
+            return;
+        }
         var pageInfo = data.statuses;
         if (page == null) page = new PageModel();
         page.rows = pageInfo.rows;

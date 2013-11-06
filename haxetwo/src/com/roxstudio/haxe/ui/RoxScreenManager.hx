@@ -62,8 +62,11 @@ class RoxScreenManager extends Sprite {
 
 //        trace(">>startScreen(" + source + "," + screenClassName + "," + finishToScreen + ")<<");
 //        starttm = haxe.Timer.stamp();
-        if (source != null && (stack.isEmpty() || stack.first().className != source.className))
-            throw "startScreen: Illegal stack state or bad source screen '" + source + "', stack=" + stack;
+        if (source != null && (stack.isEmpty() || stack.first().className != source.className)) {
+            trace("startScreen: Illegal stack state or bad source screen '" + source + "', stack=" + stack);
+            // TODO fix this
+            source = null;
+        }
 //        trace("StartScreen.afterSnap, time=" + (haxe.Timer.stamp() - starttm));
         if (finishToScreen != null) {
             finishScreen(source, finishToScreen, RoxScreen.CANCELED, null, RoxAnimate.NO_ANIMATE, true);
@@ -93,8 +96,11 @@ class RoxScreenManager extends Sprite {
 
 //        trace("<<finishScreen(screen=" + screen + ",finishTo=" + finishToScreen + ",result=" + resultCode + ",data=" + resultData + ",anim=" + animate + ",isbefore=" + isBeforeStart);
         var top: StackItem = stack.pop();
-        if (top == null || top.className != screen.className)
-            throw "finishScreen: Illegal stack state or bad source screen '" + top + "'";
+        if (top == null || top.className != screen.className) {
+//            throw "finishScreen: Illegal stack state or bad source screen '" + top + "'";
+            trace("finishScreen: Illegal stack state or bad source screen '" + top + "'");
+            // TODO fix this
+        }
         if (stack.isEmpty()) return;
 
         if (animate == null) animate = top.animate.getReverse();

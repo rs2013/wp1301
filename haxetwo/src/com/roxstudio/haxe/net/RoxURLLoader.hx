@@ -29,11 +29,14 @@ class RoxURLLoader {
     public var url(default, null): String;
     public var type(default, null): Int;
     public var started(default, null): Bool = false;
+    private var timeout: Float = 15;
+    private var timer: haxe.Timer;
 
-    public function new(url: String, type: Int = BINARY, onComplete: Bool -> Dynamic -> Void) {
+    public function new(url: String, type: Int = BINARY, onComplete: Bool -> Dynamic -> Void, ?timeout: Float = 15) {
         this.url = url;
         this.type = type;
         this.onComplete = onComplete;
+        this.timeout = timeout;
     }
 
     public dynamic function onComplete(isOk: Bool, data: Dynamic) : Void {}
@@ -56,21 +59,23 @@ class RoxURLLoader {
                 });
             }
             loader.addEventListener(IOErrorEvent.IO_ERROR, function(e: Event) {
-                onComplete(false, new Error(IOErrorEvent.IO_ERROR));
+                asyncOnComp(false, new Error(IOErrorEvent.IO_ERROR));
             });
 #if !html5
             loader.addEventListener(nme.events.SecurityErrorEvent.SECURITY_ERROR, function(e: Event) {
-                onComplete(false, new Error(nme.events.SecurityErrorEvent.SECURITY_ERROR));
+                asyncOnComp(false, new Error(nme.events.SecurityErrorEvent.SECURITY_ERROR));
             });
 #end
+            timer = new haxe.Timer(Std.int(timeout * 1000));
+            timer.run = oncomp.bind(false, new Error("Request timeout"));
             loader.load(new URLRequest(url));
         } catch (e: Dynamic) {
-            trace("roxurlloader: error=" + e);
-            haxe.Timer.delay(function() { onComplete(false, e); }, 0);
+            asyncOnComp(false, e);
         }
     }
 
     private function onDone(e: Dynamic) {
+        if (timer != null) timer.stop();
         var ba: ByteArray = cast e.target.data;
         if (onRaw != null) onRaw(ba);
         switch (type) {
@@ -82,13 +87,23 @@ class RoxURLLoader {
 //                    gifdec.read(ba);
 //                    var bmd = gifdec.getFrameCount() > 0 ? gifdec.getImage().bitmapData : new BitmapData(0, 0);
 //                    trace("gif ok");
-//                    onComplete(true, bmd);
-                    onComplete(false, null);
+//                    oncomp(true, bmd);
+                    oncomp(false, new Error("GIF is not supported"));
                 } else { // not a gif image or it's on flash target
+#if cpp
+                    var bmd = null;
+                    try {
+                        bmd = BitmapData.loadFromBytes(ba);
+                        if (bmd == null || bmd.width == 0) throw "error";
+                        oncomp(true, bmd);
+                    } catch (e: Dynamic) {
+                        oncomp(false, new Error("Malformed image data"));
+                    }
+#else
                     var ldr = new Loader();
                     var imageDone = function(_) {
                         var bmd = cast(ldr.content, Bitmap).bitmapData;
-                        onComplete(true, bmd);
+                        oncomp(true, bmd);
                     }
                     ldr.loadBytes(ba);
                     if (ldr.content != null) {
@@ -97,12 +112,23 @@ class RoxURLLoader {
                         var ldri = ldr.contentLoaderInfo;
                         ldri.addEventListener(Event.COMPLETE, imageDone);
                     }
+#end
                 }
             case TEXT:
-                onComplete(true, ba.toString());
+                oncomp(true, ba.toString());
             case BINARY:
-                onComplete(true, ba);
+                oncomp(true, ba);
         }
+    }
+
+    private inline function asyncOnComp(isOk: Bool, data: Dynamic) {
+        haxe.Timer.delay(oncomp.bind(isOk, data), 0);
+    }
+
+    private inline function oncomp(isOk: Bool, data: Dynamic) {
+        if (!isOk) trace("RoxURLLoader: error=" + data);
+        if (timer != null) timer.stop();
+        onComplete(isOk, data);
     }
 
 }

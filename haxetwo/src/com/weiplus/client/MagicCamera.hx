@@ -61,12 +61,15 @@ using StringTools;
 class MagicCamera extends MakerScreen {
 
     private static inline var ALBUM_DIR = MyUtils.ALBUM_DIR;
+    private static inline var MAX_PIXELS = 500000;
 
     private var currentCid = -1;
     private var currentAr: Widget;
     private var operation: Int;
     private var inputBmd: BitmapData = null;
     private var requestCode = -1;
+
+    private static var updatingAr: Bool = false;
 
     public function new() {
         super();
@@ -146,7 +149,7 @@ class MagicCamera extends MakerScreen {
             if (box.h > bmp.top + bmph - box.top) box.h = bmp.top + bmph - box.top;
         });
 
-        showFolder(null, -1, false);
+        showFolder(-1);
 
         this.addEventListener(Event.ACTIVATE, onActive);
 
@@ -162,60 +165,17 @@ class MagicCamera extends MakerScreen {
         }
     }
 
-    private function showFolder(_, cid: Int, forceUpdate = false) {
-        trace("showFolder, cid=" + cid + ",forceUpdate=" + forceUpdate);
+    private function showFolder(cid: Int) {
+        trace("showFolder, cid=" + cid);
         var cachefile = cid == -1 ? "arfolders.json" : "arlist_" + cid + ".json";
         var data = restoreCache(cachefile);
-        if (data == null) forceUpdate = true;
-        if (!forceUpdate) {
-            if (cid == -1) {
-                UiUtil.delay(folderLoaded.bind(data));
-            } else {
-                UiUtil.delay(arLoaded.bind(data));
-            }
+        if (data == null) {
+            trace("showFolder error, cid=" + cid); // should not happen
+        }
+        if (cid == -1) {
+            UiUtil.delay(folderLoaded.bind(data));
         } else {
-            MyUtils.showWaiting("更新中".i18n());
-            var reqUrl = cid == -1 ? "/ar/catalogs/list" : "/ar/goods/by_catalog/" + cid;
-            HpApi.instance.get(reqUrl, { sinceId: 0, rows: 100 }, function(code: Int, data: Dynamic) {
-                if (code != 200) {
-                    UiUtil.message("网络错误. code=".i18n() + code + ",message=" + data);
-                    return;
-                }
-                storeCache(cachefile, data);
-                var queue: List<String> = new List();
-                if (cid == -1) {
-                    for (c in cast(data.catalogs.records, Array<Dynamic>)) {
-                        if (!MyUtils.arCacheExists(c.icon)) queue.add(c.icon);
-                    }
-                } else {
-                    for (c in cast(data.goods.records, Array<Dynamic>)) {
-                        if (!MyUtils.arCacheExists(c.image)) queue.add(c.image);
-                    }
-                }
-                var count = queue.length;
-                var runner: Void -> Void = null;
-                runner = function() {
-                    var url = queue.pop();
-                    if (url == null) { // all jobs completed
-                        MyUtils.hideWaiting();
-                        var txt = cid == -1 ? "个新目录".i18n() : "个新魔贴".i18n();
-                        UiUtil.message("更新完成，更新了".i18n() + count + txt);
-                        if (cid == -1) {
-                            folderLoaded(data);
-                        } else {
-                            arLoaded(data);
-                        }
-                    } else {
-                        MyUtils.asyncArImage(url, function(isOk) {
-                            if (!isOk) {
-                                trace("load AR folder failed, id=" + cid + ",url=" + url);
-                            }
-                            runner();
-                        });
-                    }
-                };
-                runner();
-            });
+            UiUtil.delay(arLoaded.bind(data));
         }
     }
 
@@ -230,7 +190,7 @@ class MagicCamera extends MakerScreen {
             currentCid = -1;
 //            UIBuilder.get("folderList").parent.visible = true;
 //            UIBuilder.get("arList").parent.visible = false;
-            showFolder(null, -1, false);
+            showFolder(-1);
             return false;
         } else if (operation == 3) {
             return true;
@@ -279,20 +239,13 @@ class MagicCamera extends MakerScreen {
             }, function(folder) {
                 folder.addEventListener(MouseEvent.CLICK, function(_) {
                     currentCid = c.id;
-                    showFolder(null, currentCid, false);
+                    showFolder(currentCid);
                 });
                 folder.refresh();
             }));
 
             folderList.addChild(folder);
         }
-
-        var updatebtn: Button = UIBuilder.create(Button, { defaults: "ArFolderButtons" });
-        updatebtn.ico = new Bmp();
-        updatebtn.ico.bitmapData = BmdUtil.transform(ResKeeper.getAssetImage("res/icon_ar_update.png"), "resize", [ (100).dp(), (100).dp(), BmdUtil.RESIZE_USE_MARGIN ]);
-        updatebtn.addEventListener(MouseEvent.CLICK, showFolder.bind(_, -1, true));
-        updatebtn.refresh();
-        folderList.addChild(updatebtn);
 
         var scroll: Scroll = cast folderList.parent;
         scroll.tweenStop();
@@ -355,13 +308,6 @@ class MagicCamera extends MakerScreen {
             folderList.addChild(btn);
         }
 
-        btn = UIBuilder.create(Button, { defaults: "ArFolderButtons" });
-        btn.ico = new Bmp();
-        btn.ico.bitmapData = BmdUtil.transform(ResKeeper.getAssetImage("res/icon_ar_update.png"), "resize", [ (100).dp(), (100).dp(), BmdUtil.RESIZE_USE_MARGIN ]);
-        btn.addEventListener(MouseEvent.CLICK, showFolder.bind(_, currentCid, true));
-        btn.refresh();
-        folderList.addChild(btn);
-
         if (folderList.numChildren < 5) { // make sure it's longer than hscroll
             for (i in folderList.numChildren...5) {
                 var btn: Button = UIBuilder.create(Button, { defaults: "ArFolderButtons" });
@@ -409,7 +355,7 @@ class MagicCamera extends MakerScreen {
         updateArBox();
     }
 
-    private function restoreCache(filename: String) : Dynamic {
+    private static function restoreCache(filename: String) : Dynamic {
         var cache = ResKeeper.get("cache:" + filename);
         if (cache != null) return cache;
         var path = MyUtils.AR_CACHE_DIR + "/" + filename;
@@ -419,7 +365,7 @@ class MagicCamera extends MakerScreen {
         return null;
     }
 
-    private function storeCache(filename: String, data: Dynamic) {
+    private static function storeCache(filename: String, data: Dynamic) {
         FileUtil.mkdirs(MyUtils.AR_CACHE_DIR);
         var path = MyUtils.AR_CACHE_DIR + "/" + filename;
         var jsonStr = Json.stringify(data);
@@ -730,17 +676,20 @@ class MagicCamera extends MakerScreen {
                 onNextStep();
             }
         }
+        var path = ALBUM_DIR + "/HP_AR_" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
+        var text = "成功保存在".i18n() + ALBUM_DIR;
 #if cpp
         GameUtil.worker.addJob(new SimpleJob<Dynamic>(image, function(imgInfo) {
             com.roxstudio.haxe.io.FileUtil.mkdirs(ALBUM_DIR);
-            var path = ALBUM_DIR + "/HP_AR_" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
             trace("MagicCamera: start saving image to " + path);
+            cpp.vm.Gc.run(true);
             File.saveBytes(path, GameUtil.encodeJpeg(bmd));
             imgInfo.path = path;
 //            trace("image saved, type=\"" + status.appData.type + "\"");
         }, function(imgInfo) {
             MyUtils.hideWaiting();
             onComplete(imgInfo);
+            UiUtil.message(text);
         } ));
 #else
         onComplete(image);
@@ -799,8 +748,8 @@ class MagicCamera extends MakerScreen {
             bmd = ResKeeper.loadAssetImage(path);
 #end
         }
-        if (bmd.width * bmd.height > 1000000) { // too large
-            var ratio = Math.sqrt(1000000 / (bmd.width * bmd.height));
+        if (bmd.width * bmd.height > MAX_PIXELS) { // too large
+            var ratio = Math.sqrt(MAX_PIXELS / (bmd.width * bmd.height));
             var newbmd = new BitmapData(Std.int(bmd.width * ratio), Std.int(bmd.height * ratio), true, 0);
             newbmd.draw(bmd, new Matrix(ratio, 0, 0, ratio), true);
             bmd.dispose();
@@ -848,6 +797,68 @@ class MagicCamera extends MakerScreen {
         if (cropBox.h > (DipUtil.stageHeightDp - 120).dp() - cropBox.top)
             cropBox.h = (DipUtil.stageHeightDp - 120).dp() - cropBox.top;
 
+    }
+
+    static public function updateAr() {
+        if (updatingAr) {
+            UiUtil.message("正在更新魔贴中".i18n());
+            return;
+        } else {
+            UiUtil.message("已开始在后台更新魔贴，此过程可能需要几分钟".i18n());
+        }
+        trace("start updateAr");
+        updatingAr = true;
+        var folderCount = 0, arCount = 0, failCount = 0;
+        var queue: List<{ url: String, type: Int }> = new List();
+        queue.add({ url: null, type: 0 });
+        var runner: Void -> Void = null;
+        runner = function() {
+            var q = queue.pop();
+            if (q == null) { // all job done
+                trace("updateAr over: folders="+folderCount+",ars="+arCount+",fails="+failCount);
+                UiUtil.message("更新魔贴完成, 更新了".i18n() + folderCount + "个目录,".i18n() + arCount + "个魔贴,遇到".i18n() + failCount + "个错误".i18n());
+                updatingAr = false;
+                return;
+            }
+            switch (q.type) {
+                case 0: // folder list
+                    HpApi.instance.get("/ar/catalogs/list", { sinceId: 0, rows: 100 }, function(code: Int, data: Dynamic) {
+                        if (code != 200) {
+                            UiUtil.message("获取目录失败，更新已停止. code=".i18n() + code + ",message=" + data);
+                            updatingAr = false;
+                            return;
+                        }
+                        storeCache("arfolders.json", data);
+                        for (c in cast(data.catalogs.records, Array<Dynamic>)) {
+                            queue.add({ url: c.id, type: 1 });
+                            if (!MyUtils.arCacheExists(c.icon)) {
+                                queue.add({ url: c.icon, type: 2 });
+                            };
+                        }
+                        runner();
+                    });
+                case 1: // a folder
+                    HpApi.instance.get("/ar/goods/by_catalog/" + q.url, { sinceId: 0, rows: 100 }, function(code: Int, data: Dynamic) {
+                        if (code == 200) {
+                            storeCache("arlist_" + q.url + ".json", data);
+                            for (c in cast(data.goods.records, Array<Dynamic>)) {
+                                if (!MyUtils.arCacheExists(c.image)) {
+                                    queue.add({ url: c.image, type: 3 });
+                                }
+                            }
+                        } else { failCount++; }
+                        runner();
+                    });
+                case 2, 3: // image
+                    MyUtils.asyncArImage(q.url, function(isOk) {
+                        if (isOk) {
+                            if (q.type == 2) { folderCount++; } else { arCount++; }
+                        } else { failCount++; }
+                        runner();
+                    });
+            }
+        };
+        runner();
     }
 
 }

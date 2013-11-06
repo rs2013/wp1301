@@ -109,7 +109,7 @@ class HpApi {
                     data = json;
                 } catch (e: Dynamic) {
                     code = -2;
-                    data = "Invalid response data.";
+                    data = "Invalid response JSON data.";
                 }
             } else {
                 code = -1; // network error

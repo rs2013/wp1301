@@ -1,5 +1,7 @@
 package com.weiplus.client;
 
+import Reflect;
+import flash.net.SharedObject;
 import nme.display.Graphics;
 import flash.display.Sprite;
 import nme.display.Tilesheet;
@@ -23,6 +25,9 @@ using StringTools;
 
 class Splash extends BaseScreen {
 
+    private static inline var SHARED_OBJECT_NAME = SettingScreen.SHARED_OBJECT_NAME;
+    private static var autoUpdate: Bool = true;
+
     private var loginOk = true;
 
     override public function onCreate() {
@@ -35,6 +40,8 @@ class Splash extends BaseScreen {
         loginOk = HpManager.login();
 //        trace("loginOk=" + loginOk + ",token=" + HpManager.getTokenAsJson());
 #end
+        var settingsSo = SharedObject.getLocal(SHARED_OBJECT_NAME);
+        autoUpdate = !Reflect.hasField(settingsSo.data, "autoUpdateAr") || settingsSo.data.autoUpdateAr;
     }
 
     override public function drawBackground() {
@@ -174,6 +181,14 @@ class Splash extends BaseScreen {
                 "btn_camera_snap.png",
                 "btn_camera_ok.png",
                 "btn_camera_cancel.png",
+                "btn_ar_update.png",
+                "icon_ar_local.png",
+                "icon_crop.png",
+                "ar_obj_rot.png",
+                "ar_obj_del.png",
+                "ar_obj_buy.png",
+                "ar_obj_mir.png",
+                "ar_obj_inf.png",
         ];
         for (n in imageNames) {
             ResKeeper.getAssetImage("res/" + n, ResKeeper.DEFAULT_BUNDLE);
@@ -195,11 +210,11 @@ class Splash extends BaseScreen {
             }
             File.saveContent(dir + "/preloadedArMap.dat", buf.toString());
         }
-        var preloaded = File.getContent(dir + "/preloadedArMap.dat").split(";");
+//        var preloaded = File.getContent(dir + "/preloadedArMap.dat").split(";");
 //        trace("preloaded=" + preloaded);
-        var map = new Hash<Int>();
-        for (f in preloaded) map.set(f, 1);
-        ResKeeper.add("preloadedArMap", map, ResKeeper.DEFAULT_BUNDLE);
+//        var map = new Hash<Int>();
+//        for (f in preloaded) map.set(f, 1);
+//        ResKeeper.add("preloadedArMap", map, ResKeeper.DEFAULT_BUNDLE);
 
 //        var hash = Unzipper.decompress(ResKeeper.loadAssetData("res/astroBoy_walk_Max.zip"), "");
 //        for (n in hash.keys()) {
@@ -209,6 +224,12 @@ class Splash extends BaseScreen {
 
         var toScreen = loginOk ? Type.getClassName(HomeScreen) : Type.getClassName(PublicScreen);
         startScreen(toScreen, PARENT);
+
+        var isWifi = #if android HaxeStub.isWifiConnected() #else true #end;
+        trace("toScreen="+toScreen+",isWifi=" + isWifi);
+        if (autoUpdate && isWifi) {
+            MagicCamera.updateAr();
+        }
     }
 
 //    private function doLoad() {
@@ -217,6 +238,7 @@ class Splash extends BaseScreen {
 //        new TestC().foo();
 //    }
 //
+
 }
 
 //class TestA {

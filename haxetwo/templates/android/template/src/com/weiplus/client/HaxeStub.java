@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -258,5 +260,31 @@ public class HaxeStub {
         Log.i(TAG, "getResult code=" + requestCode);
         return resultMap.get(requestCode);
     }
-    
+
+    public static boolean isNetworkConnected() {
+        Activity context = MainActivity.getInstance();
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            NetworkInfo[] info = cm.getAllNetworkInfo();
+            if (info != null) {
+                for (int i = 0; i < info.length; i++) {
+                    if (info[i].isConnected()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean isWifiConnected() {
+        Activity context = MainActivity.getInstance();
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            NetworkInfo info = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            return info != null && info.isConnected();
+        }
+        return false;
+    }
+
 }

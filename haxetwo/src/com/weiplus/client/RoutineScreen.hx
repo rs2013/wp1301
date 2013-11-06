@@ -30,6 +30,10 @@ class RoutineScreen extends BaseScreen {
 
     private static inline var ALBUM_DIR = MyUtils.ALBUM_DIR;
 
+    public static inline var ADMIN_UID = "198";
+    private static inline var ADMIN_NAME = "赫敏小秘书";
+    private static inline var ADMIN_AVATAR = "http://www.appmagics.cn/resources/xiaomishu.jpg";
+
     private static inline var REFRESH_HEIGHT = 100;
     private static inline var TRIGGER_HEIGHT = 60;
     private static inline var SPACING_RATIO = 1 / 40;
@@ -177,14 +181,28 @@ class RoutineScreen extends BaseScreen {
         main.graphics.clear();
         main.rox_removeAll();
 
+        var WELCOME_MSG = "欢迎进入哈利波图魔法世界，玩转大片，与明星合影，动漫cosplay，游戏互动，让更多人见证你的不可思议！".i18n();
         if (routines.length == 0) {
-            var label = UiUtil.staticText("暂时没有动态".i18n(), 0, buttonFontSize);
-            main.addChild(label.rox_move((screenWidth - label.width) / 2, spacing * 2));
-            return;
+            var routine = new Routine();
+            routine.id = "0";
+            routine.type = "FRIENDSHIPS_CREATE";
+            routine.oid = "0";
+            routine.digest = WELCOME_MSG;
+            routine.createdAt = Date.now();
+            var user: User = routine.user = new User();
+            user.id = HpApi.instance.uid;
+            user = routine.follower = new User();
+            user.id = ADMIN_UID;
+            user.name = ADMIN_NAME;
+            user.profileImage = ADMIN_AVATAR;
+            routines.push(routine);
+//            var label = UiUtil.staticText("暂时没有动态".i18n(), 0, buttonFontSize);
+//            main.addChild(label.rox_move((screenWidth - label.width) / 2, spacing * 2));
+//            return;
         }
 
         var yoff: Float = 0;
-        for (c in routines) {
+        for (c in routines) { // TODO handle system broadcast messages
 //            if (!c.follower.profileImage.startsWith("http:")) { trace("bad url:" + c.follower.profileImage); continue; }
             var sp = new Sprite();
             var text = UiUtil.staticText(c.getMessage(), 0, buttonFontSize * 0.9, true, screenWidth - 60 - 3 * spacing);

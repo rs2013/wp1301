@@ -32,8 +32,6 @@ using StringTools;
 
 class Postit extends Sprite {
 
-    public static inline var MAX_RES = 800000;
-
     public static inline var COMPACT = 1;
     public static inline var NORMAL = 2;
     public static inline var FULL = 3;
@@ -68,6 +66,7 @@ class Postit extends Sprite {
         this.status = inStatus;
         this.name = "postit_" + status.id;
         setWidth(width, mode);
+//        trace(name + " created");
     }
 
     public function update() {
@@ -128,7 +127,7 @@ class Postit extends Sprite {
                     var placeholder = UiUtil.staticText("载入失败".i18n());
                     addChild(placeholder.rox_move((w - placeholder.width) / 2, (imh - placeholder.height) / 2));
                 }
-            }, false, MAX_RES);
+            }, false);
             var anim = MyUtils.getLoadingAnim("载入中".i18n());
             addChild(anim.rox_move(w / 2, imh / 2));
         }

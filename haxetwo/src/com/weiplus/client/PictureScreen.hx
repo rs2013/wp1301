@@ -38,14 +38,14 @@ class PictureScreen extends BaseScreen {
         title.addChild(UiUtil.staticText("查看原图".i18n(), 0xFFFFFF, titleFontSize * 1.2));
         super.onCreate();
         var btnSave = UiUtil.button(UiUtil.TOP_LEFT, null, "保存".i18n(), 0xFFFFFF, titleFontSize, "res/btn_common.9.png", function(_) {
-            var text1 = "保存成功".i18n();
+            var savePath = ALBUM_DIR + "/" + "HP_SAVE_" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
+            var text1 = "成功保存在".i18n() + ALBUM_DIR;
             var text2 = "保存中".i18n();
 #if cpp
             MyUtils.asyncOperation({}, function(_) {
                 FileUtil.mkdirs(ALBUM_DIR);
                 var path = MyUtils.IMAGE_CACHE_DIR + "/" + StringTools.urlEncode(status.appData.image);
                 trace("PictureScreen: path=" + path + ",exists=" + sys.FileSystem.exists(path));
-                var savePath = ALBUM_DIR + "/" + "HP_SAVE_" + Std.int(Date.now().getTime() / 1000) + "_" + Std.random(10000) + ".jpg";
                 if (sys.FileSystem.exists(path)) {
                     trace("copy from " + path + " to " + savePath);
                     sys.io.File.copy(path, savePath);

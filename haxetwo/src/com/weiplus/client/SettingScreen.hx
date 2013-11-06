@@ -1,5 +1,7 @@
 package com.weiplus.client;
 
+import Reflect;
+import flash.net.SharedObject;
 import ru.stablex.ui.UIBuilder;
 import ru.stablex.ui.widgets.Floating;
 import com.roxstudio.haxe.ui.UiUtil;
@@ -14,11 +16,16 @@ using com.roxstudio.haxe.ui.UiUtil;
 using com.roxstudio.haxe.ui.DipUtil;
 
 class SettingScreen extends BaseScreen {
+
+    public static inline var SHARED_OBJECT_NAME = "harryphoto.settings";
+    private static var settingsSo: SharedObject;
+
     private var starttm: Float;
 
     public function new() {
         super();
         starttm = haxe.Timer.stamp();
+        settingsSo = SharedObject.getLocal(SHARED_OBJECT_NAME);
     }
 
     override public function createContent(h: Float) : Sprite {
@@ -35,12 +42,18 @@ class SettingScreen extends BaseScreen {
         yoff += list.height + spacing;
 
         arr = [];
+        var autoUpdate = !Reflect.hasField(settingsSo.data, "autoUpdateAr") || settingsSo.data.autoUpdateAr;
+        arr.push({ id: "auto_update_ar", icon: null, name: "Wifi下自动更新魔贴".i18n(), type: 3, data: autoUpdate });
         arr.push({ id: "umeng_xp", icon: null, name: "推荐应用".i18n(), type: 1, data: null });
         arr.push({ id: "umeng_fb", icon: null, name: "意见反馈".i18n(), type: 1, data: null });
         arr.push({ id: "clear_image_cache", icon: null, name: "清除图片缓存".i18n(), type: 1, data: null });
         arr.push({ id: "about", icon: null, name: "关于哈利波图(Beta)".i18n(), type: 1, data: null });
         list = MyUtils.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
             switch (i.id) {
+                case "auto_update_ar":
+                    autoUpdate = !autoUpdate;
+                    settingsSo.data.autoUpdateAr = autoUpdate;
+                    settingsSo.flush();
 #if android
                 case "umeng_xp": HaxeStub.startUmengXp();
                 case "umeng_fb": HaxeStub.startUmengFb();

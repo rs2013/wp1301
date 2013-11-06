@@ -126,18 +126,41 @@ class HaxeStub
 		a.push(arg2);
 		_onActivityResult_func(a);
 	}
-	
-	
-	private static var _getResult_func:Dynamic;
 
-	public static function getResult(arg0:Int):String
-	{
-		if (_getResult_func == null)
-			_getResult_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "getResult", "(I)Ljava/lang/String;", true);
-		var a = new Array<Dynamic>();
-		a.push(arg0);
-		return _getResult_func(a);
-	}
-	
-	
+
+    private static var _getResult_func:Dynamic;
+
+    public static function getResult(arg0:Int):String
+    {
+        if (_getResult_func == null)
+            _getResult_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "getResult", "(I)Ljava/lang/String;", true);
+        var a = new Array<Dynamic>();
+        a.push(arg0);
+        return _getResult_func(a);
+    }
+
+
+    private static var _isNetworkConnected_func:Dynamic;
+
+    public static function isNetworkConnected():Bool
+    {
+        if (_isNetworkConnected_func == null)
+            _isNetworkConnected_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "isNetworkConnected", "()Z", true);
+        var a = new Array<Dynamic>();
+        return _isNetworkConnected_func(a);
+    }
+
+
+    private static var _isWifiConnected_func:Dynamic;
+
+    public static function isWifiConnected():Bool
+    {
+        if (_isWifiConnected_func == null)
+            _isWifiConnected_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HaxeStub", "isWifiConnected", "()Z", true);
+        var a = new Array<Dynamic>();
+        return _isWifiConnected_func(a);
+    }
+
+
+
 }
