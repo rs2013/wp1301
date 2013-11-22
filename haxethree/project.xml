@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+
+	<meta title="哈利波图" package="com.weiplus.client" version="1.3.0" company="迈吉客科技（上海）有限公司" />
+	<app file="harryphoto" main="com.weiplus.client.Main" />
+
+    <window fps="30" background="0xFFFFFF" hardware="true" width="540" height="800" depthBuffer="true" orientation="portrait" resizable="false" />
+    <window fps="30" background="0xFFFFFF" hardware="true" width="0" height="0" depthBuffer="true" orientation="portrait" resizable="false" if="android" />
+
+    <set name="BUILD_DIR" value="bin" />
+
+    <set name="SHOW_CONSOLE" value="1" />
+    <setenv name="show_console" value="1" if="cpp" />
+<!-- <setenv name="no_console" value="1" if="cpp" />-->
+
+    <source path="src" />
+
+    <haxedef name="fdb" if="target_flash" />
+    <haxedef name="network-sandbox" if="target_flash" />
+    <haxedef name="js_can_implement_array_access" if="html5" />
+
+    <haxelib name="openfl" />
+    <haxelib name="openfl-compatibility" />
+    <haxelib name="actuate" />
+    <haxelib name="spritesheet" />
+    <haxelib name="format" />
+    <haxelib name="stablexui" />
+    <haxelib name="rox-i18n" />
+    <compilerflag name="--macro com.roxstudio.i18n.I18n.locale('global')" />
+    <compilerflag name="--macro com.roxstudio.i18n.I18n.assets('res/i18n')" />
+
+    <icon path="res/icon/icon96.png" size="96"/>
+    <icon path="res/icon/icon72.png" size="72"/>
+    <icon path="res/icon/icon48.png" size="48"/>
+    <icon path="res/icon/icon36.png" size="36"/>
+
+    <assets path="res" include="*" exclude="icon/*.*" />
+
+    <template path="templates" />
+    <template path="templates/android/template/src/com/weiplus/client/MainActivity.java" rename="src/com/weiplus/client/MainActivity.java" if="android" />
+    
+    <android target-sdk-version="10"/>
+
+    <certificate path="D:\work\ws_haxe\wp1301\haxeone\appmagics.keystore"
+                 alias="appmagics"
+                 password="appmagics"
+                 alias-password="appmagics"
+                 if="android" />
+
+</project>

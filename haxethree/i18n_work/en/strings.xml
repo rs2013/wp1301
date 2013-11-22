@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<strings>
+  <file path="src/com/weiplus/apps/jigsaw/App.hx">
+    <t id="预览">Preview</t>
+  </file>
+  <file path="src/com/weiplus/apps/slidepuzzle/App.hx">
+    <t id="预览">Preview</t>
+  </file>
+  <file path="src/com/weiplus/apps/swappuzzle/App.hx">
+    <t id="预览">Preview</t>
+  </file>
+  <file path="src/com/weiplus/client/AndroidCamera.hx">
+    <t id="启动相机中">Starting Camera</t><!--line 30-->
+  </file>
+  <file path="src/com/weiplus/client/BaseScreen.hx">
+    <t id="返回">Back</t>
+  </file>
+  <file path="src/com/weiplus/client/CommentsScreen.hx">
+    <t id="发表评论">Add Comment</t>
+    <t id="暂时没有评论">No comments at the moment.</t>
+    <t id="没有更多评论了">No more comments</t>
+    <t id="测试评论">A test comment</t>
+    <t id="添加">Add</t>
+    <t id="添加评论...">Add comment...</t>
+    <t id="网络错误. code=">Network error. code=</t>
+    <t id="评论列表">Comments</t>
+    <t id="评论已经添加">Comment added</t>
+    <t id="载入中">Loading</t>
+  </file>
+  <file path="src/com/weiplus/client/FriendsList.hx">
+    <t id="关注列表">Follows</t>
+    <t id="关系更新成功">Updated</t>
+    <t id="取消关注">Unfollow</t>
+    <t id="好友列表">_Friends_</t>
+    <t id="尚未关注任何人"> has no follows.</t>
+    <t id="您">You</t>
+    <t id="添加关注">Follow</t>
+    <t id="目前还没有粉丝"> has no followers.</t>
+    <t id="粉丝列表">Followers</t>
+    <t id="网络错误. code=">Network error. code=</t>
+    <t id="网络错误，code=">Network error. code=</t>
+    <t id="载入中">Loading</t>
+  </file>
+  <file path="src/com/weiplus/client/HomeScreen.hx">
+    <t id="发生错误: ">Error: </t><!--line 57-->
+    <t id="哈利波图(Beta)">appmagicsPhoto</t><!--line 38-->
+  </file>
+  <file path="src/com/weiplus/client/LoginScreen.hx">
+    <t id="人人网账号登陆">Use Renren Account</t>
+    <t id="新浪微博账号登陆">Use Weibo Account</t>
+    <t id="登录中">Signing In</t>
+    <t id="登录错误. error=">Login failed. error=</t>
+    <t id="腾讯微博账号登陆">Use Tencent Account</t>
+  </file>
+  <file path="src/com/weiplus/client/MagicEditor.hx">
+    <t id="个目录,"> folders, </t><!--line 706-->
+    <t id="个错误"> errors.</t><!--line 706-->
+    <t id="个魔贴,遇到"> ARs with </t><!--line 706-->
+    <t id="保存中">Saving</t><!--line 552-->
+    <t id="已开始在后台更新魔贴，此过程可能需要几分钟">Updating started, this may take a few minutes.</t><!--line 694-->
+    <t id="成功保存在">Saved at </t><!--line 556-->
+    <t id="更新魔贴完成, 更新了">Updated </t><!--line 706-->
+    <t id="正在更新魔贴中">Updating</t><!--line 691-->
+    <t id="获取目录失败，更新已停止. code=">Network error, updating stopped. code=</t><!--line 714-->
+  </file>
+  <file path="src/com/weiplus/client/MakerScreen.hx">
+    <t id="下一步">Next</t>
+    <t id="处理中">Processing</t>
+  </file>
+  <file path="src/com/weiplus/client/MyUtils.hx">
+    <t id="分钟前"> minutes ago</t>
+    <t id="刚刚">Just now</t>
+    <t id="小时前"> hours ago</t>
+  </file>
+  <file path="src/com/weiplus/client/PictureScreen.hx">
+    <t id="保存">Save</t><!--line 42-->
+    <t id="保存中">Saving</t><!--line 45-->
+    <t id="删除">Delete</t><!--line 117-->
+    <t id="已删除">Deleted</t><!--line 156-->
+    <t id="已经赞过了">Praised</t><!--line 144-->
+    <t id="成功保存在">Saved at </t><!--line 44-->
+    <t id="查看原图">Original Picture</t><!--line 40-->
+    <t id="网络错误，ex=">Network error, ex=</t><!--line 147, 159-->
+    <t id="评论">Comment</t><!--line 106-->
+    <t id="赞">Praise</t><!--line 102-->
+    <t id="赞 +1">Praise +1</t><!--line 142-->
+    <t id="赞已取消">Canceled</t><!--line 142-->
+    <t id="转发">Retweet</t><!--line 109-->
+    <t id="魔法！">Magic!</t><!--line 112-->
+  </file>
+  <file path="src/com/weiplus/client/PlayScreen.hx">
+    <t id="你太有才了！">You are genius!</t>
+    <t id="分">' </t>
+    <t id="发布">Add</t>
+    <t id="发表感受">Comment</t>
+    <t id="完成了你制作的游戏！"> !</t>
+    <t id="完成游戏，用时">Game completed, used </t>
+    <t id="我用">I've completed your game within </t>
+    <t id="查看原图">V i e w</t>
+    <t id="求助">Retweet</t><!--line 95-->
+    <t id="秒">'' </t>
+    <t id="评论已经添加">Comment added</t>
+    <t id="载入中">Loading</t>
+    <t id="返回">Back</t>
+  </file>
+  <file path="src/com/weiplus/client/PostScreen.hx">
+    <t id="#哈利波图#">#Magics#</t><!--line 115-->
+    <t id="人人网">Renren</t><!--line 229-->
+    <t id="发布">Post</t><!--line 48, 51-->
+    <t id="发布中">Posting</t><!--line 173-->
+    <t id="同步到：">Share: </t><!--line 238-->
+    <t id="完成">Done</t><!--line 89, 89, 89-->
+    <t id="微信">Weixin</t><!--line 230-->
+    <t id="新浪微博">Weibo</t><!--line 227-->
+    <t id="登录">Login</t><!--line 161-->
+    <t id="登录中">Logging in</t><!--line 276-->
+    <t id="登录哈利波图">Log in to Magics</t><!--line 160-->
+    <t id="继续">Next</t><!--line 161-->
+    <t id="编辑内容">Edit</t><!--line 88, 88, 88-->
+    <t id="腾讯微博">Tencent Weibo</t><!--line 228-->
+    <t id="请登录或使用公共账户继续。">Please login or continue using guest account.</t><!--line 160-->
+  </file>
+  <file path="src/com/weiplus/client/Postit.hx">
+    <t id="删除">Delete</t><!--line 219-->
+    <t id="已删除">Deleted</t><!--line 318-->
+    <t id="已经赞过了">Praised</t>
+    <t id="网络错误，ex=">Network error. ex=</t>
+    <t id="评论(">Comments(</t>
+    <t id="赞 +1">Praise +1</t>
+    <t id="赞(">Praises(</t>
+    <t id="赞已取消">Canceled</t>
+    <t id="转发">Retweet</t><!--line 214-->
+    <t id="载入中">Loading</t>
+    <t id="载入失败">Loading failed</t>
+  </file>
+  <file path="src/com/weiplus/client/Refresher.hx">
+    <t id="上拉可以刷新">Drag-up to refresh</t>
+    <t id="下拉可以刷新">Draw-down to refresh</t>
+    <t id="松开立即刷新">Release to refresh</t>
+  </file>
+  <file path="src/com/weiplus/client/RoutineScreen.hx">
+    <t id="欢迎进入哈利波图魔法世界，玩转大片，与明星合影，动漫cosplay，游戏互动，让更多人见证你的不可思议！">Welcome to the world of Magics!</t><!--line 179-->
+    <t id="没有更多动态了">No more activities</t>
+    <t id="消息">Activities</t>
+    <t id="网络错误. code=">Network error. code=</t>
+    <t id="载入中">Loading</t>
+  </file>
+  <file path="src/com/weiplus/client/SelectedScreen.hx">
+    <t id="发生错误: ">Error: </t><!--line 43-->
+    <t id="精选">Selection</t>
+  </file>
+  <file path="src/com/weiplus/client/SettingScreen.hx">
+      <t id="ABOUT">appMagics provides the magic camera to help user create amazing photos by putting virtual objects into reality, it’s a real time photo editor, which is transforming entertainment and shopping experiences by discovering different way of augmented reality, and deep integration and interactive with social networks.
+Version: 1.2.2 beta
+Publish Date: 2013.10.13
+Feedback & Suggestion: support@appMagics.com
+Term of Use & Privacy Policy: http://www.appmagics.com/policies/en/terms/ http://www.appmagics.com/policies/en/privacy/
+    </t>
+    <t id="Wifi下自动更新魔贴">Auto-update ARs in Wifi</t><!--line 46-->
+    <t id="关于哈利波图(Beta)">About Magics</t><!--line 41, 55-->
+    <t id="分享设置">Share Settings</t>
+    <t id="图片缓存已清除">Cache cleared</t>
+    <t id="开始清除，请稍候">Cleaning...</t><!--line 65-->
+    <t id="意见反馈">Feedback</t>
+    <t id="推荐应用">Recommended</t>
+     <t id="注销当前账户">Logoff</t><!--line 69-->
+    <t id="清除图片缓存">Clear Cache</t><!--line 40-->
+    <t id="立即检测更新魔贴">Update ARs Now</t><!--line 47-->
+  </file>
+  <file path="src/com/weiplus/client/ShareSetting.hx">
+    <t id="人人网">Renren.com</t>
+    <t id="微信">Weixin</t><!--line 31-->
+    <t id="新浪微博">Sina Weibo</t>
+    <t id="登录中">Signing in</t><!--line 33-->
+    <t id="登录错误. error=">Login failed. error=</t>
+    <t id="腾讯微博">Tencent Weibo</t>
+  </file>
+  <file path="src/com/weiplus/client/SimpleMaker.hx">
+    <t id="中等">Normal</t>
+    <t id="困难">Hard</t>
+    <t id="简单">Easy</t>
+  </file>
+  <file path="src/com/weiplus/client/TimelineScreen.hx">
+    <t id="载入中">Loading</t>
+  </file>
+  <file path="src/com/weiplus/client/UserScreen.hx">
+    <t id="作品">Spells</t>
+    <t id="关注">Follow</t>
+    <t id="发生错误: ">发生错误: </t><!--line 208-->
+    <t id="取消关注">Unfollow</t>
+    <t id="已成功">$1ed</t>
+    <t id="添加关注">Follow</t>
+    <t id="粉丝">Follower</t>
+    <t id="载入中">Loading</t>
+    <t id="错误,code=">Error. code=</t>
+  </file>
+  <file path="src/com/weiplus/client/model/Routine.hx">
+    <t id="对您的作品发表了评论："> commented your post: </t><!--line 21-->
+    <t id="已开始关注您。"> followed you.</t><!--line 28-->
+    <t id="称赞了您的作品。"> praised your post.</t><!--line 23-->
+  </file>
+  <file path="ui/alert_dialog.xml">
+    <t id="确认">OK</t><!--line 176-->
+  </file>
+  <file path="ui/confirm_dialog.xml">
+    <t id="取消">Cancel</t><!--line 235-->
+    <t id="确认">OK</t><!--line 190-->
+  </file>
+  <file path="ui/magic_editor.xml">
+    <t id="保存并分享">Save & Share</t><!--line 474-->
+    <t id="制作游戏">Make a Game</t><!--line 602-->
+    <t id="发布与分享">Post & Share</t><!--line 558-->
+    <t id="取消">Cancel</t><!--line 447-->
+    <t id="裁剪">Crop</t><!--line 244-->
+  </file>
+</strings>

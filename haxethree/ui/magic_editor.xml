@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Widget id="'MagicEditor'" w="flash.Lib.current.stage.stageWidth" h="flash.Lib.current.stage.stageHeight">
+
+    <Widget id="'BgLayer'" widthPt="100" h="flash.Lib.current.stage.stageHeight - 110.dp()">
+
+        <Bmp id="'EditorBgBmp'"/>
+
+    </Widget>
+
+    <Widget id="'CanvasLayer'" widthPt="100" h="flash.Lib.current.stage.stageHeight - 110.dp()" skin:Paint-color="0" skin:Paint-alpha="0.01"
+            on-click="
+            if (event.target != $this) return; currentAr = null; #ArBox.visible = false;
+            ">
+
+        <!--<Widget defaults="ArObject"/>-->
+        <Widget id="'ArBox'" defaults="'ArBox'" visible="false"
+                left="100" top="100" w="200" h="200">
+
+            <Button skin:Img-src="'res/ar_obj_del.png'.dpScale()" left="-30.dp()" top="-30.dp()"
+                    on-click="
+                    currentAr.userData.bmd.dispose();
+                    #CanvasLayer.removeChild(currentAr);
+                    #ArBox.visible = false;
+                    "/>
+
+            <Button id="'ArBoxInfo'"
+                    skin:Img-src="'res/ar_obj_buy.png'.dpScale()" right="-30.dp()" top="-30.dp()" visible="false"
+                    on-click="
+                    openBrowser(currentAr.userData.goUrl);
+                    "/>
+
+            <Button skin:Img-src="'res/ar_obj_mir.png'.dpScale()" left="-30.dp()" bottom="-30.dp()"
+                    on-click="
+                    var obj = cast(currentAr.getChildAt(0), Sprite);
+                    var bmd = currentAr.userData.bmd;
+                    var ang = ((obj.scaleX < 0 ? -180 : 0) + obj.rotation) * Math.PI / 180;
+                    //var bounds = currentAr.getBounds(flash.Lib.current.stage);
+                    obj.scaleX = -obj.scaleX;
+                    var dx = bmd.width * obj.scaleY * Math.cos(ang);
+                    var dy = bmd.height * obj.scaleY * Math.sin(ang);
+                    //var dx = bounds.width - 2 * bmd.height * obj.scaleY * Math.sin(ang);
+                    currentAr.x += dx; //obj.scaleX < 0 ? dx : -dx;
+                    currentAr.y += dy;
+                    trace('ang='+ang+',scale='+obj.scaleX+',dx='+dx+',dy='+dy+',bm='+bmd.width+','+bmd.height+',obj='+obj.width+','+obj.height);
+                    updateArBox();
+                    "/>
+
+            <Button id="'ArBoxCtrl'"
+                    skin:Img-src="'res/ar_obj_rot.png'.dpScale()" right="-40.dp()" bottom="-40.dp()" />
+
+        </Widget>
+
+    </Widget>
+
+    <Widget id="'CtrlLayer'" widthPt="100" heightPt="100">
+
+        <Button id="'CropButton'" text="'裁剪'.i18n()" defaults="'CameraTopButtons'"
+                top="10.dp()" right="20.dp()"
+                on-click="
+                #CropButton.visible = false;
+                #CropBox.visible = true;
+                #ArSelect.visible = false;
+                currentAr = null;
+                #ArBox.visible = false;
+                resetCropBox();
+                "/>
+
+        <Widget id="'CropBox'" visible="false"
+                skin:ArBox-borderColor="0x00FF00" skin:ArBox-border="5.dp()" skin:ArBox-color="0xFFFFFF" skin:ArBox-alpha="0.2"
+                left="100" top="100" w="200" h="200">
+
+            <Button skin:Img-src="'res/ar_obj_del.png'.dpScale()" left="-30.dp()" top="-30.dp()"
+                    on-click="
+                    #CropButton.visible = true;
+                    #CropBox.visible = false;
+                    #ArSelect.visible = true;
+                    "/>
+
+            <Button id="'CropBoxCtrl'"
+                    skin:Img-src="'res/icon_crop.png'.dpScale()" right="-40.dp()" bottom="-40.dp()" />
+
+        </Widget>
+
+        <Scroll id="'ArSelect'" bottom="110.dp()" widthPt="100" h="(180).dp()"
+                vScroll="false" hBar="null" vBar="null"
+                skin:Paint-color="0" skin:Paint-alpha="0.4">
+
+            <HBox id="'folderList'" autoWidth="true" h="(180).dp()" padding="(10).dp()">
+                <!--<Button defaults="'ArFolderButtons'" text="'folder'" />-->
+            </HBox>
+
+        </Scroll>
+
+    </Widget>
+
+    <Widget id="'MenuLayer'" widthPt="100" heightPt="100">
+
+        <Widget bottom="0" widthPt="100" h="(110).dp()" skin:Img-src="'res/camera_bottom.png'.dpScale()" >
+
+            <Button id="'btnSnapCancel'"
+                    defaults="'CameraBottomButtons'"
+                    text="'取消'.i18n()"
+                    left="(100).dp()"
+                    skin:Img-src="'res/btn_camera_cancel.png'.dpScale()"
+                    on-click="finish(RoxScreen.OK, createDrawingData()); onDestroy();"/>
+
+            <Button id="'btnSnapOk'"
+                    defaults="'CameraBottomButtons'"
+                    text="'保存并分享'.i18n()"
+                    right="(100).dp()"
+                    skin:Slice3-src="'res/btn_camera_ok.png'.dpScale()"
+                    on-click="#EditorMenu.visible = true;" />
+
+        </Widget>
+
+        <Widget id="'EditorMenu'" widthPt="100" heightPt="100" skin:Paint-alpha="0.4" skin:Paint-color="0x000000" visible="false">
+
+            <VBox w="220.dp()" autoHeight="true" right="96.dp()" bottom="100.dp()"
+                  padding="1"
+                  skin:Paint-border="2" skin:Paint-borderColor="0xFFFFFF" skin:Paint-color="0x2F2F2F">
+
+                <Button text="'发布与分享'.i18n()" defaults="'EditorMenuItem'"
+                        on-click="#EditorMenu.visible = false; save();"/>
+
+                <Widget defaults="'EditorMenuSeperator1'"/>
+                <Widget defaults="'EditorMenuSeperator2'"/>
+
+                <Button text="'制作游戏'.i18n()" defaults="'EditorMenuItem'"
+                        on-click="makeGame();"/>
+
+            </VBox>
+
+        </Widget>
+
+    </Widget>
+
+</Widget>

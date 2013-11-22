@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Defaults>
+
+    <Text>
+        <Default
+            format-font      = "$Main.getFont()"
+            format-size      = "(30).dp()"
+            format-color     = "0"
+            label-selectable = "false"
+            label-embedFonts = "false"
+        />
+
+        <EditorMenuHead
+            format-font      = "$Main.getFont()"
+            format-size      = "(20).dp()"
+            format-color     = "0xFFFFFF"
+            label-selectable = "false"
+            label-embedFonts = "false"
+            widthPt          = "100"
+            h                = "32.dp()"
+            paddingLeft      = "6.dp()"
+            skin:Paint-color = "0x202020"
+        />
+
+    </Text>
+
+
+    <Button>
+
+        <EditorMenuItem
+            format-font      = "$Main.getFont()"
+            format-size      = "(34).dp()"
+            format-color     = "0xFFFFFF"
+            label-selectable = "false"
+            label-embedFonts = "false"
+            widthPt          = "100"
+            h                = "80.dp()"
+            childPadding     = "14.dp()"
+            paddingLeft      = "10.dp()"
+            align            = "'center,middle'"
+            skin:Paint-color = "0x2F2F2F"
+        />
+
+        <CameraTopButtons
+            format-font      = "##if android '/system/fonts/DroidSansFallback.ttf' ##else 'Microsoft YaHei' ##end"
+            format-size      = "(30).dp()"
+            format-color     = "0"
+            top="(10).dp()"
+            w="(140).dp()"
+            h="(70).dp()"
+            skin:Paint-border="2"
+            skin:Paint-color="0xFFFFFF"
+            skin:Paint-alpha="0.4"
+            skin:Paint-corners="[ (70).dp() ]"
+        />
+        <CameraBottomButtons
+            format-font      = "getFont()"
+            format-size      = "(28).dp()"
+            format-color     = "0xFFFFFF"
+            top="(21).dp()"
+            autoWidth="true"
+            h="(66).dp()"
+            paddingLeft="10.dp()"
+            paddingRight="10.dp()"
+            childPadding="10.dp()"
+            ico-src="';create(' + (45).dp() + ',' + (45).dp() + ')'"
+        />
+        <ArFolderButtons
+            w="(142).dp()"
+            h="(142).dp()"
+        />
+        <ArButtons
+            w="(120).dp()"
+            h="(120).dp()"
+            skin:Paint-color="0"
+            skin:Paint-alpha="0.2"
+        />
+        <ArObjectMenuButtons
+            format-font      = "getFont()"
+            format-size      = "(36).dp()"
+            format-color     = "0xFFFFFF"
+            w="(210).dp()"
+            h="(45).dp()"
+            skin:Rect-border="2"
+            skin:Rect-borderColor="0xFFFFFF"
+            skin:Rect-corners="[ (20).dp() ]"
+        />
+
+    </Button>
+
+
+    <StateButton>
+        <CameraTopButtons
+            format-font      = "getFont()"
+            format-size      = "(30).dp()"
+            format-color     = "0"
+            top="(10).dp()"
+            w="(140).dp()"
+            h="(70).dp()"
+            skin:Paint-border="2"
+            skin:Paint-color="0xFFFFFF"
+            skin:Paint-alpha="0.6"
+            skin:Paint-corners="[ (70).dp() ]"
+        />
+    </StateButton>
+
+
+    <HBox>
+        <ArRows
+            widthPt="100"
+            h="(152).dp()"
+            padding="(32).dp()"
+            childPadding="(32).dp()"
+        />
+    </HBox>
+
+
+    <Widget>
+
+        <EditorMenuSeperator1
+            widthPt="100"
+            h="2"
+            skin:Paint-color="0x222222"
+        />
+
+        <EditorMenuSeperator2
+            widthPt="100"
+            h="2"
+            skin:Paint-color="0x3C3C3C"
+        />
+
+        <ArObject
+            w="0"
+            h="0"
+            left="(320).dp()"
+            top="(DipUtil.stageHeightDp / 2).dp()"
+        />
+
+        <ArBox
+            left="0"
+            top="0"
+            skin:ArBox-borderColor="0xFFFFFF"
+            skin:ArBox-border="3.dp()"
+        />
+
+    </Widget>
+
+
+    <Scroll>
+    </Scroll>
+
+</Defaults>
