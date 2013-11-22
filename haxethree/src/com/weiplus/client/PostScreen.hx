@@ -276,6 +276,7 @@ class PostScreen extends BaseScreen {
         var text = "登录中".i18n();
 #if (android && !testin)
         var type = e.target.name;
+//        trace("<<<<<<<<<<type="+type+",binding="+HpManager.isBindingSessionValid(type)+",useBinds="+useBinds);
         if (type != "WEIXIN" && HpApi.instance.isDefault()) {
             startScreen(Type.getClassName(LoginScreen), resetSharePanel);
             return;

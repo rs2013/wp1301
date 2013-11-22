@@ -62,7 +62,7 @@ class HpApi {
         this.accessToken = json.accessToken;
         this.uid = json.uid;
         this.refreshToken = json.refreshToken;
-        if (uid == null || uid == "") {
+        if (uid == null || uid == "" || uid == DEFAULT_UID) {
             this.user = null;
         } else {
             get("/users/show/" + uid, { }, function(code: Int, json: Dynamic) {

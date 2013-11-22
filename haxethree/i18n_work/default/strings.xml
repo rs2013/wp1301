@@ -150,12 +150,12 @@
     <t id="精选">精选</t><!--line 25-->
   </file>
   <file path="src/com/weiplus/client/SettingScreen.hx">
-      <t id="ABOUT">appMagics provides the magic camera to help user create amazing photos by putting virtual objects into reality, it’s a real time photo editor, which is transforming entertainment and shopping experiences by discovering different way of augmented reality, and deep integration and interactive with social networks.
+    <t id="ABOUT">appMagics provides the magic camera to help user create amazing photos by putting virtual objects into reality, it’s a real time photo editor, which is transforming entertainment and shopping experiences by discovering different way of augmented reality, and deep integration and interactive with social networks.
 Version: 1.2.2 beta
 Publish Date: 2013.10.13
-Feedback & Suggestion: support@appMagics.com
-Term of Use & Privacy Policy: http://www.appmagics.com/policies/en/terms/ http://www.appmagics.com/policies/en/privacy/
-    </t>
+Feedback &amp;amp;amp;amp; Suggestion: support@appMagics.com
+Term of Use &amp;amp;amp;amp; Privacy Policy: http://www.appmagics.com/policies/en/terms/ http://www.appmagics.com/policies/en/privacy/
+    </t><!--line 73-->
     <t id="Wifi下自动更新魔贴">Wifi下自动更新魔贴</t><!--line 46-->
     <t id="关于哈利波图(Beta)">关于哈利波图(Beta)</t><!--line 51, 72-->
     <t id="分享设置">分享设置</t><!--line 36-->

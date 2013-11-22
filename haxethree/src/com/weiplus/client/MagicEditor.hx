@@ -576,10 +576,10 @@ class MagicEditor extends MakerScreen {
     private function drawWaterMark(bmd: BitmapData) {
         var s = (HpApi.instance.user != null ? HpApi.instance.user.name : "") + "@哈利波图";
         var scale = bmd.width / 640;
-        var tf = UiUtil.staticText(s, 0xFFFFFF, 30 * scale);
+        var tf = UiUtil.staticText(s, 0xFFFFFF, 28 * scale);
         var glow = new GlowFilter(0); // black
         tf.filters = [ glow ];
-        var mat = new Matrix(1, 0, 0, 1, bmd.width - tf.width - 6 * scale, bmd.height - tf.height - 4 * scale);
+        var mat = new Matrix(1, 0, 0, 1, 6 * scale, bmd.height - tf.height - 4 * scale);
         bmd.draw(tf, mat);
     }
 

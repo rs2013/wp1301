@@ -93,10 +93,20 @@ public class HpManager {
                 
             });
         }
+        if (DEFAULT_UID.equals(accessToken.getUid())) {
+            addWeixinBinding();
+        }
         return accessToken.isSessionValid();
+    }
+
+    private static void addWeixinBinding() {
+        Binding b = HpManager.createBinding(Type.WEIXIN, new String[] { "" });
+        b.setEnabled(true);
+        HpManager.addBinding(b);
     }
     
     public static void restoreBindings(JSONArray bindUsers) throws JSONException {
+        bindings.clear();
         for (int i = 0, n = bindUsers.length(); i < n; i++) {
             JSONObject bu = bindUsers.getJSONObject(i);
             Type type = Type.valueOf(bu.getString("bindType"));
@@ -111,9 +121,7 @@ public class HpManager {
                 Log.e(TAG, "restoreBindings: e=" + e);
             }
         }
-        Binding b = HpManager.createBinding(Type.WEIXIN, new String[] { "" });
-        b.setEnabled(true);
-        HpManager.addBinding(b);
+        addWeixinBinding();
     }
     
     public static void postStatus(final String[] bindTypes, 
@@ -253,6 +261,7 @@ public class HpManager {
             } catch (Exception ex) { }
         }
         bindings.clear();
+        addWeixinBinding();
     }
     
     public static void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
