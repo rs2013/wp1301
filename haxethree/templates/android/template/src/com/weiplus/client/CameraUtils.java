@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -63,15 +62,10 @@ public class CameraUtils {
     }
     
     public static Bitmap loadImage(String path, int maxArea) {
+        Bitmap big = loadSmallImage(path, maxArea, false);
+        if (big == null) return null;
+        
         maxArea = maxArea <= 0 ? Integer.MAX_VALUE : maxArea;
-        Bitmap big = null;
-        try {
-            FileInputStream is = new FileInputStream(path);
-            big = BitmapFactory.decodeStream(is);
-            is.close();
-        } catch (IOException e) { 
-            Log.e(TAG, "LoadImage, path=" + path + ",ex=" + e);
-        }
         int area = big.getWidth() * big.getHeight();
         Bitmap bm = big;
         if (area > maxArea) {
@@ -83,15 +77,11 @@ public class CameraUtils {
     }
     
     public static Bitmap loadArImage(String path, int maxArea) {
-        maxArea = maxArea <= 0 ? Integer.MAX_VALUE : maxArea;
-        Bitmap big = null;
-        try {
-            FileInputStream is = new FileInputStream(path);
-            big = BitmapFactory.decodeStream(is);
-            is.close();
-        } catch (IOException e) {
-            Log.e(TAG, "LoadArImage, path=" + path + ",ex=" + e);
-        }
+        Bitmap big = loadSmallImage(path, maxArea * 2, true);
+        if (big == null) return null;
+        
+        maxArea = maxArea <= 0 ? Integer.MAX_VALUE : maxArea * 2;
+        
         int area = big.getWidth() * big.getHeight();
         Bitmap bm = big;
         if (area > maxArea) {
@@ -112,6 +102,28 @@ public class CameraUtils {
         }
         Bitmap newbm = Bitmap.createBitmap(pixels, 0, w, w2, h, Config.ARGB_8888);
         return newbm;
+    }
+    
+    public static Bitmap loadSmallImage(String path, int maxArea, boolean evenOnly) {
+        if (maxArea <= 0) {
+            return BitmapFactory.decodeFile(path);
+        }
+        int[] size = getImageSize(path);
+        int sample = 1;
+        if (evenOnly) {
+            sample = 0;
+            for (int ns = 2, area = size[0] * size[1]; maxArea * ns * ns <= area; ns += 2, sample += 2);
+            if (sample == 0) sample = 1;
+        } else {
+            for (int ns = 2, area = size[0] * size[1]; maxArea * ns * ns <= area; ns++, sample++);
+        }
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inSampleSize = sample;
+        try {
+            return BitmapFactory.decodeFile(path, opt);
+        } catch (OutOfMemoryError e) {
+            return null;
+        }
     }
     
     public static JSONObject getUserData(View view) {

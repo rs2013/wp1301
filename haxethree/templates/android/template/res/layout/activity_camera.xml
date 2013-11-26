@@ -77,7 +77,8 @@
 	                android:layout_marginLeft="-15dp"
 	                android:background="@android:color/transparent"
 	                android:scaleType="fitXY"
-	                android:src="@drawable/ar_obj_mir" />
+	                android:src="@drawable/ar_obj_mir"
+	                android:visibility="invisible" />
 	            
                 <ImageButton
                     android:id="@+id/btnArRot"

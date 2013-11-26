@@ -30,7 +30,7 @@
                     openBrowser(currentAr.userData.goUrl);
                     "/>
 
-            <Button skin:Img-src="'res/ar_obj_mir.png'.dpScale()" left="-30.dp()" bottom="-30.dp()"
+            <Button skin:Img-src="'res/ar_obj_mir.png'.dpScale()" left="-30.dp()" bottom="-30.dp()" visible="false"
                     on-click="
                     var obj = cast(currentAr.getChildAt(0), Sprite);
                     var bmd = currentAr.userData.bmd;
@@ -54,6 +54,11 @@
     </Widget>
 
     <Widget id="'CtrlLayer'" widthPt="100" heightPt="100">
+
+        <Button defaults="'CameraTopButtons'"
+                top="10.dp()" left="20.dp()"
+                ico-src="'res/icon_camera_back.png'.dpScale()"
+                on-click="finish(RoxScreen.OK, createDrawingData()); onDestroy();"/>
 
         <Button id="'CropButton'" text="'裁剪'.i18n()" defaults="'CameraTopButtons'"
                 top="10.dp()" right="20.dp()"
@@ -100,36 +105,17 @@
 
             <Button id="'btnSnapCancel'"
                     defaults="'CameraBottomButtons'"
-                    text="'取消'.i18n()"
+                    text="'制作游戏'.i18n()"
                     left="(100).dp()"
-                    skin:Img-src="'res/btn_camera_cancel.png'.dpScale()"
-                    on-click="finish(RoxScreen.OK, createDrawingData()); onDestroy();"/>
+                    skin:Slice3-src="'res/btn_camera_ok.png'.dpScale()"
+                    on-click="makeGame();"/>
 
             <Button id="'btnSnapOk'"
                     defaults="'CameraBottomButtons'"
-                    text="'保存并分享'.i18n()"
+                    text="'保存/分享'.i18n()"
                     right="(100).dp()"
                     skin:Slice3-src="'res/btn_camera_ok.png'.dpScale()"
-                    on-click="#EditorMenu.visible = true;" />
-
-        </Widget>
-
-        <Widget id="'EditorMenu'" widthPt="100" heightPt="100" skin:Paint-alpha="0.4" skin:Paint-color="0x000000" visible="false">
-
-            <VBox w="220.dp()" autoHeight="true" right="96.dp()" bottom="100.dp()"
-                  padding="1"
-                  skin:Paint-border="2" skin:Paint-borderColor="0xFFFFFF" skin:Paint-color="0x2F2F2F">
-
-                <Button text="'发布与分享'.i18n()" defaults="'EditorMenuItem'"
-                        on-click="#EditorMenu.visible = false; save();"/>
-
-                <Widget defaults="'EditorMenuSeperator1'"/>
-                <Widget defaults="'EditorMenuSeperator2'"/>
-
-                <Button text="'制作游戏'.i18n()" defaults="'EditorMenuItem'"
-                        on-click="makeGame();"/>
-
-            </VBox>
+                    on-click="save();" />
 
         </Widget>
 

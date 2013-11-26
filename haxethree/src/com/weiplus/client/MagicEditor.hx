@@ -1,60 +1,40 @@
 package com.weiplus.client;
 
-import com.weiplus.client.MyUtils;
-import flash.filters.GlowFilter;
-import com.weiplus.client.MyUtils;
-import com.weiplus.client.MyUtils;
 import com.roxstudio.haxe.utils.SimpleJob;
-import com.roxstudio.haxe.gesture.RoxGestureAgent;
-import ru.stablex.ui.widgets.Scroll;
-import com.weiplus.client.TimelineScreen;
-import sys.io.File;
-import haxe.Json;
-import com.roxstudio.haxe.ui.UiUtil;
-import com.weiplus.client.TimelineScreen;
-import com.roxstudio.haxe.ui.RoxAnimate;
-import com.roxstudio.haxe.ui.UiUtil;
-import flash.display.BitmapEncodingColorSpace;
-import com.roxstudio.haxe.gesture.RoxGestureEvent;
-import com.roxstudio.haxe.gesture.RoxGestureAgent;
-import ru.stablex.ui.events.DndEvent;
-import ru.stablex.ui.Dnd;
-import ru.stablex.ui.widgets.VBox;
-import flash.events.MouseEvent;
-import ru.stablex.ui.widgets.Bmp;
 import com.roxstudio.i18n.I18n;
 import com.roxstudio.haxe.game.BmdUtil;
-import ru.stablex.ui.skins.Img;
 import com.roxstudio.haxe.io.FileUtil;
-import ru.stablex.ui.widgets.Button;
-import ru.stablex.ui.widgets.HBox;
-import ru.stablex.ui.UIBuilder;
-import ru.stablex.ui.misc.BtnState;
-import ru.stablex.ui.widgets.Widget;
-import Lambda;
-import ru.stablex.ui.widgets.StateButton;
-import ru.stablex.ui.UIBuilder;
 import com.roxstudio.haxe.ui.DipUtil;
-import flash.Lib;
+import com.roxstudio.haxe.gesture.RoxGestureEvent;
+import com.roxstudio.haxe.gesture.RoxGestureAgent;
 import com.roxstudio.haxe.game.GfxUtil;
-import com.roxstudio.haxe.game.GameUtil;
-import com.roxstudio.haxe.io.IOUtil;
-import haxe.io.BytesOutput;
-import haxe.io.Bytes;
-import flash.geom.Point;
-import com.roxstudio.haxe.ui.UiUtil;
-import flash.geom.Rectangle;
 import com.roxstudio.haxe.ui.RoxScreen;
-import com.weiplus.client.model.AppData;
+import com.roxstudio.haxe.ui.UiUtil;
 import com.roxstudio.haxe.game.GameUtil;
 import com.roxstudio.haxe.game.ResKeeper;
-import com.roxstudio.haxe.ui.RoxFlowPane;
-import flash.display.Shape;
+import com.weiplus.client.MyUtils;
+import com.weiplus.client.model.AppData;
+
+import sys.io.File;
+import haxe.Json;
+
+import flash.Lib;
+import flash.geom.Point;
+import flash.geom.Rectangle;
 import flash.display.BitmapData;
-import flash.display.Bitmap;
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.geom.Matrix;
+import flash.events.MouseEvent;
+import flash.filters.GlowFilter;
+
+import ru.stablex.ui.widgets.Bmp;
+import ru.stablex.ui.widgets.Scroll;
+import ru.stablex.ui.skins.Img;
+import ru.stablex.ui.widgets.Button;
+import ru.stablex.ui.widgets.HBox;
+import ru.stablex.ui.widgets.Widget;
+import ru.stablex.ui.UIBuilder;
 
 using com.roxstudio.haxe.game.GfxUtil;
 using com.roxstudio.haxe.ui.UiUtil;
@@ -220,10 +200,7 @@ class MagicEditor extends MakerScreen {
     }
 
     override public function onBackKey() {
-        if (UIBuilder.get("EditorMenu").visible) {
-            UIBuilder.get("EditorMenu").visible = false;
-            return false;
-        } else if (currentCid >= 0) {
+        if (currentCid >= 0) {
             currentCid = -1;
             showFolder(-1);
             return false;
@@ -592,7 +569,6 @@ class MagicEditor extends MakerScreen {
             trace("MagicEditor save");
             onNextStep();
         });
-        UIBuilder.get("EditorMenu").visible = false;
     }
 
     private function makeGame() {
@@ -600,7 +576,6 @@ class MagicEditor extends MakerScreen {
         doSave(false, function() {
             startScreen(Type.getClassName(SimpleMaker), null, image);
         });
-        UIBuilder.get("EditorMenu").visible = false;
     }
 
     private function createDrawingData() : String {

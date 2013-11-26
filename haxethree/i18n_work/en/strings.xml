@@ -150,11 +150,11 @@
     <t id="精选">Selection</t>
   </file>
   <file path="src/com/weiplus/client/SettingScreen.hx">
-      <t id="ABOUT">appMagics provides the magic camera to help user create amazing photos by putting virtual objects into reality, it’s a real time photo editor, which is transforming entertainment and shopping experiences by discovering different way of augmented reality, and deep integration and interactive with social networks.
-Version: 1.2.2 beta
-Publish Date: 2013.10.13
-Feedback & Suggestion: support@appMagics.com
-Term of Use & Privacy Policy: http://www.appmagics.com/policies/en/terms/ http://www.appmagics.com/policies/en/privacy/
+    <t id="ABOUT">appMagics provides the magic camera to help user create amazing photos by putting virtual objects into reality, it’s a real time photo editor, which is transforming entertainment and shopping experiences by discovering different way of augmented reality, and deep integration and interactive with social networks.
+Version: 1.3.0
+Publish Date: 2013.11.26
+Feedback and Suggestion: support@appMagics.com
+Term of Use and Privacy Policy: http://www.appmagics.com/policies/en/terms/ http://www.appmagics.com/policies/en/privacy/
     </t>
     <t id="Wifi下自动更新魔贴">Auto-update ARs in Wifi</t><!--line 46-->
     <t id="关于哈利波图(Beta)">About Magics</t><!--line 41, 55-->
@@ -207,10 +207,8 @@ Term of Use & Privacy Policy: http://www.appmagics.com/policies/en/terms/ http:/
     <t id="确认">OK</t><!--line 190-->
   </file>
   <file path="ui/magic_editor.xml">
-    <t id="保存并分享">Save & Share</t><!--line 474-->
+    <t id="保存并分享">Save / Share</t><!--line 474-->
     <t id="制作游戏">Make a Game</t><!--line 602-->
-    <t id="发布与分享">Post & Share</t><!--line 558-->
-    <t id="取消">Cancel</t><!--line 447-->
     <t id="裁剪">Crop</t><!--line 244-->
   </file>
 </strings>

@@ -48,7 +48,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
     private static final int ALBUM_AS_BG = 1110;
     private static final int ALBUM_AS_AR = 1111;
     private static final int AR_ICON_SIZE = 140;
-    private static final int AR_ICON_MAX_AREA = 150 * 120;
+    private static final int AR_ICON_MAX_AREA = 14400; // 120^2
     private static final int AR_MAX_AREA = 200000;
     
     private static CamInfo camInfo;
@@ -590,6 +590,10 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
     
     private void addAr(String path, String description, boolean isAr, Matrix matrix, boolean changeCurrentAr) {
         Bitmap bm = isAr ? CameraUtils.loadArImage(path, 0) : CameraUtils.loadImage(path, AR_MAX_AREA);
+        if (bm == null) {
+            Log.e(TAG, "OOM while adding AR: " + path + ",isAr=" + isAr);
+            return;
+        }
         ImageView im = new ImageView(this);
         im.setImageBitmap(bm);
         im.setPadding(0, 0, 0, 0);
@@ -631,7 +635,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
             arBox.setVisibility(View.INVISIBLE);
             btnArDel.setVisibility(View.INVISIBLE);
             btnArInf.setVisibility(View.INVISIBLE);
-            btnArMir.setVisibility(View.INVISIBLE);
+//            btnArMir.setVisibility(View.INVISIBLE);
             btnArRot.setVisibility(View.INVISIBLE);
             btnArCtrl.setVisibility(View.INVISIBLE);
             return;
@@ -651,7 +655,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
                 int resId = "url".equals(urlType) ? R.drawable.ar_obj_inf : R.drawable.ar_obj_buy;
                 btnArInf.setImageResource(resId);
             }
-            btnArMir.setVisibility(View.VISIBLE);
+//            btnArMir.setVisibility(View.VISIBLE);
             btnArRot.setVisibility(View.VISIBLE);
             btnArCtrl.setVisibility(View.VISIBLE);
             canvas.removeView(arBoxFrame);
@@ -1023,6 +1027,11 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
             String path = CameraUtils.arCachePath(url);
             try {
                 final Bitmap bm = CameraUtils.loadArImage(path, AR_ICON_MAX_AREA);
+                if (bm == null) {
+                    Log.e(TAG, "OOM while loading AR Button: " + path);
+                    return;
+                }
+                
                 activity.runOnUiThread(new Runnable() {
 
                     @Override

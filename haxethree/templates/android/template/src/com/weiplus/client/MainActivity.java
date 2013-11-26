@@ -1,5 +1,8 @@
 package com.weiplus.client;
 
+import com.umeng.analytics.MobclickAgent;
+import com.umeng.update.UmengUpdateAgent;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,20 +27,23 @@ public class MainActivity extends org.haxe.nme.GameActivity {
             }
             
         }.start();
+        
+        UmengUpdateAgent.update(this);
+        MobclickAgent.onError(this);
     }
     
     @Override
     public void onResume() {
         super.onResume();
         Log.i(TAG, "onResume");
-        com.umeng.analytics.MobclickAgent.onResume(this);
+        MobclickAgent.onResume(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         Log.i(TAG, "onPause");
-        com.umeng.analytics.MobclickAgent.onPause(this);
+        MobclickAgent.onPause(this);
     }
 
     @Override

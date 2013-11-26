@@ -28,6 +28,9 @@ class SimpleMaker extends MakerScreen {
     private var btnJigsaw: RoxFlowPane;
     private var btnSwap: RoxFlowPane;
     private var btnSlide: RoxFlowPane;
+    private var btnJigsawBw: RoxFlowPane;
+    private var btnSwapBw: RoxFlowPane;
+    private var btnSlideBw: RoxFlowPane;
     private var btnSimple: RoxFlowPane;
     private var btnNormal: RoxFlowPane;
     private var btnHard: RoxFlowPane;
@@ -44,9 +47,21 @@ class SimpleMaker extends MakerScreen {
         content = super.createContent(height);
         viewHeight = height;
         addTitleButton(btnNextStep, UiUtil.RIGHT);
-        btnJigsaw = UiUtil.button(UiUtil.CENTER, "res/icon_jigsaw_maker.png", null, 0, 0, UiUtil.VCENTER, null, setType.bind(_, "jigsaw"));
-        btnSwap = UiUtil.button(UiUtil.CENTER, "res/icon_swap_maker.png", null, 0, 0, UiUtil.VCENTER, null, setType.bind(_, "swappuzzle"));
-        btnSlide = UiUtil.button(UiUtil.CENTER, "res/icon_slide_maker.png", null, 0, 0, UiUtil.VCENTER, null, setType.bind(_, "slidepuzzle"));
+        btnJigsaw = UiUtil.button(UiUtil.CENTER, "res/icon_jigsaw_maker.png", null, 0, 0, UiUtil.VCENTER, null);
+        btnSwap = UiUtil.button(UiUtil.CENTER, "res/icon_swap_maker.png", null, 0, 0, UiUtil.VCENTER, null);
+        btnSlide = UiUtil.button(UiUtil.CENTER, "res/icon_slide_maker.png", null, 0, 0, UiUtil.VCENTER, null);
+        btnJigsawBw = UiUtil.button(UiUtil.CENTER, "res/icon_jigsaw_maker_bw.png", null, 0, 0, UiUtil.VCENTER, null, setType.bind(_, "jigsaw"));
+        btnSwapBw = UiUtil.button(UiUtil.CENTER, "res/icon_swap_maker_bw.png", null, 0, 0, UiUtil.VCENTER, null, setType.bind(_, "swappuzzle"));
+        btnSlideBw = UiUtil.button(UiUtil.CENTER, "res/icon_slide_maker_bw.png", null, 0, 0, UiUtil.VCENTER, null, setType.bind(_, "slidepuzzle"));
+        btnJigsaw.name = btnJigsawBw.name = "jigsaw";
+        btnJigsaw.rox_move(LEVEL_BTN_W / 2, 38);
+        btnJigsawBw.rox_move(LEVEL_BTN_W / 2, 38);
+        btnSwap.name = btnSwapBw.name = "swappuzzle";
+        btnSwap.rox_move(LEVEL_BTN_W + LEVEL_BTN_W / 2, 38);
+        btnSwapBw.rox_move(LEVEL_BTN_W + LEVEL_BTN_W / 2, 38);
+        btnSlide.name = btnSlideBw.name = "slidepuzzle";
+        btnSlide.rox_move(LEVEL_BTN_W * 2 + LEVEL_BTN_W / 2, 38);
+        btnSlideBw.rox_move(LEVEL_BTN_W * 2 + LEVEL_BTN_W / 2, 38);
         btnSimple = UiUtil.button(UiUtil.CENTER, null, "简单".i18n(), 0xFFFFFF, titleFontSize, setLevel.bind(_, 0));
         btnNormal = UiUtil.button(UiUtil.CENTER, null, "中等".i18n(), 0xFFFFFF, titleFontSize, setLevel.bind(_, 1));
         btnHard = UiUtil.button(UiUtil.CENTER, null, "困难".i18n(), 0xFFFFFF, titleFontSize, setLevel.bind(_, 2));
@@ -55,9 +70,9 @@ class SimpleMaker extends MakerScreen {
         levelPane = new Sprite();
         levelPane.addChild(UiUtil.bitmap("res/bg_maker_bottom.png"));
         levelPane.addChild(levelBg.rox_move(0, panelH - levelBg.height));
-        levelPane.addChild(btnJigsaw.rox_move(LEVEL_BTN_W / 2, 38));
-        levelPane.addChild(btnSwap.rox_move(LEVEL_BTN_W + LEVEL_BTN_W / 2, 38));
-        levelPane.addChild(btnSlide.rox_move(LEVEL_BTN_W * 2 + LEVEL_BTN_W / 2, 38));
+        levelPane.addChild(btnJigsaw);
+        levelPane.addChild(btnSwapBw);
+        levelPane.addChild(btnSlideBw);
         levelPane.addChild(btnSimple.rox_move(LEVEL_BTN_W / 2, panelH - 44));
         levelPane.addChild(btnNormal.rox_move(LEVEL_BTN_W + LEVEL_BTN_W / 2, panelH - 44));
         levelPane.addChild(btnHard.rox_move(LEVEL_BTN_W * 2 + LEVEL_BTN_W / 2, panelH - 44));
@@ -128,8 +143,16 @@ class SimpleMaker extends MakerScreen {
     }
 
     private function setType(_, type: String) {
+        levelPane.rox_removeByName(this.type);
+        levelPane.rox_removeByName(type);
+        var addBtnBw = switch (this.type) { case "jigsaw": btnJigsawBw; case "swappuzzle": btnSwapBw; case "slidepuzzle": btnSlideBw; case _: null; }
+        var addBtn = switch (type) { case "jigsaw": btnJigsaw; case "swappuzzle": btnSwap; case "slidepuzzle": btnSlide; case _: null; }
+        levelPane.addChild(addBtnBw);
+        levelPane.addChild(addBtn);
+
         this.type = type;
         setLevel(null, level);
+
     }
 
     private function setLevel(_, level: Int) {
