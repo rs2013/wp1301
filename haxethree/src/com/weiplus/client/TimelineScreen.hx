@@ -211,7 +211,7 @@ class TimelineScreen extends BaseScreen {
                 status.appData.label = att.attachName;
             }
             var postit = new Postit(this, status, postitw, compactMode ? Postit.COMPACT : numCol == 1 ? Postit.FULL : Postit.NORMAL);
-            postit.addEventListener(Event.SELECT, onPlay);
+//            postit.addEventListener(Event.SELECT, onPlay);
             postits.push(postit);
         }
         if (page != null && statuses.length > 0) page.oldestId = oldest;
@@ -321,12 +321,16 @@ class TimelineScreen extends BaseScreen {
         for (p in postits) p.update();
     }
 
-    private function onPlay(e: Dynamic) {
+    private function onPlay(postit: Postit) {
 //        trace("HomeScreen.onPlay: e.target=" + e.target);
-        var postit: Postit = cast(e.target);
+//        var postit: Postit = cast(e.target);
         var status = postit.status;
-        var classname = "com.weiplus.apps." + status.appData.type + ".App";
-        startScreen(classname, null, null, null, 1, status);
+        if (status.isGame()) {
+            var classname = "com.weiplus.apps." + status.appData.type + ".App";
+            startScreen(classname, null, null, null, 1, status);
+        } else {
+            startScreen(Type.getClassName(PictureScreen), { status: status, image: null });
+        }
     }
 
     private inline function animDone(sp: DisplayObject) {
@@ -348,7 +352,8 @@ class TimelineScreen extends BaseScreen {
                         var pt = main.localToGlobal(new Point(sp.x, sp.y));
                         if (GameUtil.pointInRect(e.stageX, e.stageY, pt.x, pt.y, sp.width, sp.height)) {
                             var postit: Postit = cast(sp);
-                            var r = new Rectangle(pt.x, pt.y, sp.width, sp.height);
+//                            var r = new Rectangle(pt.x, pt.y, sp.width, sp.height);
+                            onPlay(postit);
                             return;
                         }
                     }

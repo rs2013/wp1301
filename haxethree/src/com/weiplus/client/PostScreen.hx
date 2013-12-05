@@ -212,6 +212,9 @@ class PostScreen extends BaseScreen {
 //                var makerList: MakerList = cast manager.findScreen(Type.getClassName(MakerList));
 //                var toScreen = makerList.parentScreen;
                 finish(FinishToScreen.ROOT, RoxScreen.OK);
+                if (Std.is(manager.getRootScreen(), TimelineScreen)) {
+                    cast (manager.getRootScreen(), TimelineScreen).refresh(false);
+                }
             case "startAuth":
                 if (resultCode == "ok" && str == "ok") {
                     resetSharePanel();

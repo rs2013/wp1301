@@ -93,10 +93,10 @@ class Postit extends Sprite {
                     if (mode == COMPACT) {
                         graphics.rox_drawRegionRound(image, 0, 0, w, imh, r);
                     } else if (imageScale == 1 && imageOffset > 0) {
-                        graphics.rox_drawRegion(image, imageOffset, 0);
+                        graphics.rox_drawRegion(image, imageOffset, 0, w - 2 * imageOffset, imh);
                     } else {
-                        imageScale = this.w / image.width;
-                        graphics.beginBitmapFill(image, new Matrix(imageScale, 0, 0, imageScale, imageOffset, 0), false, true);
+                        var scale = this.w / image.width;
+                        graphics.beginBitmapFill(image, new Matrix(scale, 0, 0, scale, imageOffset, 0), false, true);
                         graphics.moveTo(0, r);
                         graphics.curveTo(0, 0, r, 0);
                         graphics.lineTo(w - r, 0);
@@ -107,20 +107,20 @@ class Postit extends Sprite {
                         graphics.endFill();
                     }
                     if (status.isGame()) {
-                        var playButton = UiUtil.button("res/btn_play.png", onPlay);
+                        var playButton = UiUtil.button("res/btn_play.png");
 //                    trace("imw=" + imw + ",appdata.w="+appdata.width+",scale="+(imw/640));
                         playButton.rox_scale(w / 640);
                         playButton.rox_move((w - playButton.width) / 2, (imh - playButton.height) / 2);
                         addChild(playButton);
-                    } else {
-                        var button = new Sprite();
-                        button.graphics.rox_fillRect(0x01FFFFFF, 0, 0, w, imh);
-                        var agent = new RoxGestureAgent(button);
-                        agent.swipeTimeout = 0;
-                        button.addEventListener(RoxGestureEvent.GESTURE_TAP, function(_) {
-                            parentScreen.startScreen(Type.getClassName(PictureScreen), { status: status, image: image });
-                        });
-                        addChild(button);
+//                    } else {
+//                        var button = new Sprite();
+//                        button.graphics.rox_fillRect(0x01FFFFFF, 0, 0, w, imh);
+//                        var agent = new RoxGestureAgent(button);
+//                        agent.swipeTimeout = 0;
+//                        button.addEventListener(RoxGestureEvent.GESTURE_TAP, function(_) {
+//                            parentScreen.startScreen(Type.getClassName(PictureScreen), { status: status, image: image });
+//                        });
+//                        addChild(button);
                     }
 //                trace("im="+imw+","+imh+",scale="+imageScale+",offset="+imageOffset);
                 } else {

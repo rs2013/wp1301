@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import flash.geom.Rectangle;
 import com.roxstudio.haxe.ui.UiUtil;
 import com.weiplus.client.model.AppData;
 import flash.geom.Rectangle;
@@ -173,31 +174,33 @@ class SimpleMaker extends MakerScreen {
 
     private function addGrids(n: Int) {
         if (type == "jigsaw") {
-            var shape = ResKeeper.getAssetImage("res/shape_1.png");
-            var top = 1, left = 1, rows = n, columns = n;
-            var pw = (preview.width / preview.scaleX);
-            var sideLen = pw / n;
-            var maxLen = sideLen * shape.height / 184;
-//        trace("sideLen="+sideLen+",maxLen="+maxLen+",scale="+preview.scaleX);
-            var bottoms: Array<Int> = [];
+//            var shape = ResKeeper.getAssetImage("res/shape_1.png");
+//            var top = 1, left = 1, rows = n, columns = n;
+//            var pw = (preview.width / preview.scaleX);
+//            var sideLen = pw / n;
+//            var maxLen = sideLen * shape.height / 184;
+//            var bottoms: Array<Int> = [];
+//            var grid = new Shape();
+//            for (i in 0...rows) {
+//                left = 1;
+//                for (j in 0...columns) {
+//                    var top = i == 0 ? 1 : 3 - (bottoms[j] - 2);
+//                    var bottom = i == rows - 1 ? 1 : Std.random(2) + 2;
+//                    bottoms[j] = bottom;
+//                    var right = j == columns - 1 ? 1 : Std.random(2) + 2;
+//                    var sides: Array<Int>, x: Float, y: Float;
+//                    sides = [ top, right, bottom, left ];
+//                    x = sideLen / 2 + sideLen * j;
+//                    y = sideLen / 2 + sideLen * i;
+//                    var t = com.weiplus.apps.jigsaw.Tile.getMask(shape, maxLen, sides);
+//                    grid.graphics.rox_drawRegion(t, x - maxLen / 2, y - maxLen / 2);
+//                    left = 3 - (right - 2);
+//                }
+//            }
+            var mask = ResKeeper.getAssetImage("res/jigsaw_mask" + (level + 3) + ".png");
             var grid = new Shape();
-            for (i in 0...rows) {
-                left = 1;
-                for (j in 0...columns) {
-                    var top = i == 0 ? 1 : 3 - (bottoms[j] - 2);
-                    var bottom = i == rows - 1 ? 1 : Std.random(2) + 2;
-                    bottoms[j] = bottom;
-                    var right = j == columns - 1 ? 1 : Std.random(2) + 2;
-                    var sides: Array<Int>, x: Float, y: Float;
-                    sides = [ top, right, bottom, left ];
-                    x = sideLen / 2 + sideLen * j;
-                    y = sideLen / 2 + sideLen * i;
-                    var t = com.weiplus.apps.jigsaw.Tile.getMask(shape, maxLen, sides);
-//                trace("t.w="+t.width+",t.h="+t.height+",x="+x+",y="+y);
-                    grid.graphics.rox_drawRegion(t, x - maxLen / 2, y - maxLen / 2);
-                    left = 3 - (right - 2);
-                }
-            }
+            var pw = preview.width / preview.scaleX;
+            grid.graphics.rox_drawRegion(mask, new Rectangle(15, 35, 610, 610), 0, 0, pw, pw);
             preview.addChild(grid.rox_move(-pw / 2, -pw / 2));
         } else {
             var gridw = SIDELEN / n;

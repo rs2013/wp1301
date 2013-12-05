@@ -27,7 +27,8 @@ public class MainActivity extends org.haxe.nme.GameActivity {
             }
             
         }.start();
-        
+
+        UmengUpdateAgent.setUpdateOnlyWifi(false);
         UmengUpdateAgent.update(this);
         MobclickAgent.onError(this);
     }

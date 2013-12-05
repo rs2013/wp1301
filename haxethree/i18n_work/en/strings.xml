@@ -13,7 +13,9 @@
     <t id="启动相机中">Starting Camera</t><!--line 30-->
   </file>
   <file path="src/com/weiplus/client/BaseScreen.hx">
+    <t id="是否退出哈利波图？">Exit Magics? </t><!--line 90-->
     <t id="返回">Back</t>
+    <t id="退出">Exit</t><!--line 89-->
   </file>
   <file path="src/com/weiplus/client/CommentsScreen.hx">
     <t id="发表评论">Add Comment</t>
@@ -207,7 +209,7 @@ Term of Use and Privacy Policy: http://www.appmagics.com/policies/en/terms/ http
     <t id="确认">OK</t><!--line 190-->
   </file>
   <file path="ui/magic_editor.xml">
-    <t id="保存并分享">Save / Share</t><!--line 474-->
+    <t id="保存/分享">Save / Share</t><!--line 474-->
     <t id="制作游戏">Make a Game</t><!--line 602-->
     <t id="裁剪">Crop</t><!--line 244-->
   </file>

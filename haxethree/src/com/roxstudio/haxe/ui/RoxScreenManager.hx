@@ -30,14 +30,22 @@ class RoxScreenManager extends Sprite {
         screenPool = new Hash<RoxScreen>();
         stack = new List<StackItem>();
         RoxApp.stage.addEventListener(KeyboardEvent.KEY_UP, function(e: KeyboardEvent) {
-            if (e.keyCode == 27 && stack.length > 1) {
+            if (e.keyCode == 27) {
                 var topscreen: RoxScreen = stack.first().screen;
                 if (topscreen.onBackKey()) {
                     finishScreen(topscreen, null, RoxScreen.CANCELED, null, null);
                 }
-                e.stopPropagation();
+                if (stack.length > 0) e.stopPropagation();
             }
         });
+    }
+
+    public inline function stackSize() {
+        return stack.length;
+    }
+
+    public inline function getRootScreen() {
+        return stack.last().screen;
     }
 
     public inline function findScreen(screenId: String) : RoxScreen {

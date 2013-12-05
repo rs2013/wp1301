@@ -713,53 +713,62 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
         };
         btn.setOnClickListener(onClick);
         
-        new Thread() {
-            
-            @Override
-            public void run() {
-                JSONArray records = null;
-                if (isFolder) {
-                    records = folderList;
-                } else {
+        if (isFolder) {
+            addButtons(folderList, true);
+            new Thread() {
+                
+                @Override
+                public void run() {
+                    loadFolderList();
+                }
+                
+            }.start();
+        } else {
+            new Thread() {
+                
+                @Override
+                public void run() {
                     try {
                         String path = CameraUtils.AR_CACHE_DIR + "/arlist_" + cid + ".json";
                         JSONObject data = CameraUtils.readJsonFromFile(path);
-                        records = data.getJSONObject("goods").getJSONArray("records");
+                        final JSONArray records = data.getJSONObject("goods").getJSONArray("records");
+                        CameraActivity.this.runOnUiThread(new Runnable() {
+        
+                            @Override
+                            public void run() {
+                                addButtons(records, false);
+                            }
+                            
+                        });
                     } catch (Exception ex) {
-                        Log.e(TAG, "showFolder error, ex=" + ex);
+                        Log.e(TAG, "showFolder: cid = " + cid + ",ex=" + ex);
                     }
+    
                 }
-                final JSONArray recs = records != null ? records : new JSONArray();
-                CameraActivity.this.runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        for (int i = 0, n = recs.length(); i < n; i++) {
-                            JSONObject rec = recs.optJSONObject(i);
-                            try {
-                                rec.put("isFolder", isFolder);
-                            } catch (Exception shouldNotHappen) { }
-                            String url = rec.optString(isFolder ? "icon" : "image");
-                            if (!CameraUtils.arCacheExists(url)) continue;
-                            ImageButton btn = new ImageButton(CameraActivity.this);
-                            btn.setContentDescription(rec.toString());
-                            btn.setBackgroundColor(Color.TRANSPARENT);
-                            btn.setPadding(0, 0, 0, 0);
-                            btn.setScaleType(ScaleType.FIT_CENTER);
-                            LayoutParams params = new LayoutParams((int) (AR_ICON_SIZE * dpFactor), (int) (AR_ICON_SIZE * dpFactor));
-                            arSelect.addView(btn, params);
-                            new ImageButtonLoader(CameraActivity.this, btn, url).start();
-                        }
-                    }
-                    
-                });
-
-            }
-            
-        }.start();
+                
+            }.start();
+        }
         ((HorizontalScrollView) arSelect.getParent()).scrollTo(0, 0);
     }
     
+    private void addButtons(JSONArray recs, boolean isFolder) {
+        for (int i = 0, n = recs.length(); i < n; i++) {
+            JSONObject rec = recs.optJSONObject(i);
+            try {
+                rec.put("isFolder", isFolder);
+            } catch (Exception shouldNotHappen) { }
+            String url = rec.optString(isFolder ? "icon" : "image");
+            if (!CameraUtils.arCacheExists(url)) continue;
+            ImageButton btn = new ImageButton(CameraActivity.this);
+            btn.setContentDescription(rec.toString());
+            btn.setBackgroundColor(Color.TRANSPARENT);
+            btn.setPadding(0, 0, 0, 0);
+            btn.setScaleType(ScaleType.FIT_CENTER);
+            LayoutParams params = new LayoutParams((int) (AR_ICON_SIZE * dpFactor), (int) (AR_ICON_SIZE * dpFactor));
+            arSelect.addView(btn, params);
+            new ImageButtonLoader(CameraActivity.this, btn, url).start();
+        }
+    }
     
     public static void initCameras() {
         if (camInfo != null) return; // already initialized
@@ -814,14 +823,19 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
         
         camInfo.cameraId = 0;
 
+        loadFolderList();
+    }
+    
+    private static void loadFolderList() {
         try {
             String path = CameraUtils.AR_CACHE_DIR + "/arfolders.json";
             JSONObject data = CameraUtils.readJsonFromFile(path);
             folderList = data.getJSONObject("catalogs").getJSONArray("records");
         } catch (Exception ex) {
-            Log.e(TAG, "initCamera loadFolderList error, ex=" + ex);
+            Log.e(TAG, "loadFolderList error, ex=" + ex);
         }
     }
+    
     /**
      * NOTE: in this method, w must always great than h
      * @param w: pixel distance of the longer side 

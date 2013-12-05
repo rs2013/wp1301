@@ -1,6 +1,7 @@
 package com.weiplus.client;
 
-using com.roxstudio.i18n.I18n;
+import ru.stablex.ui.widgets.Floating;
+import ru.stablex.ui.UIBuilder;
 import com.roxstudio.haxe.ui.RoxScreenManager;
 import nme.events.MouseEvent;
 import com.roxstudio.haxe.ui.UiUtil;
@@ -11,6 +12,8 @@ import com.roxstudio.haxe.ui.RoxScreen;
 import nme.geom.Rectangle;
 import nme.display.Sprite;
 
+using com.roxstudio.haxe.ui.DipUtil;
+using com.roxstudio.i18n.I18n;
 using com.roxstudio.haxe.game.GfxUtil;
 using com.roxstudio.haxe.ui.UiUtil;
 
@@ -76,6 +79,22 @@ class BaseScreen extends RoxScreen {
             addChild(titleBar);
             addChild(hideButton.rox_move((screenWidth - hideButton.width) / 2, 0));
         }
+    }
+
+    override public function onBackKey() {
+//        trace("stacksize="+manager.stackSize());
+        if (manager.stackSize() == 1) {
+            var dialog: Floating = null;
+            dialog = cast UIBuilder.buildFn("ui/confirm_dialog.xml")( {
+                title: "退出".i18n(),
+                message: "是否退出哈利波图？".i18n(),
+                onOk: function() { dialog.free(); Sys.exit(0); },
+                onCancel: function() { dialog.free(); }
+            } );
+            dialog.show();
+            return false;
+        }
+        return true;
     }
 
     public function onTitleClicked() {

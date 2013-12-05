@@ -72,14 +72,17 @@ class PictureScreen extends BaseScreen {
         status = data.status;
         bitmapData = cast data.image;
 #if cpp
-        path = MyUtils.IMAGE_CACHE_DIR + "/" + StringTools.urlEncode(status.appData.image);
-        trace("PictureScreen.onNewRequest: path=" + path + ",exists=" + sys.FileSystem.exists(path));
-        if (sys.FileSystem.exists(path)) {
-            bitmapData = ResKeeper.loadLocalImage(path);
+        if (!status.isGame() || bitmapData == null) {
+            path = MyUtils.IMAGE_CACHE_DIR + "/" + StringTools.urlEncode(status.appData.image);
+            trace("PictureScreen.onNewRequest: path=" + path + ",exists=" + sys.FileSystem.exists(path));
+            if (sys.FileSystem.exists(path)) {
+                bitmapData = ResKeeper.loadLocalImage(path);
+            }
         }
 #end
         var sc: Float = Math.min(screenWidth / bitmapData.width, (screenHeight - titleBar.height) / bitmapData.height);
         var offx = (screenWidth - bitmapData.width * sc) / 2, offy = (screenHeight - titleBar.height - bitmapData.height * sc) / 2;
+//        trace("sc="+sc+",bmd="+bitmapData.width+","+bitmapData.height+",off="+offx+","+offy);
         var sp = new Sprite();
         sp.addChild(new Bitmap(bitmapData).rox_smooth());
         sp.rox_scale(sc).rox_move(offx, offy);

@@ -13,7 +13,9 @@
     <t id="启动相机中">启动相机中</t><!--line 30-->
   </file>
   <file path="src/com/weiplus/client/BaseScreen.hx">
-    <t id="返回">返回</t><!--line 65-->
+    <t id="是否退出哈利波图？">是否退出哈利波图？</t><!--line 90-->
+    <t id="返回">返回</t><!--line 68-->
+    <t id="退出">退出</t><!--line 89-->
   </file>
   <file path="src/com/weiplus/client/CommentsScreen.hx">
     <t id="发表评论">发表评论</t><!--line 73-->
@@ -75,18 +77,18 @@
   <file path="src/com/weiplus/client/PictureScreen.hx">
     <t id="保存">保存</t><!--line 42-->
     <t id="保存中">保存中</t><!--line 45-->
-    <t id="删除">删除</t><!--line 117-->
-    <t id="已删除">已删除</t><!--line 156-->
-    <t id="已经赞过了">已经赞过了</t><!--line 144-->
+    <t id="删除">删除</t><!--line 120-->
+    <t id="已删除">已删除</t><!--line 159-->
+    <t id="已经赞过了">已经赞过了</t><!--line 147-->
     <t id="成功保存在">成功保存在</t><!--line 44-->
     <t id="查看原图">查看原图</t><!--line 40-->
-    <t id="网络错误，ex=">网络错误，ex=</t><!--line 147, 159-->
-    <t id="评论">评论</t><!--line 106-->
-    <t id="赞">赞</t><!--line 102-->
-    <t id="赞 +1">赞 +1</t><!--line 142-->
-    <t id="赞已取消">赞已取消</t><!--line 142-->
-    <t id="转发">转发</t><!--line 109-->
-    <t id="魔法！">魔法！</t><!--line 112-->
+    <t id="网络错误，ex=">网络错误，ex=</t><!--line 150, 162-->
+    <t id="评论">评论</t><!--line 109-->
+    <t id="赞">赞</t><!--line 105-->
+    <t id="赞 +1">赞 +1</t><!--line 145-->
+    <t id="赞已取消">赞已取消</t><!--line 145-->
+    <t id="转发">转发</t><!--line 112-->
+    <t id="魔法！">魔法！</t><!--line 115-->
   </file>
   <file path="src/com/weiplus/client/PlayScreen.hx">
     <t id="你太有才了！">你太有才了！</t><!--line 222-->
@@ -105,19 +107,19 @@
   </file>
   <file path="src/com/weiplus/client/PostScreen.hx">
     <t id="#哈利波图#">#哈利波图#</t><!--line 115-->
-    <t id="人人网">人人网</t><!--line 229-->
+    <t id="人人网">人人网</t><!--line 232-->
     <t id="发布">发布</t><!--line 48, 51-->
     <t id="发布中">发布中</t><!--line 173-->
-    <t id="同步到：">同步到：</t><!--line 238-->
+    <t id="同步到：">同步到：</t><!--line 241-->
     <t id="完成">完成</t><!--line 89, 89, 89-->
-    <t id="微信">微信</t><!--line 230-->
-    <t id="新浪微博">新浪微博</t><!--line 227-->
+    <t id="微信">微信</t><!--line 233-->
+    <t id="新浪微博">新浪微博</t><!--line 230-->
     <t id="登录">登录</t><!--line 161-->
-    <t id="登录中">登录中</t><!--line 276-->
+    <t id="登录中">登录中</t><!--line 279-->
     <t id="登录哈利波图">登录哈利波图</t><!--line 160-->
     <t id="继续">继续</t><!--line 161-->
     <t id="编辑内容">编辑内容</t><!--line 88, 88, 88-->
-    <t id="腾讯微博">腾讯微博</t><!--line 228-->
+    <t id="腾讯微博">腾讯微博</t><!--line 231-->
     <t id="请登录或使用公共账户继续。">请登录或使用公共账户继续。</t><!--line 160-->
   </file>
   <file path="src/com/weiplus/client/Postit.hx">
@@ -176,9 +178,9 @@
     <t id="腾讯微博">腾讯微博</t><!--line 29-->
   </file>
   <file path="src/com/weiplus/client/SimpleMaker.hx">
-    <t id="中等">中等</t><!--line 66-->
-    <t id="困难">困难</t><!--line 67-->
-    <t id="简单">简单</t><!--line 65-->
+    <t id="中等">中等</t><!--line 67-->
+    <t id="困难">困难</t><!--line 68-->
+    <t id="简单">简单</t><!--line 66-->
   </file>
   <file path="src/com/weiplus/client/TimelineScreen.hx">
     <t id="载入中">载入中</t><!--line 105-->
@@ -195,16 +197,16 @@
     <t id="错误,code=">错误,code=</t><!--line 128-->
   </file>
   <file path="src/com/weiplus/client/model/Routine.hx">
-    <t id="对您的作品发表了评论：">对您的作品发表了评论：</t><!--line 21-->
-    <t id="已开始关注您。">已开始关注您。</t><!--line 28-->
-    <t id="称赞了您的作品。">称赞了您的作品。</t><!--line 23-->
+    <t id="对您的作品发表了评论：">对您的作品发表了评论：</t><!--line 23-->
+    <t id="已开始关注您。">已开始关注您。</t><!--line 30-->
+    <t id="称赞了您的作品。">称赞了您的作品。</t><!--line 25-->
   </file>
   <file path="ui/alert_dialog.xml">
     <t id="确认">确认</t><!--line 176-->
   </file>
   <file path="ui/confirm_dialog.xml">
-    <t id="取消">取消</t><!--line 235-->
-    <t id="确认">确认</t><!--line 190-->
+    <t id="取消">取消</t><!--line 235, 235-->
+    <t id="确认">确认</t><!--line 190, 190-->
   </file>
   <file path="ui/magic_editor.xml">
     <t id="保存/分享">保存/分享</t><!--line 493-->
