@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import flash.geom.Point;
 import com.weiplus.client.TimelineScreen;
 import com.roxstudio.haxe.ui.UiUtil;
 using com.roxstudio.i18n.I18n;
@@ -59,6 +60,12 @@ class Postit extends Sprite {
     private var parentScreen: TimelineScreen;
 
     private static var ptnUrl = ~/http[s]?:\/\/[^ $]+/i;
+
+    public var imageBounds(get_imageBounds, null): Point;
+
+    private inline function get_imageBounds() {
+        return new Point(w, imh);
+    }
 
     public function new(parent: TimelineScreen, inStatus: Status, width: Float, mode: Int) {
         super();

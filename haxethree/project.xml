@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 
-	<meta title="哈利波图" package="com.weiplus.client" version="1.3.1" company="迈吉客科技（上海）有限公司" />
+	<meta title="哈利波图" package="com.weiplus.client" version="1.3.2" company="迈吉客科技（上海）有限公司" />
 	<app file="harryphoto" main="com.weiplus.client.Main" />
 
     <window fps="30" background="0xFFFFFF" hardware="true" width="540" height="800" depthBuffer="true" orientation="portrait" resizable="false" />

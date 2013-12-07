@@ -350,7 +350,8 @@ class TimelineScreen extends BaseScreen {
 //                        trace("e=" + e + ",sp=("+sp.x+","+sp.y+","+sp.width+","+sp.height+")");
 // TODO: in gestureagent, handle bubbled mouse/touch event, use currentTarget as owner?
                         var pt = main.localToGlobal(new Point(sp.x, sp.y));
-                        if (GameUtil.pointInRect(e.stageX, e.stageY, pt.x, pt.y, sp.width, sp.height)) {
+                        var bounds = cast(sp, Postit).imageBounds;
+                        if (GameUtil.pointInRect(e.stageX, e.stageY, pt.x, pt.y, bounds.x, bounds.y)) {
                             var postit: Postit = cast(sp);
 //                            var r = new Rectangle(pt.x, pt.y, sp.width, sp.height);
                             onPlay(postit);
