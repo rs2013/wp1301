@@ -367,7 +367,7 @@ class MagicEditor extends MakerScreen {
         obj.left = matrix.tx;
 
         obj.userData = copyUserData(userData, bmd);
-        var agent = new RoxGestureAgent(obj);
+        var agent = new RoxGestureAgent(obj, RoxGestureAgent.GESTURE_CAPTURE);
         obj.addEventListener(RoxGestureEvent.GESTURE_ROTATION, handleEvent.bind(_, null));
         obj.addEventListener(RoxGestureEvent.GESTURE_PINCH, handleEvent.bind(_, null));
         obj.addEventListener(RoxGestureEvent.GESTURE_PAN, handleEvent.bind(_, null));

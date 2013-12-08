@@ -90,7 +90,7 @@ class PictureScreen extends BaseScreen {
         sp.addEventListener(RoxGestureEvent.GESTURE_PAN, agent.getHandler());
         sp.addEventListener(RoxGestureEvent.GESTURE_PINCH, agent.getHandler());
         content.addChild(sp);
-        if (!HpApi.instance.isDefault()) {
+        if (!HpApi.instance.isDefault() && status.user != null) { // logged in & not from maker
             content.addChild(bottomBar().rox_move(0, viewh - (89).dp()));
         }
     }
@@ -112,9 +112,11 @@ class PictureScreen extends BaseScreen {
         var repostbtn = UiUtil.button(UiUtil.TOP_LEFT, null, "转发".i18n(), 0, fontsize, "res/btn_grey.9.png", onButton);
         repostbtn.name = "repost_" + status.id;
         arr.push(repostbtn);
-        var magicbtn = UiUtil.button(UiUtil.TOP_LEFT, null, "魔法！".i18n(), 0, fontsize, "res/btn_grey.9.png", onButton);
-        magicbtn.name = "magic_" + status.id;
-        arr.push(magicbtn);
+        if (!status.isGame()) {
+            var magicbtn = UiUtil.button(UiUtil.TOP_LEFT, null, "魔法！".i18n(), 0, fontsize, "res/btn_grey.9.png", onButton);
+            magicbtn.name = "magic_" + status.id;
+            arr.push(magicbtn);
+        }
         if (status.user.id == HpApi.instance.uid) {
             var deletebtn = UiUtil.button(UiUtil.TOP_LEFT, null,
             "删除".i18n(), 0, fontsize, "res/btn_grey.9.png", onButton);
