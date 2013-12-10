@@ -1,87 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">MagicPhoto</string>
-    <string name="btnBack">返回</string>
-    <string name="btnDone">完成</string>
-    <string name="btnWeibo">使用新浪微博账号登录</string>
-    <string name="btnQq">使用腾讯微博账号登录</string>
-    <string name="btnRenren">使用人人网账号登录</string>
-    <string name="btnRefresh">更新</string>
-    <string name="btnHome">首页</string>
-    <string name="btnSelected">精选</string>
-    <string name="btnWrite">发表</string>
-    <string name="btnMessage">消息</string>
-    <string name="btnAccount">账户</string>
-    <string name="btnPost">发表</string>
-    <string name="btnImage">图片</string>
-    <string name="btnRecord">录音</string>
-    <string name="btnLocation">位置</string>
-    <string name="btnMagic">魔法</string>
-    <string name="btnGift">礼物</string>
-    <string name="btnRandom">随便</string>
-    
-<!-- copied from Harry Camera -->
-    
-    <!-- Emulated action bar -->
-    <string name="contentDescription_action_bar_icon">action bar icon</string>
-
-    <!-- Bottom bar -->
-    <string name="contentDescription_bottom_bar_buttom">bottom bar buttom</string>
-
-    <!-- Welcome -->
-    <string name="cd_splash">Splash</string>
-    <string name="welcome_main_title">Harry Camera</string>
-    <string name="title_my_photos">My Photo</string>
-    <string name="title_popular">Popular</string>
-    <string name="title_options">Options</string>
-    <string name="contentDescription_my_photos">my photo</string>
-    <string name="contentDescription_popular">popular</string>
-    <string name="option_content_share">Share setting</string>
-    <string name="option_content_update">Source update</string>
-    <string name="option_content_about">About</string>
-    <string name="option_mark_update">(new)</string>
-
-    <!-- Camera -->
-    <string name="camera">Camera</string>
-    <!-- ShowRoom -->
-    <string name="show_room">Show Room</string>
-    <string name="menu_settings">Settings</string>
-    <string name="menu_about">About</string>
-    <string name="btn_header1">Sort</string>
-    <string name="btn_header2">Price</string>
-    <string name="btn_header3">Color</string>
-    <string name="btn_footer">Try on</string>
-    <string name="footer">Choose what you like</string>
-
-    <!-- FittingRoom-->
-    <string name="fitting_room">Fitting</string>
-    <string name="capture">Capture</string>
-    <string name="recapture">Recapture</string>
-    <string name="save">Save</string>
-    <string name="view">View</string>
-    <string name="share">Share</string>
-    <string name="contentDescription_fitting_image_view">fitting</string>
-    <string name="contentDescription_ring_image_view">ring</string>
-    <string name="toast_camera_error">Camera hasn\'t been ready or it is busy now!</string>
-
-    <!-- Ring Grid Item -->
-    <string name="contentDescription_thumb_image_view">thumb</string>
-    <string name="contentDescription_check_image_view">check</string>
-    <string name="content_item_price">￥ %1$s</string>
-
-    <!-- Guide -->
-    <string name="guide_take_pic">Please shoot your hand</string>
-    <string name="guide_pic_taked">You can try on the rings now, or recapture</string>
-    <string name="guide_pic_saved">Your show has been saved, view ,share and enjoy it.</string>
-
-    <string name="share_via">Share via</string>
-    <string name="share_subject">"Share"</string>
-    <string name="share_text">"I would like to share the pretty ring with you."</string>
-
-    <string name="no_camera">Sorry, your device has no camera, can\'t run this app!</string>
-    <!-- Camera Activity -->
-    <string name="category_title">Categories</string>
+    <string name="app_name">Magics</string>
     
     <string name="umeng_example_home_btn_analytics">Analytics</string>
     <string name="umeng_example_home_btn_xp">XP</string>
@@ -108,4 +28,56 @@
     <string name="actionbar_activity_not_found">Failed to open intent...</string>
     <string name="umeng_example_home_hint_wait">Coming soooooon</string>
     <string name="intro"> The webview before show js call Umeng Analytics APIs</string>
+
+<!-- for share sdk -->
+
+    <string name="weibo_oauth_regiseter">Authorization</string>
+    <string name="website">http://www.appmagics.com</string>
+    <string name="weibo_upload_content">分享图片</string>
+    <string name="wechat_client_inavailable">Wechat client not exists or the version is too low</string>
+    <string name="google_plus_client_inavailable">Google+ client not exists or the version is too low</string>
+    <string name="qq_client_inavailable">Mobile QQ client not exists or the version is too low</string>
+    <string name="pinterest_client_inavailable">Pinterest client not exists or the version is too low</string>
+    <string name="instagram_client_inavailable">Instagram client not exists or the version is too low</string>
+    
+    <string name="sinaweibo">Sina Weibo</string>
+    <string name="tencentweibo">Tencent Weibo</string>
+    <string name="qzone">QZone</string>
+    <string name="wechat">Wechat</string>
+    <string name="wechatmoments">Wechat Moments</string>
+    <string name="facebook">Facebook</string>
+    <string name="twitter">Twitter</string>
+    <string name="renren">Renren</string>
+    <string name="kaixin">Kaixin</string>
+    <string name="email">Email</string>
+    <string name="shortmessage">Short Message</string>
+    <string name="sohumicroblog">Sohu Microblog</string>
+    <string name="neteasemicroblog">Netease Microblog</string>
+    <string name="douban">Douban</string>
+    <string name="youdao">Youdao</string>
+    <string name="evernote">Evernote</string>
+    <string name="linkedin">Linked in</string>
+    <string name="googleplus">Google+</string>
+    <string name="foursquare">FourSquare</string>
+    <string name="qq">QQ</string>
+    <string name="sohusuishenkan">Sohu Suishenkan</string>
+    <string name="pinterest">Pinterest</string>
+    <string name="flickr">Flickr</string>
+    <string name="tumblr">Tumblr</string>
+    <string name="dropbox">Dropbox</string>
+    <string name="vkontakte">VK</string>
+    <string name="instagram">Instagram</string>
+
+    <string name="cancel">Cancel</string>
+    <string name="finish">Finish</string>
+    <string name="sharing">Sharing operation is working in the background…</string>
+    <string name="share_to">Share to </string>
+    <string name="share">Share</string>
+    <string name="multi_share">Photo Sharing</string>
+    <string name="share_completed">Operation succeeded</string>
+    <string name="share_canceled">Operation canceled</string>
+    <string name="select_one_plat_at_least">Please select a target platform</string>
+    <string name="list_friends">Friends on %s</string>
+    <string name="share_failed">Operation failed</string>
+
 </resources>

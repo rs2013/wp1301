@@ -34,11 +34,16 @@ class HpApi {
     private static function get_instance() : HpApi {
         if (instance == null) {
 #if (android && !testin)
-            instance = new HpApi(Json.parse(HpManager.getTokenAsJson()));
+            if (MyUtils.isEn()) {
+                instance = new HpApi({ accessToken: "45cdb6b37a59ec2273bcfd6e19dc2883", uid: "8", refreshToken: "" });
+            } else {
+                instance = new HpApi(Json.parse(HpManager.getTokenAsJson()));
+            }
 #else
 //            instance = new HpApi({ accessToken: "5de6dd1b60c6e090042d9fb605136bba", uid: "7", refreshToken: "" });
 //            instance = new HpApi({ accessToken: "c0cd303a9f13db7d79b4ec3e6cc125a9", uid: "113", refreshToken: "" });
-            instance = new HpApi({ accessToken: "ad589fd46c1dbea90cfb99c0010e61b4", uid: "3", refreshToken: "" });
+//            instance = new HpApi({ accessToken: "ad589fd46c1dbea90cfb99c0010e61b4", uid: "3", refreshToken: "" });
+            instance = new HpApi({ accessToken: "45cdb6b37a59ec2273bcfd6e19dc2883", uid: "8", refreshToken: "" });
 #end
         }
 #if (android && !testin)

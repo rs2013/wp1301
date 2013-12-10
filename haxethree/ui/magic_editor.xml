@@ -30,7 +30,7 @@
                     openBrowser(currentAr.userData.goUrl);
                     "/>
 
-            <Button skin:Img-src="'res/ar_obj_mir.png'.dpScale()" left="-30.dp()" bottom="-30.dp()" visible="false"
+            <Button skin:Img-src="'res/ar_obj_mir.png'.dpScale()" left="-30.dp()" bottom="-30.dp()" visible="true"
                     on-click="
                     var obj = cast(currentAr.getChildAt(0), Sprite);
                     var bmd = currentAr.userData.bmd;

@@ -823,10 +823,10 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
         
         camInfo.cameraId = 0;
 
-        loadFolderList();
     }
     
-    private static void loadFolderList() {
+    public static void loadFolderList() {
+        Log.i(TAG, "loadFolderList");
         try {
             String path = CameraUtils.AR_CACHE_DIR + "/arfolders.json";
             JSONObject data = CameraUtils.readJsonFromFile(path);

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.haxe.nme.HaxeObject;
@@ -49,6 +50,8 @@ public class HpManager {
     private static String LINK = "http://www.appmagics.cn/w/statuses/show/${ID}";
     private static final String DEFAULT_UID = "113";
     private static final String DEFAULT_TOKEN = "c0cd303a9f13db7d79b4ec3e6cc125a9";
+    private static final String DEFAULT_UID_EN = "8";
+    private static final String DEFAULT_TOKEN_EN = "45cdb6b37a59ec2273bcfd6e19dc2883";
     
     private static HpAccessToken accessToken;
     
@@ -59,7 +62,9 @@ public class HpManager {
     
     public static boolean login() {
         getAccessToken();
-        if (accessToken.isSessionValid() && !DEFAULT_UID.equals(accessToken.getUid()) && bindings.size() == 0) {
+        if (accessToken.isSessionValid() && bindings.size() == 0
+                && !DEFAULT_UID.equals(accessToken.getUid())) { 
+//                && !DEFAULT_UID_EN.equals(accessToken.getUid())) {
             AuthAPI api = new AuthAPI(accessToken);
             api.login(new HpListener() {
 
@@ -93,11 +98,16 @@ public class HpManager {
                 
             });
         }
+//        if (!isEn() && DEFAULT_UID.equals(accessToken.getUid())) {
         if (DEFAULT_UID.equals(accessToken.getUid())) {
             addWeixinBinding();
         }
         return accessToken.isSessionValid();
     }
+    
+//    private static boolean isEn() {
+//        return !Locale.getDefault().getLanguage().toLowerCase().startsWith("zh");
+//    }
 
     private static void addWeixinBinding() {
         Binding b = HpManager.createBinding(Type.WEIXIN, new String[] { "" });
@@ -124,6 +134,64 @@ public class HpManager {
         addWeixinBinding();
     }
     
+    public static void postStatusEn(final String bindTypes, 
+            final String text, final String imgPath, 
+            final String type, final String filePath, final HaxeObject callback) {
+        
+        StatusAPI api = new StatusAPI(getEnShareToken());
+        api.post(text, imgPath, type, filePath, "", "", new HpListener() {
+
+            @Override
+            public void onComplete(String response) {
+                try {
+                    JSONObject json = new JSONObject(response);
+                    if (json.getInt("code") == 200) {
+                        JSONObject st = json.getJSONArray("statuses").getJSONObject(0);
+                        long statusId = st.getLong("id");
+                        String link = LINK.replace("${ID}", "" + statusId);
+                        shareEn(bindTypes, text + " See: " + link, imgPath);
+                        Utility.haxeOk(callback, "statuses_create", response);
+                    } else {
+                        throw new Exception("error, code=" + json.getInt("code"));
+                    }
+                } catch (Exception e) {
+                    onError(new HpException(e));
+                }
+            }
+
+            @Override
+            public void onIOException(IOException e) {
+                onError(new HpException(e));
+            }
+
+            @Override
+            public void onError(final HpException e) {
+                Log.e(TAG, e.getMessage());
+                Utility.haxeError(callback, "statuses_create", e);
+            }
+            
+        });
+    }
+    
+    private static void shareEn(final String platformNames, final String text, final String imgPath) {
+        final Activity activity = MainActivity.getInstance();
+        activity.runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                OnekeyShare oks = new OnekeyShare();
+                oks.setNotification(R.drawable.icon, activity.getString(R.string.app_name));
+
+                oks.setSilent(true);
+                oks.setText(text);
+                oks.setImagePath(imgPath);
+//                oks.share("Facebook,Twitter,GooglePlus,Pinterest");
+                oks.share(platformNames);
+            }
+            
+        });
+    }
+    
     public static void postStatus(final String[] bindTypes, 
             final String text, final String imgPath, 
             final String type, final String filePath, 
@@ -146,10 +214,12 @@ public class HpManager {
                 try {
                     FileOutputStream fos = new FileOutputStream(smallpath);
                     newbmp.compress(Bitmap.CompressFormat.JPEG, 80, fos);
-                     fos.close();
+                    fos.close();
                 } catch (IOException e) {
                     Log.w(TAG, "Error creating bitmap file " + smallpath + ", ex=" + e.getMessage());
                 }
+                bmp.recycle();
+                newbmp.recycle();
             }
         }
         final String smallImgPath = smallpath == null ? imgPath : smallpath; 
@@ -194,6 +264,20 @@ public class HpManager {
         });
     }
     
+    public static void loadFolderList() {
+        CameraActivity.loadFolderList();
+    }
+    
+    public static HpAccessToken getEnShareToken() {
+        HpAccessToken token = accessToken = new HpAccessToken();
+        token.setToken(DEFAULT_TOKEN_EN);
+        token.setRefreshToken("");
+        token.setExpiresTime(0);
+        token.setUid(DEFAULT_UID_EN);
+        token.setDisabledBindingsFromString("");
+        return token;
+    }
+    
     public static HpAccessToken getAccessToken() {
         if (accessToken == null || !accessToken.isSessionValid()) {
             SharedPreferences pref = MainActivity.getInstance().getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
@@ -204,8 +288,13 @@ public class HpManager {
             token.setUid(pref.getString("uid", ""));
             token.setDisabledBindingsFromString(pref.getString("disabledBindings", ""));
             if (!accessToken.isSessionValid()) {
-                token.setUid(DEFAULT_UID);
-                token.setToken(DEFAULT_TOKEN);
+//                if (isEn()) {
+//                    token.setUid(DEFAULT_UID_EN);
+//                    token.setToken(DEFAULT_TOKEN_EN);
+//                } else {
+                    token.setUid(DEFAULT_UID);
+                    token.setToken(DEFAULT_TOKEN);
+//                }
             }
         }
         return accessToken;

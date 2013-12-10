@@ -154,7 +154,7 @@ class PostScreen extends BaseScreen {
     private function doPost(_) {
 //        trace("doPost");
 
-        if (HpApi.instance.isDefault()) {
+        if (!MyUtils.isEn() && HpApi.instance.isDefault()) {
             var dialog: Floating = null;
             dialog = cast UIBuilder.buildFn("ui/confirm_dialog.xml")( {
                     title: "登录哈利波图".i18n(), message: "请登录或使用公共账户继续。".i18n(),
@@ -177,11 +177,20 @@ class PostScreen extends BaseScreen {
         if (!sys.FileSystem.exists(imgPath)) imgPath = "";
         var zipPath = MAKER_DIR + "/data.zip";
         if (!sys.FileSystem.exists(zipPath)) zipPath = "";
-        var types: Array<String> = [];
-        for (t in useBinds.keys()) {
-            if (useBinds.get(t)) types.push(t);
+        if (MyUtils.isEn()) {
+            var map = MyUtils.platformMap;
+            var names = "";
+            for (k in map.keys()) {
+                if (map.get(k) == 1) names += k + ",";
+            }
+            HpManager.postStatusEn(names, input.text + tagStr, imgPath, status.appData.type, zipPath, this);
+        } else {
+            var types: Array<String> = [];
+            for (t in useBinds.keys()) {
+                if (useBinds.get(t)) types.push(t);
+            }
+            HpManager.postStatus(types, input.text + tagStr, imgPath, status.appData.type, zipPath, status.isGame() ? "" : "image", "", this);
         }
-        HpManager.postStatus(types, input.text + tagStr, imgPath, status.appData.type, zipPath, status.isGame() ? "" : "image", "", this);
 #else
         onApiCallback("statuses_create", "ok", "");
 #end
@@ -227,10 +236,18 @@ class PostScreen extends BaseScreen {
     }
 
     private function sharePanel() : Sprite {
-        var btn0 = shareButton("sina", "新浪微博".i18n(), "tl", "SINA_WEIBO");
-        var btn1 = shareButton("tencent", "腾讯微博".i18n(), "tr", "TENCENT_WEIBO");
-        var btn2 = shareButton("renren", "人人网".i18n(), "ml", "RENREN_WEIBO");
-        var btn3 = shareButton("weixin", "微信".i18n(), "mr", "WEIXIN");
+        var btn0: RoxFlowPane, btn1: RoxFlowPane, btn2: RoxFlowPane, btn3: RoxFlowPane;
+        if (MyUtils.LOCALE == "default") {
+            btn0 = shareButton("sina", "新浪微博".i18n(), "tl", "SINA_WEIBO");
+            btn1 = shareButton("tencent", "腾讯微博".i18n(), "tr", "TENCENT_WEIBO");
+            btn2 = shareButton("renren", "人人网".i18n(), "ml", "RENREN_WEIBO");
+            btn3 = shareButton("weixin", "微信".i18n(), "mr", "WEIXIN");
+        } else {
+            btn0 = shareButton("facebook", "Facebook".i18n(), "tl", "Facebook");
+            btn1 = shareButton("twitter", "Twitter".i18n(), "tr", "Twitter");
+            btn2 = shareButton("pinterest", "Pinterest".i18n(), "ml", "Pinterest");
+            btn3 = shareButton("googleplus", "Google+".i18n(), "mr", "GooglePlus");
+        }
 //        var btn3 = shareButton("sohu_g", "搜狐微博", "ml");
 //        var btn4 = shareButton("qqspace_g", "QQ空间", "ml");
 //        var btn5 = shareButton("twit_g", "Twitter", "mr");
@@ -252,8 +269,13 @@ class PostScreen extends BaseScreen {
     private function shareButton(icon: String, name: String, bg: String, type: String) : RoxFlowPane {
         var bg = UiUtil.ninePatch("res/btn_share_" + bg + ".9.png");
 #if (android && !testin)
-        var valid = (!HpApi.instance.isDefault() || type == "WEIXIN")
-            && type != "" && HpManager.isBindingSessionValid(type) && useBinds.get(type);
+        var valid = true;
+        if (MyUtils.isEn()) {
+            valid = MyUtils.platformMap.get(type) == 1;
+        } else {
+            valid = (!HpApi.instance.isDefault() || type == "WEIXIN")
+                && type != "" && HpManager.isBindingSessionValid(type) && useBinds.get(type);
+        }
 //        trace("type=" + type + ",hasBinding=" + HpManager.hasBinding(type) + ",isValid=" + HpManager.isBindingSessionValid(type));
 #else
         var valid = true;
@@ -279,18 +301,24 @@ class PostScreen extends BaseScreen {
         var text = "登录中".i18n();
 #if (android && !testin)
         var type = e.target.name;
-//        trace("<<<<<<<<<<type="+type+",binding="+HpManager.isBindingSessionValid(type)+",useBinds="+useBinds);
-        if (type != "WEIXIN" && HpApi.instance.isDefault()) {
-            startScreen(Type.getClassName(LoginScreen), resetSharePanel);
-            return;
-        }
-        if (HpManager.isBindingSessionValid(type)) {
-            useBinds.set(type, !useBinds.get(type));
+        if (MyUtils.isEn()) {
+            var old = MyUtils.platformMap.get(type);
+            MyUtils.platformMap.set(type, 1 - old);
             resetSharePanel();
-            return;
+        } else {
+//        trace("<<<<<<<<<<type="+type+",binding="+HpManager.isBindingSessionValid(type)+",useBinds="+useBinds);
+            if (type != "WEIXIN" && HpApi.instance.isDefault()) {
+                startScreen(Type.getClassName(LoginScreen), resetSharePanel);
+                return;
+            }
+            if (HpManager.isBindingSessionValid(type)) {
+                useBinds.set(type, !useBinds.get(type));
+                resetSharePanel();
+                return;
+            }
+            addChild(waitingAnim(text));
+            HpManager.startAuth(type, this);
         }
-        addChild(waitingAnim(text));
-        HpManager.startAuth(type, this);
 #end
     }
 

@@ -52,7 +52,7 @@ class FriendsList extends BaseScreen {
         user = data.user;
         type = data.type;
         cast(title.getChildAt(0), TextField).text = type == "friends" ? "关注列表".i18n() : "粉丝列表".i18n();
-        isOwner = !HpApi.instance.isDefault() && HpApi.instance.uid == user.id;
+        isOwner = !MyUtils.isEn() && !HpApi.instance.isDefault() && HpApi.instance.uid == user.id;
         addChild(MyUtils.getLoadingAnim("载入中".i18n()).rox_move(screenWidth / 2, screenHeight / 2));
         refresh(false);
     }

@@ -126,9 +126,26 @@ class HpManager
 		a.push(arg1);
 		_getUserInfo_func(a);
 	}
-	
-	
-	private static var _postStatus_func:Dynamic;
+
+
+    private static var _postStatusEn_func:Dynamic;
+
+    public static function postStatusEn(arg0:String, arg1:String, arg2:String, arg3:String, arg4:String, arg5:Dynamic /*org.haxe.nme.HaxeObject*/):Void
+    {
+        if (_postStatusEn_func == null)
+            _postStatusEn_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "postStatusEn", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/haxe/nme/HaxeObject;)V", true);
+        var a = new Array<Dynamic>();
+        a.push(arg0);
+        a.push(arg1);
+        a.push(arg2);
+        a.push(arg3);
+        a.push(arg4);
+        a.push(arg5);
+        _postStatusEn_func(a);
+    }
+
+
+    private static var _postStatus_func:Dynamic;
 
 	public static function postStatus(arg0:Array<String>, arg1:String, arg2:String, arg3:String, arg4:String, arg5:String, arg6:String, arg7:Dynamic /*org.haxe.nme.HaxeObject*/):Void
 	{
@@ -156,9 +173,20 @@ class HpManager
 		var a = new Array<Dynamic>();
 		return _getAccessToken_func(a);
 	}
-	
-	
-	private static var _getTokenAsJson_func:Dynamic;
+
+
+    private static var _loadFolderList_func:Dynamic;
+
+    public static function loadFolderList():Void
+    {
+        if (_loadFolderList_func == null)
+            _loadFolderList_func = openfl.utils.JNI.createStaticMethod("com/weiplus/client/HpManager", "loadFolderList", "()V", true);
+        var a = new Array<Dynamic>();
+        _loadFolderList_func(a);
+    }
+
+
+    private static var _getTokenAsJson_func:Dynamic;
 
 	public static function getTokenAsJson():String
 	{

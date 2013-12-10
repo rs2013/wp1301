@@ -32,14 +32,19 @@ class SettingScreen extends BaseScreen {
         var content = super.createContent(h);
         var spacing = 20 * d2rScale;
         var yoff = spacing;
-        var arr: Array<ListItem> = [];
-        arr.push({ id: "share", icon: null, name: "分享设置".i18n(), type: 1, data: null });
-        var list = MyUtils.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
-            startScreen(Type.getClassName(ShareSetting));
-            return true;
-        });
-        content.addChild(list.rox_move(spacing, yoff));
-        yoff += list.height + spacing;
+        var arr: Array<ListItem> = null;
+        var list: Sprite = null;
+
+        if (!MyUtils.isEn()) {
+            arr = [];
+            arr.push({ id: "share", icon: null, name: "分享设置".i18n(), type: 1, data: null });
+            list = MyUtils.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
+                startScreen(Type.getClassName(ShareSetting));
+                return true;
+            });
+            content.addChild(list.rox_move(spacing, yoff));
+            yoff += list.height + spacing;
+        }
 
         arr = [];
         var autoUpdate = !Reflect.hasField(settingsSo.data, "autoUpdateAr") || settingsSo.data.autoUpdateAr;
@@ -79,21 +84,23 @@ class SettingScreen extends BaseScreen {
         content.addChild(list.rox_move(spacing, yoff));
         yoff += list.height + spacing;
 
-        arr = [];
-        arr.push({ id: "logoff", icon: null, name: "注销当前账户".i18n(), type: 2, data: null });
-        var list = MyUtils.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
-            switch (i.id) {
-            case "logoff":
-                MyUtils.logout();
+        if (!MyUtils.isEn()) {
+            arr = [];
+            arr.push({ id: "logoff", icon: null, name: "注销当前账户".i18n(), type: 2, data: null });
+            var list = MyUtils.list(arr, screenWidth - 2 * spacing, function(i: ListItem) : Bool {
+                switch (i.id) {
+                    case "logoff":
+                        MyUtils.logout();
 #if (android && !testin)
                 HpManager.login(); // use default account
 #end
-                startScreen(Type.getClassName(HomeScreen), CLEAR);
+                        startScreen(Type.getClassName(HomeScreen), CLEAR);
 //                UiUtil.message("你已经登出".i18n());
-            }
-            return true;
-        });
-        content.addChild(list.rox_move(spacing, yoff));
+                }
+                return true;
+            });
+            content.addChild(list.rox_move(spacing, yoff));
+        }
         return content;
     }
 

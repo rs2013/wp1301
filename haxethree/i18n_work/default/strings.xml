@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <strings>
-  <file path="src/com/weiplus/apps/jigsaw/App.hx">
-    <t id="预览">预览</t><!--line 118-->
-  </file>
-  <file path="src/com/weiplus/apps/slidepuzzle/App.hx">
-    <t id="预览">预览</t><!--line 91-->
-  </file>
-  <file path="src/com/weiplus/apps/swappuzzle/App.hx">
-    <t id="预览">预览</t><!--line 90-->
-  </file>
   <file path="src/com/weiplus/client/AndroidCamera.hx">
     <t id="启动相机中">启动相机中</t><!--line 30-->
   </file>
@@ -70,25 +61,25 @@
     <t id="处理中">处理中</t><!--line 56-->
   </file>
   <file path="src/com/weiplus/client/MyUtils.hx">
-    <t id="分钟前">分钟前</t><!--line 161-->
-    <t id="刚刚">刚刚</t><!--line 159-->
-    <t id="小时前">小时前</t><!--line 163-->
+    <t id="分钟前">分钟前</t><!--line 180-->
+    <t id="刚刚">刚刚</t><!--line 178-->
+    <t id="小时前">小时前</t><!--line 182-->
   </file>
   <file path="src/com/weiplus/client/PictureScreen.hx">
-    <t id="保存">保存</t><!--line 42-->
-    <t id="保存中">保存中</t><!--line 45-->
-    <t id="删除">删除</t><!--line 122-->
-    <t id="已删除">已删除</t><!--line 161-->
-    <t id="已经赞过了">已经赞过了</t><!--line 149-->
-    <t id="成功保存在">成功保存在</t><!--line 44-->
-    <t id="查看原图">查看原图</t><!--line 40-->
-    <t id="网络错误，ex=">网络错误，ex=</t><!--line 152, 164-->
-    <t id="评论">评论</t><!--line 109-->
-    <t id="赞">赞</t><!--line 105-->
-    <t id="赞 +1">赞 +1</t><!--line 147-->
-    <t id="赞已取消">赞已取消</t><!--line 147-->
-    <t id="转发">转发</t><!--line 112-->
-    <t id="魔法！">魔法！</t><!--line 116-->
+    <t id="保存">保存</t><!--line 43-->
+    <t id="保存中">保存中</t><!--line 46-->
+    <t id="删除">删除</t><!--line 125-->
+    <t id="已删除">已删除</t><!--line 164-->
+    <t id="已经赞过了">已经赞过了</t><!--line 152-->
+    <t id="成功保存在">成功保存在</t><!--line 45-->
+    <t id="查看原图">查看原图</t><!--line 41-->
+    <t id="网络错误，ex=">网络错误，ex=</t><!--line 155, 167-->
+    <t id="评论">评论</t><!--line 112-->
+    <t id="赞">赞</t><!--line 107-->
+    <t id="赞 +1">赞 +1</t><!--line 150-->
+    <t id="赞已取消">赞已取消</t><!--line 150-->
+    <t id="转发">转发</t><!--line 115-->
+    <t id="魔法！">魔法！</t><!--line 119-->
   </file>
   <file path="src/com/weiplus/client/PlayScreen.hx">
     <t id="你太有才了！">你太有才了！</t><!--line 222-->
@@ -107,33 +98,37 @@
   </file>
   <file path="src/com/weiplus/client/PostScreen.hx">
     <t id="#哈利波图#">#哈利波图#</t><!--line 115-->
-    <t id="人人网">人人网</t><!--line 232-->
+    <t id="Facebook">Facebook</t><!--line 246-->
+    <t id="Google+">Google+</t><!--line 249-->
+    <t id="Pinterest">Pinterest</t><!--line 248-->
+    <t id="Twitter">Twitter</t><!--line 247-->
+    <t id="人人网">人人网</t><!--line 243-->
     <t id="发布">发布</t><!--line 48, 51-->
     <t id="发布中">发布中</t><!--line 173-->
-    <t id="同步到：">同步到：</t><!--line 241-->
+    <t id="同步到：">同步到：</t><!--line 258-->
     <t id="完成">完成</t><!--line 89, 89, 89-->
-    <t id="微信">微信</t><!--line 233-->
-    <t id="新浪微博">新浪微博</t><!--line 230-->
+    <t id="微信">微信</t><!--line 244-->
+    <t id="新浪微博">新浪微博</t><!--line 241-->
     <t id="登录">登录</t><!--line 161-->
-    <t id="登录中">登录中</t><!--line 279-->
+    <t id="登录中">登录中</t><!--line 301-->
     <t id="登录哈利波图">登录哈利波图</t><!--line 160-->
     <t id="继续">继续</t><!--line 161-->
     <t id="编辑内容">编辑内容</t><!--line 88, 88, 88-->
-    <t id="腾讯微博">腾讯微博</t><!--line 231-->
+    <t id="腾讯微博">腾讯微博</t><!--line 242-->
     <t id="请登录或使用公共账户继续。">请登录或使用公共账户继续。</t><!--line 160-->
   </file>
   <file path="src/com/weiplus/client/Postit.hx">
-    <t id="删除">删除</t><!--line 226-->
-    <t id="已删除">已删除</t><!--line 325-->
-    <t id="已经赞过了">已经赞过了</t><!--line 312-->
-    <t id="网络错误，ex=">网络错误，ex=</t><!--line 315, 327-->
-    <t id="评论(">评论(</t><!--line 215-->
-    <t id="赞 +1">赞 +1</t><!--line 310-->
-    <t id="赞(">赞(</t><!--line 211-->
-    <t id="赞已取消">赞已取消</t><!--line 310-->
-    <t id="转发">转发</t><!--line 221-->
-    <t id="载入中">载入中</t><!--line 138-->
-    <t id="载入失败">载入失败</t><!--line 134-->
+    <t id="删除">删除</t><!--line 229-->
+    <t id="已删除">已删除</t><!--line 328-->
+    <t id="已经赞过了">已经赞过了</t><!--line 315-->
+    <t id="网络错误，ex=">网络错误，ex=</t><!--line 318, 330-->
+    <t id="评论(">评论(</t><!--line 218-->
+    <t id="赞 +1">赞 +1</t><!--line 313-->
+    <t id="赞(">赞(</t><!--line 213-->
+    <t id="赞已取消">赞已取消</t><!--line 313-->
+    <t id="转发">转发</t><!--line 224-->
+    <t id="载入中">载入中</t><!--line 139-->
+    <t id="载入失败">载入失败</t><!--line 135-->
   </file>
   <file path="src/com/weiplus/client/Refresher.hx">
     <t id="上拉可以刷新">上拉可以刷新</t><!--line 34-->
@@ -153,21 +148,21 @@
   </file>
   <file path="src/com/weiplus/client/SettingScreen.hx">
     <t id="ABOUT">appMagics定位于提供创新的应用模式，结合增强现实场景使用户可以基于自己的照片，声音，文本等创造神奇的内容，并与其各类社交网络结合以产生深层面的互动。
-版本号: 1.3.0
+版本号: 1.3.3
 发布日期: 2013.11.26
 反馈和建议: support@appMagics.com 或用应用内的反馈功能
 服务条款和隐私政策: http://www.appmagics.com/policies/en/terms/ http://www.appmagics.com/policies/en/privacy/
-    </t><!--line 73-->
-    <t id="Wifi下自动更新魔贴">Wifi下自动更新魔贴</t><!--line 46-->
-    <t id="关于哈利波图(Beta)">关于哈利波图(Beta)</t><!--line 51, 72-->
-    <t id="分享设置">分享设置</t><!--line 36-->
-    <t id="图片缓存已清除">图片缓存已清除</t><!--line 67-->
-    <t id="开始清除，请稍候">开始清除，请稍候</t><!--line 65-->
-    <t id="意见反馈">意见反馈</t><!--line 49-->
-    <t id="推荐应用">推荐应用</t><!--line 48-->
-    <t id="注销当前账户">注销当前账户</t><!--line 83-->
-    <t id="清除图片缓存">清除图片缓存</t><!--line 50-->
-    <t id="立即检测更新魔贴">立即检测更新魔贴</t><!--line 47-->
+    </t><!--line 78-->
+    <t id="Wifi下自动更新魔贴">Wifi下自动更新魔贴</t><!--line 51-->
+    <t id="关于哈利波图(Beta)">关于哈利波图(Beta)</t><!--line 56, 77-->
+    <t id="分享设置">分享设置</t><!--line 40-->
+    <t id="图片缓存已清除">图片缓存已清除</t><!--line 72-->
+    <t id="开始清除，请稍候">开始清除，请稍候</t><!--line 70-->
+    <t id="意见反馈">意见反馈</t><!--line 54-->
+    <t id="推荐应用">推荐应用</t><!--line 53-->
+    <t id="注销当前账户">注销当前账户</t><!--line 89-->
+    <t id="清除图片缓存">清除图片缓存</t><!--line 55-->
+    <t id="立即检测更新魔贴">立即检测更新魔贴</t><!--line 52-->
   </file>
   <file path="src/com/weiplus/client/ShareSetting.hx">
     <t id="人人网">人人网</t><!--line 30-->

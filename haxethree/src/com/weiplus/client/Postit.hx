@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import com.weiplus.client.MyUtils;
 import flash.geom.Point;
 import com.weiplus.client.TimelineScreen;
 import com.roxstudio.haxe.ui.UiUtil;
@@ -207,10 +208,12 @@ class Postit extends Sprite {
 
         if (mode == FULL && !HpApi.instance.isDefault()) {
             var arr: Array<DisplayObject> = [];
-            var praisebtn = UiUtil.button(UiUtil.TOP_LEFT, status.praised ? "res/icon_praised.png" : "res/icon_praise.png",
+            if (!MyUtils.isEn()) {
+                var praisebtn = UiUtil.button(UiUtil.TOP_LEFT, status.praised ? "res/icon_praised.png" : "res/icon_praise.png",
                 "赞(".i18n() + status.praiseCount + ")", 0, fontsize + 2, "res/btn_grey.9.png", onButton);
-            praisebtn.name = "praise_" + status.id;
-            arr.push(praisebtn);
+                praisebtn.name = "praise_" + status.id;
+                arr.push(praisebtn);
+            }
             var commentbtn = UiUtil.button(UiUtil.TOP_LEFT, "res/icon_comment.png",
                 "评论(".i18n() + status.commentCount + ")", 0, fontsize + 2, "res/btn_grey.9.png", onButton);
             commentbtn.name = "comment_" + status.id;
@@ -221,7 +224,7 @@ class Postit extends Sprite {
             var repostbtn = UiUtil.button(UiUtil.TOP_LEFT, null, "转发".i18n(), 0, fontsize + 2, "res/btn_grey.9.png", onButton);
             repostbtn.name = "repost_" + status.id;
             arr.push(repostbtn);
-            if (status.user.id == HpApi.instance.uid) {
+            if (!MyUtils.isEn() && status.user.id == HpApi.instance.uid) {
                 var deletebtn = UiUtil.button(UiUtil.TOP_LEFT, null,
                 "删除".i18n(), 0, fontsize + 2, "res/btn_grey.9.png", onButton);
                 deletebtn.name = "delete_" + status.id;

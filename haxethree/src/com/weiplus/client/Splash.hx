@@ -38,7 +38,9 @@ class Splash extends BaseScreen {
         UiUtil.delay(doLoad, 1);
 #if (android && !testin)
 //        HpManager.logout();
-        loginOk = HpManager.login();
+        if (!MyUtils.isEn()) {
+            loginOk = HpManager.login();
+        }
 //        trace("loginOk=" + loginOk + ",token=" + HpManager.getTokenAsJson());
 #end
         var settingsSo = SharedObject.getLocal(SHARED_OBJECT_NAME);
@@ -229,6 +231,10 @@ class Splash extends BaseScreen {
 
         var toScreen = loginOk ? Type.getClassName(HomeScreen) : Type.getClassName(SelectedScreen);
         startScreen(toScreen, FinishToScreen.CLEAR);
+
+#if android
+        HpManager.loadFolderList();
+#end
 
         var isWifi = #if android HaxeStub.isWifiConnected() #else true #end;
         trace("toScreen="+toScreen+",isWifi=" + isWifi);

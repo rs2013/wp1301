@@ -1,5 +1,6 @@
 package com.weiplus.client;
 
+import com.weiplus.client.MyUtils;
 import haxe.Json;
 import com.weiplus.client.MyUtils;
 import com.roxstudio.haxe.ui.SxAdapter;
@@ -101,10 +102,12 @@ class PictureScreen extends BaseScreen {
     private function bottomBar() : Sprite {
         var fontsize = (28).dp();
         var arr: Array<DisplayObject> = [];
-        var praisebtn = UiUtil.button(UiUtil.TOP_LEFT, status.praised ? "res/icon_praised.png" : "res/icon_praise.png",
-        "赞".i18n(), 0, fontsize, "res/btn_grey.9.png", onButton);
-        praisebtn.name = "praise_" + status.id;
-        arr.push(praisebtn);
+        if (!MyUtils.isEn()) {
+            var praisebtn = UiUtil.button(UiUtil.TOP_LEFT, status.praised ? "res/icon_praised.png" : "res/icon_praise.png",
+                "赞".i18n(), 0, fontsize, "res/btn_grey.9.png", onButton);
+            praisebtn.name = "praise_" + status.id;
+            arr.push(praisebtn);
+        }
         var commentbtn = UiUtil.button(UiUtil.TOP_LEFT, "res/icon_comment.png",
         "评论".i18n(), 0, fontsize, "res/btn_grey.9.png", onButton);
         commentbtn.name = "comment_" + status.id;
@@ -117,7 +120,7 @@ class PictureScreen extends BaseScreen {
             magicbtn.name = "magic_" + status.id;
             arr.push(magicbtn);
         }
-        if (status.user.id == HpApi.instance.uid) {
+        if (!MyUtils.isEn() && status.user.id == HpApi.instance.uid) {
             var deletebtn = UiUtil.button(UiUtil.TOP_LEFT, null,
             "删除".i18n(), 0, fontsize, "res/btn_grey.9.png", onButton);
             deletebtn.name = "delete_" + status.id;

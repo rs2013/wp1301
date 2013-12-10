@@ -65,7 +65,26 @@ class MyUtils {
     public static inline var LOADING_ANIM_NAME = "MyUtils.loadingAnim";
     public static inline var WAITING_NAME = "MyUtils.waiting";
 
+    public static var LOCALE = "default";
+
+    public static var platformMap(get_platformMap, null): Map<String, Int>;
+
     public function new() {
+    }
+
+    public inline static function isEn() {
+        return LOCALE != "default";
+    }
+
+    private inline static function get_platformMap() {
+        if (platformMap == null) {
+            platformMap = new Map();
+            platformMap.set("Facebook", 1);
+            platformMap.set("Twitter", 1);
+            platformMap.set("Pinterest", 1);
+            platformMap.set("GooglePlus", 1);
+        }
+        return platformMap;
     }
 
     public static function getLoadingAnim(label: String) : Sprite {

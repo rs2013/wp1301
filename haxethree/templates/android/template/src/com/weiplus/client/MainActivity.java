@@ -1,5 +1,7 @@
 package com.weiplus.client;
 
+import cn.sharesdk.framework.ShareSDK;
+
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.update.UmengUpdateAgent;
 
@@ -31,6 +33,7 @@ public class MainActivity extends org.haxe.nme.GameActivity {
         UmengUpdateAgent.setUpdateOnlyWifi(false);
         UmengUpdateAgent.update(this);
         MobclickAgent.onError(this);
+        ShareSDK.initSDK(this);
     }
     
     @Override
@@ -45,6 +48,12 @@ public class MainActivity extends org.haxe.nme.GameActivity {
         super.onPause();
         Log.i(TAG, "onPause");
         MobclickAgent.onPause(this);
+    }
+    
+    @Override
+    protected void onDestroy() {
+        ShareSDK.stopSDK(this);
+        super.onDestroy();
     }
 
     @Override

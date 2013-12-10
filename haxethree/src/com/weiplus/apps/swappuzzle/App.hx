@@ -87,8 +87,8 @@ class App extends PlayScreen {
                 map[i][j] = t;
             }
         }
-        var btnView = UiUtil.button(UiUtil.TOP_LEFT, null, "预览".i18n(), 0xFFFFFF, titleFontSize, "res/btn_dark.9.png", onView);
-        addTitleButton(btnView, UiUtil.RIGHT);
+//        var btnView = UiUtil.button(UiUtil.TOP_LEFT, null, "预览".i18n(), 0xFFFFFF, titleFontSize, "res/btn_dark.9.png", onView);
+//        addTitleButton(btnView, UiUtil.RIGHT);
     }
 
     private function onView(_) {

@@ -56,6 +56,7 @@ class Main {
             loc = "en";
         }
         I18n.setCurrentLocale(loc);
+        MyUtils.LOCALE = loc;
         RoxApp.init();
 //        trace("init ok");
         var m = new RoxScreenManager();

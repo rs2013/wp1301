@@ -76,30 +76,37 @@ public class CameraUtils {
         return bm;
     }
     
+    /**
+     * 读取Alpha通道分离压缩的AR图像文件
+     * @param path: 图像文件路径
+     * @param maxArea: 载入后的最大面积（即总像素数=图像宽*图像高），为0则不限，即载入原始大小图片
+     * @return Alpha通道合并后的半透明32位真彩位图
+     */
     public static Bitmap loadArImage(String path, int maxArea) {
         Bitmap big = loadSmallImage(path, maxArea * 2, true);
         if (big == null) return null;
+        // 因为alpha通道分离的图像宽度为原图的2倍，因此面积也是2倍
+        maxArea = maxArea <= 0 ? Integer.MAX_VALUE : maxArea * 2; 
         
-        maxArea = maxArea <= 0 ? Integer.MAX_VALUE : maxArea * 2;
-        
-        int area = big.getWidth() * big.getHeight();
+        int area = big.getWidth() * big.getHeight(); // 原始图面积
         Bitmap bm = big;
-        if (area > maxArea) {
-            double r = Math.sqrt(maxArea / (double) area);
+        if (area > maxArea) { // 原始面积大于最大面积，需要缩小
+            double r = Math.sqrt(maxArea / (double) area); // 面积比例再开方，即一个维度的缩小比例
             bm = Bitmap.createScaledBitmap(big, (int) (r * big.getWidth()), (int) (r * big.getHeight()), false);
             big.recycle();
         }
         
         int w = bm.getWidth(), h = bm.getHeight(), w2 = w / 2;
         int[] pixels = new int[w * h];
-        bm.getPixels(pixels, 0, w, 0, 0, w, h);
+        bm.getPixels(pixels, 0, w, 0, 0, w, h); // 把所有像素读取到数组
         bm.recycle();
-        for (int i = h; --i >= 0;) {
-            for (int n = i * w, j = n + w2, jj = n + w; --j >= n;) {
-                int alpha = (pixels[--jj] & 0x00FF0000) << 8; // use red channel
-                pixels[j] = (pixels[j] & 0x00FFFFFF) | alpha;
+        for (int i = h; --i >= 0;) { // 对每个扫描行
+            for (int n = i * w, j = n + w2, jj = n + w; --j >= n;) { // 把右半扫描行的像素的Red值作为Alpha值合并到左半扫描行
+                int alpha = (pixels[--jj] & 0x00FF0000) << 8; // 对ARGB排列的像素，把RED值左移8位即成为Alpha值
+                pixels[j] = (pixels[j] & 0x00FFFFFF) | alpha; // 合并到左半扫描行的对应像素
             }
         }
+        // 使用像素数组的左半部分创建一个新的图像，即结果图像
         Bitmap newbm = Bitmap.createBitmap(pixels, 0, w, w2, h, Config.ARGB_8888);
         return newbm;
     }
