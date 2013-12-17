@@ -160,6 +160,8 @@ class UserScreen extends TimelineScreen {
 
     override public function refresh(append: Bool) {
         if (refreshing) return;
+
+        refreshing = true;
         this.append = append && page != null;
 
         HpApi.instance.get("/users/show/" + user.id, { }, function(code: Int, json: Dynamic) {
@@ -197,15 +199,15 @@ class UserScreen extends TimelineScreen {
                 HpApi.instance.get("/statuses/user_timeline/" + user.id, param, onComplete);
             }
         });
-        refreshing = true;
 //#end
     }
 
     private function onComplete(code: Int, data: Dynamic) {
-        refreshing = false;
         if (code != 200) {
             UiUtil.rox_removeByName(this, MyUtils.LOADING_ANIM_NAME);
             UiUtil.message("发生错误: ".i18n() + "code=" + code + ",error=" + data);
+
+            refreshing = false;
             return;
         }
         var pageInfo = data.statuses;
@@ -214,6 +216,8 @@ class UserScreen extends TimelineScreen {
         page.totalPages = pageInfo.totalPages;
         page.totalRows = pageInfo.totalRows;
         updateList(pageInfo.records, append);
+
+        refreshing = false;
     }
 
 }

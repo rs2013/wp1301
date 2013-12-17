@@ -10,8 +10,8 @@
   </file>
   <file path="src/com/weiplus/client/CommentsScreen.hx">
     <t id="发表评论">发表评论</t><!--line 73-->
-    <t id="暂时没有评论">暂时没有评论</t><!--line 166-->
-    <t id="没有更多评论了">没有更多评论了</t><!--line 110, 157-->
+    <t id="暂时没有评论">暂时没有评论</t><!--line 168-->
+    <t id="没有更多评论了">没有更多评论了</t><!--line 111, 159-->
     <t id="测试评论">测试评论</t><!--line 75-->
     <t id="添加">添加</t><!--line 74-->
     <t id="添加评论...">添加评论...</t><!--line 69-->
@@ -22,21 +22,21 @@
   </file>
   <file path="src/com/weiplus/client/FriendsList.hx">
     <t id="关注列表">关注列表</t><!--line 54-->
-    <t id="关系更新成功">关系更新成功</t><!--line 164-->
-    <t id="取消关注">取消关注</t><!--line 157-->
+    <t id="关系更新成功">关系更新成功</t><!--line 168-->
+    <t id="取消关注">取消关注</t><!--line 161-->
     <t id="好友列表">好友列表</t><!--line 47-->
-    <t id="尚未关注任何人">尚未关注任何人</t><!--line 139-->
-    <t id="您">您</t><!--line 137-->
-    <t id="添加关注">添加关注</t><!--line 157-->
-    <t id="目前还没有粉丝">目前还没有粉丝</t><!--line 139-->
+    <t id="尚未关注任何人">尚未关注任何人</t><!--line 141-->
+    <t id="您">您</t><!--line 139-->
+    <t id="添加关注">添加关注</t><!--line 161-->
+    <t id="目前还没有粉丝">目前还没有粉丝</t><!--line 141-->
     <t id="粉丝列表">粉丝列表</t><!--line 54-->
     <t id="网络错误. code=">网络错误. code=</t><!--line 97-->
-    <t id="网络错误，code=">网络错误，code=</t><!--line 166-->
+    <t id="网络错误，code=">网络错误，code=</t><!--line 170-->
     <t id="载入中">载入中</t><!--line 56-->
   </file>
   <file path="src/com/weiplus/client/HomeScreen.hx">
     <t id="发生错误: ">发生错误: </t><!--line 57-->
-    <t id="哈利波图(Beta)">哈利波图(Beta)</t><!--line 38-->
+    <t id="哈利波图(Beta)">哈利波图</t><!--line 38-->
   </file>
   <file path="src/com/weiplus/client/LoginScreen.hx">
     <t id="人人网账号登陆">人人网账号登陆</t><!--line 38-->
@@ -46,15 +46,16 @@
     <t id="腾讯微博账号登陆">腾讯微博账号登陆</t><!--line 37-->
   </file>
   <file path="src/com/weiplus/client/MagicEditor.hx">
-    <t id="个目录,">个目录,</t><!--line 681-->
-    <t id="个错误">个错误</t><!--line 681-->
-    <t id="个魔贴,遇到">个魔贴,遇到</t><!--line 681-->
-    <t id="保存中">保存中</t><!--line 529-->
-    <t id="已开始在后台更新魔贴，此过程可能需要几分钟">已开始在后台更新魔贴，此过程可能需要几分钟</t><!--line 669-->
-    <t id="成功保存在">成功保存在</t><!--line 533-->
-    <t id="更新魔贴完成, 更新了">更新魔贴完成, 更新了</t><!--line 681-->
-    <t id="正在更新魔贴中">正在更新魔贴中</t><!--line 666-->
-    <t id="获取目录失败，更新已停止. code=">获取目录失败，更新已停止. code=</t><!--line 689-->
+    <t id="@哈利波图">@哈利波图</t><!--line 556-->
+    <t id="个目录,">个目录,</t><!--line 683-->
+    <t id="个错误">个错误</t><!--line 683-->
+    <t id="个魔贴,遇到">个魔贴,遇到</t><!--line 683-->
+    <t id="保存中">保存中</t><!--line 531-->
+    <t id="已开始在后台更新魔贴，此过程可能需要几分钟">已开始在后台更新魔贴，此过程可能需要几分钟</t><!--line 671-->
+    <t id="成功保存在">成功保存在</t><!--line 535-->
+    <t id="更新魔贴完成, 更新了">更新魔贴完成, 更新了</t><!--line 683-->
+    <t id="正在更新魔贴中">正在更新魔贴中</t><!--line 668-->
+    <t id="获取目录失败，更新已停止. code=">获取目录失败，更新已停止. code=</t><!--line 691-->
   </file>
   <file path="src/com/weiplus/client/MakerScreen.hx">
     <t id="下一步">下一步</t><!--line 49-->
@@ -136,30 +137,29 @@
     <t id="松开立即刷新">松开立即刷新</t><!--line 45-->
   </file>
   <file path="src/com/weiplus/client/RoutineScreen.hx">
-    <t id="欢迎进入哈利波图魔法世界，玩转大片，与明星合影，动漫cosplay，游戏互动，让更多人见证你的不可思议！">欢迎进入哈利波图魔法世界，玩转大片，与明星合影，动漫cosplay，游戏互动，让更多人见证你的不可思议！</t><!--line 179-->
-    <t id="没有更多动态了">没有更多动态了</t><!--line 121, 171-->
+    <t id="欢迎进入哈利波图魔法世界，玩转大片，与明星合影，动漫cosplay，游戏互动，让更多人见证你的不可思议！">欢迎进入哈利波图魔法世界，玩转大片，与明星合影，动漫cosplay，游戏互动，让更多人见证你的不可思议！</t><!--line 180-->
+    <t id="没有更多动态了">没有更多动态了</t><!--line 121, 172-->
     <t id="消息">消息</t><!--line 68-->
-    <t id="网络错误. code=">网络错误. code=</t><!--line 135-->
+    <t id="网络错误. code=">网络错误. code=</t><!--line 134-->
     <t id="载入中">载入中</t><!--line 62-->
   </file>
   <file path="src/com/weiplus/client/SelectedScreen.hx">
-    <t id="发生错误: ">发生错误: </t><!--line 43-->
-    <t id="精选">精选</t><!--line 25-->
+    <t id="发生错误: ">发生错误: </t><!--line 42-->
+    <t id="精选">精选</t><!--line 24-->
   </file>
   <file path="src/com/weiplus/client/SettingScreen.hx">
     <t id="ABOUT">appMagics定位于提供创新的应用模式，结合增强现实场景使用户可以基于自己的照片，声音，文本等创造神奇的内容，并与其各类社交网络结合以产生深层面的互动。
-版本号: 1.3.3
-发布日期: 2013.11.26
+版本号: 1.5.0
+发布日期: 2013.12.20
 反馈和建议: support@appMagics.com 或用应用内的反馈功能
 服务条款和隐私政策: http://www.appmagics.com/policies/en/terms/ http://www.appmagics.com/policies/en/privacy/
     </t><!--line 78-->
     <t id="Wifi下自动更新魔贴">Wifi下自动更新魔贴</t><!--line 51-->
-    <t id="关于哈利波图(Beta)">关于哈利波图(Beta)</t><!--line 56, 77-->
+    <t id="关于哈利波图(Beta)">关于哈利波图</t><!--line 56, 77-->
     <t id="分享设置">分享设置</t><!--line 40-->
     <t id="图片缓存已清除">图片缓存已清除</t><!--line 72-->
     <t id="开始清除，请稍候">开始清除，请稍候</t><!--line 70-->
     <t id="意见反馈">意见反馈</t><!--line 54-->
-    <t id="推荐应用">推荐应用</t><!--line 53-->
     <t id="注销当前账户">注销当前账户</t><!--line 89-->
     <t id="清除图片缓存">清除图片缓存</t><!--line 55-->
     <t id="立即检测更新魔贴">立即检测更新魔贴</t><!--line 52-->
@@ -176,6 +176,10 @@
     <t id="中等">中等</t><!--line 67-->
     <t id="困难">困难</t><!--line 68-->
     <t id="简单">简单</t><!--line 66-->
+  </file>
+  <file path="src/com/weiplus/client/SinglePostit.hx">
+    <t id="发生错误: ">发生错误: </t><!--line 50-->
+    <t id="查看贴子">查看贴子</t><!--line 24-->
   </file>
   <file path="src/com/weiplus/client/TimelineScreen.hx">
     <t id="载入中">载入中</t><!--line 105-->

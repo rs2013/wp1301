@@ -35,7 +35,7 @@ class Splash extends BaseScreen {
         hasTitleBar = false;
         hasBack = false;
         super.onCreate();
-        UiUtil.delay(doLoad, 1);
+        UiUtil.delay(doLoad, 1.5);
 #if (android && !testin)
 //        HpManager.logout();
         if (!MyUtils.isEn()) {

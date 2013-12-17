@@ -120,15 +120,15 @@ class TimelineScreen extends BaseScreen {
         return sp;
     }
 
-    override public function onShown() {
-        trace("Screen(" + name + ").onShown");
-        super.onShown();
-    }
-
-    override public function onHidden() {
-        trace("Screen(" + name + ").onHidden");
-        super.onHidden();
-    }
+//    override public function onShown() {
+//        trace("Screen(" + name + ").onShown");
+//        super.onShown();
+//    }
+//
+//    override public function onHidden() {
+//        trace("Screen(" + name + ").onHidden");
+//        super.onHidden();
+//    }
 
     private function buttonPanel() : Sprite {
         var btnpanel = new Sprite();

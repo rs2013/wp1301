@@ -42,19 +42,21 @@ class HomeScreen extends TimelineScreen {
 
     override public function refresh(append: Bool) {
         if (refreshing) return;
+
+        refreshing = true;
         this.append = append && page != null;
 
         var param = { sinceId: 0, rows: 10 };
         if (this.append) untyped param.maxId = Std.int(page.oldestId - 1);
         HpApi.instance.get(timelineUrl, param, onComplete);
-        refreshing = true;
     }
 
     private function onComplete(code: Int, data: Dynamic) {
-        refreshing = false;
         if (code != 200) {
             UiUtil.rox_removeByName(this, MyUtils.LOADING_ANIM_NAME);
             UiUtil.message("发生错误: ".i18n() + "code=" + code + ",error=" + data);
+
+            refreshing = false;
             return;
         }
         var pageInfo = data.statuses;
@@ -63,10 +65,13 @@ class HomeScreen extends TimelineScreen {
         page.totalPages = pageInfo.totalPages;
         page.totalRows = pageInfo.totalRows;
         updateList(pageInfo.records, append);
+
+        refreshing = false;
     }
 
     private function doSwitch(e: Dynamic) {
         if (refreshing) return;
+
         if (e != null) isPublic = !isPublic;
         so.data.isPublic = isPublic;
         so.flush();

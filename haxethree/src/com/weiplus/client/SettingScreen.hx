@@ -50,7 +50,7 @@ class SettingScreen extends BaseScreen {
         var autoUpdate = !Reflect.hasField(settingsSo.data, "autoUpdateAr") || settingsSo.data.autoUpdateAr;
         arr.push({ id: "auto_update_ar", icon: null, name: "Wifi下自动更新魔贴".i18n(), type: 3, data: autoUpdate });
         arr.push({ id: "force_update_ar", icon: null, name: "立即检测更新魔贴".i18n(), type: 1, data: null });
-        arr.push({ id: "umeng_xp", icon: null, name: "推荐应用".i18n(), type: 1, data: null });
+//        arr.push({ id: "umeng_xp", icon: null, name: "推荐应用".i18n(), type: 1, data: null });
         arr.push({ id: "umeng_fb", icon: null, name: "意见反馈".i18n(), type: 1, data: null });
         arr.push({ id: "clear_image_cache", icon: null, name: "清除图片缓存".i18n(), type: 1, data: null });
         arr.push({ id: "about", icon: null, name: "关于哈利波图(Beta)".i18n(), type: 1, data: null });

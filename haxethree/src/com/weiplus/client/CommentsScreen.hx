@@ -105,23 +105,25 @@ class CommentsScreen extends BaseScreen {
 
     private function refresh(append: Bool) {
         if (refreshing) return;
+
         this.append = append && page != null;
         if (this.append && page.oldestId - 1 <= 0) {
             UiUtil.message("没有更多评论了".i18n());
             return;
         }
 
+        refreshing = true;
         var param = { sinceId: 0, rows: 20 };
         if (this.append) untyped param.maxId = Std.int(page.oldestId - 1);
         HpApi.instance.get("/comments/show/" + statusId, param, onComplete);
-        refreshing = true;
     }
 
     private function onComplete(code: Int, data: Dynamic) {
         UiUtil.rox_removeByName(this, MyUtils.LOADING_ANIM_NAME);
-        refreshing = false;
         if (code != 200) {
             UiUtil.message("网络错误. code=".i18n() + code + ",message=" + data);
+
+            refreshing = false;
             return;
         }
 
@@ -165,6 +167,8 @@ class CommentsScreen extends BaseScreen {
         if (comments.length == 0) {
             var label = UiUtil.staticText("暂时没有评论".i18n(), 0, buttonFontSize);
             main.addChild(label.rox_move((screenWidth - label.width) / 2, spacing * 2));
+
+            refreshing = false;
             return;
         }
 
@@ -191,6 +195,8 @@ class CommentsScreen extends BaseScreen {
 
         }
         mainh = yoff;
+
+        refreshing = false;
     }
 
     private function onGesture(e: RoxGestureEvent) {

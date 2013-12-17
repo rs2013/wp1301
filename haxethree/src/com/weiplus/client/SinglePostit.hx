@@ -9,31 +9,39 @@ import haxe.Json;
 using com.roxstudio.haxe.ui.UiUtil;
 using com.roxstudio.haxe.game.GfxUtil;
 
-class SelectedScreen extends TimelineScreen {
+class SinglePostit extends TimelineScreen {
 
-    private var append: Bool;
     private var refreshing: Bool = false;
+
+    var statusId: String;
 
     public function new() {
         super();
-        this.screenTabIndex = 1;
     }
 
     override public function onCreate() {
         title = new Sprite();
-        title.addChild(UiUtil.staticText("精选".i18n(), 0xFFFFFF, titleFontSize * 1.2));
+        title.addChild(UiUtil.staticText("查看贴子".i18n(), 0xFFFFFF, titleFontSize * 1.2));
         super.onCreate();
+        addTitleButton(btnBack, UiUtil.LEFT);
+        removeTitleButton(btnCol);
+        UiUtil.rox_removeByName(this, "buttonPanel");
+        viewh = screenHeight - titleBar.height;
+        numCol = 1;
+    }
+
+    override public function onNewRequest(data: Dynamic) {
+        statusId = cast data;
+        refresh(false);
     }
 
     override public function refresh(append: Bool) {
         if (refreshing) return;
 
         refreshing = true;
-        this.append = append && page != null;
 
-        var param = { sinceId: 0, rows: 10 };
-        if (this.append) untyped param.maxId = Std.int(page.oldestId - 1);
-        HpApi.instance.get("/statuses/select", param, onComplete);
+        var param = { maxId: statusId, rows: 1 };
+        HpApi.instance.get("/statuses/public_timeline", param, onComplete);
     }
 
     private function onComplete(code: Int, data: Dynamic) {
@@ -49,7 +57,7 @@ class SelectedScreen extends TimelineScreen {
         page.rows = pageInfo.rows;
         page.totalPages = pageInfo.totalPages;
         page.totalRows = pageInfo.totalRows;
-        updateList(pageInfo.records, append);
+        updateList(pageInfo.records, false);
 
         refreshing = false;
     }

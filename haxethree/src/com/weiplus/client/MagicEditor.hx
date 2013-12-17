@@ -326,6 +326,8 @@ class MagicEditor extends MakerScreen {
                 tags.push(goUrl);
             } else if (low.startsWith("@")) {
                 tags.push(s);
+            } else {
+                tags.push(s);
             }
         }
         return { id: id, url: url, path: path, compact: compact, description: descr, goType: goType, goUrl: goUrl, tags: tags, bmd: null };
@@ -551,7 +553,7 @@ class MagicEditor extends MakerScreen {
     }
 
     private function drawWaterMark(bmd: BitmapData) {
-        var s = (HpApi.instance.user != null ? HpApi.instance.user.name : "") + "@哈利波图";
+        var s = (HpApi.instance.user != null ? HpApi.instance.user.name : "") + "@哈利波图".i18n();
         var scale = bmd.width / 640;
         var tf = UiUtil.staticText(s, 0xFFFFFF, 28 * scale);
         var glow = new GlowFilter(0); // black

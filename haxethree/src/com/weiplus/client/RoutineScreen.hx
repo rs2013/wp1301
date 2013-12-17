@@ -122,17 +122,18 @@ class RoutineScreen extends BaseScreen {
             return;
         }
 
+        refreshing = true;
         var param = { sinceId: 0, rows: 20 };
         if (this.append) untyped param.maxId = Std.int(page.oldestId - 1);
         HpApi.instance.get("/routines/home_timeline/" + HpApi.instance.uid, param, onComplete);
-        refreshing = true;
     }
 
     private function onComplete(code: Int, data: Dynamic) {
         UiUtil.rox_removeByName(this, MyUtils.LOADING_ANIM_NAME);
-        refreshing = false;
         if (code != 200) {
             UiUtil.message("网络错误. code=".i18n() + code + ",message=" + data);
+
+            refreshing = false;
             return;
         }
 
@@ -215,6 +216,13 @@ class RoutineScreen extends BaseScreen {
                 sp.graphics.rox_drawRegionRound(bmd, spacing, spacing, 60, 60);
                 sp.graphics.rox_drawRoundRect(1, 0xFF000000, spacing, spacing, 60, 60);
             });
+            if (c.type == "COMMENTS_CREATE" || c.type == "STATUSES_PRAISE") {
+                var agent = new RoxGestureAgent(sp, RoxGestureAgent.GESTURE);
+                sp.addEventListener(RoxGestureEvent.GESTURE_TAP, function(_) {
+                    startScreen(Type.getClassName(SinglePostit), "SinglePostit_" + c.oid, null, null, 1, c.oid);
+//                    manager.dumpStack();
+                });
+            }
 
             main.addChild(sp.rox_move(0, yoff));
             yoff += sp.height;
@@ -222,6 +230,8 @@ class RoutineScreen extends BaseScreen {
         }
 
         mainh = yoff;
+
+        refreshing = false;
     }
 
     private function onGesture(e: RoxGestureEvent) {
