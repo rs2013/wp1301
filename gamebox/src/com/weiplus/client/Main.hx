@@ -1,9 +1,20 @@
 package com.weiplus.client;
 
 //import com.weiplus.client.TestMakerScreen;
-import haxe.Json;
+import com.roxstudio.haxe.game.GameUtil;
+#if cpp
+import sys.FileSystem;
+import sys.io.File;
+#end
+import com.roxstudio.haxe.game.ResKeeper;
+import com.roxstudio.haxe.ui.SxAdapter;
+import com.roxstudio.haxe.ui.DipUtil;
+import flash.system.Capabilities;
+import com.roxstudio.i18n.I18n;
+import ru.stablex.ui.UIBuilder;
+import Lambda;
 using com.roxstudio.i18n.I18n;
-import com.roxstudio.i18n.Global;
+import nme.events.Event;
 import com.weiplus.client.model.AppData;
 import com.weiplus.client.model.Status;
 import com.roxstudio.haxe.ui.RoxApp;
@@ -21,7 +32,7 @@ import nme.Lib;
 //import com.weiplus.client.Postit;
 //import com.weiplus.client.PostitScreen;
 
-//import com.roxstudio.haxe.net.RoxURLLoader;
+using com.roxstudio.haxe.ui.DipUtil;
 
 class Main {
 
@@ -30,14 +41,23 @@ class Main {
 
     static public function main() {
         I18n.init();
-        var loc = nme.system.Capabilities.language;
+//        UIBuilder.regClass("com.weiplus.client.HaxeCamera");
+//        UIBuilder.saveCodeTo("ui_gencode");
+//        UIBuilder.regClass("com.weiplus.client.Main");
+//        UIBuilder.regClass("com.weiplus.client.ArBox");
+//        UIBuilder.regClass("com.weiplus.client.LazyBmp");
+//        UIBuilder.init("ui/defaults.xml");
+        SxAdapter.setupAssets();
+        DipUtil.init(640);
+        var loc = Capabilities.language;
         trace("lang=" + loc);
         if (StringTools.startsWith(loc, "zh")) {
             loc = "default";
-        } else if (!Lambda.has(Global.supportedLocales, loc)) {
+        } else if (!Lambda.has(I18n.getSupportedLocales(), loc)) {
             loc = "en";
         }
-        Global.currentLocale = loc;
+        I18n.setCurrentLocale(loc);
+        MyUtils.LOCALE = loc;
         RoxApp.init();
         var m = new RoxScreenManager();
         m.startRootScreen(Type.getClassName(Splash));
@@ -55,6 +75,14 @@ class Main {
 //        fps.y = 10;
 //        fps.mouseEnabled = false;
 //        RoxApp.stage.addChild(fps);
+    }
+
+    public static inline function getFont() : String {
+#if android
+        return "/system/fonts/DroidSansFallback.ttf";
+#else
+        return "Microsoft YaHei";
+#end
     }
 
 }

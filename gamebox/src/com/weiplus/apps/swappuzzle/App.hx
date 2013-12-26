@@ -1,10 +1,11 @@
 package com.weiplus.apps.swappuzzle;
 
+using com.roxstudio.i18n.I18n;
 import haxe.Json;
 using com.roxstudio.i18n.I18n;
 import com.weiplus.client.PlayScreen;
-import com.eclecticdesignstudio.motion.easing.Elastic;
-import com.eclecticdesignstudio.motion.Actuate;
+import motion.easing.Elastic;
+import motion.Actuate;
 import com.roxstudio.haxe.ui.RoxScreen;
 import com.roxstudio.haxe.game.GameUtil;
 import com.roxstudio.haxe.game.ResKeeper;
@@ -42,12 +43,12 @@ class App extends PlayScreen {
 //        trace("swappuzzle.onstart: \nsaved=" + saved + "\nstatus=" + status);
         if (status.makerData != null) {
             image = status.makerData.image;
-            sideLen = image.width / status.makerData.size;
+            sideLen = Std.int(image.width / status.makerData.size);
         } else {
             var datastr: String = cast(getFileData("data.json"));
             var data: Dynamic = Json.parse(datastr);
             image = cast(getFileData(data.image));
-            sideLen = Reflect.hasField(data, "size") ? image.width / data.size : data.sideLen;
+            sideLen = Std.int(Reflect.hasField(data, "size") ? image.width / data.size : data.sideLen);
         }
 
         shape = ResKeeper.getAssetImage("res/shape184.png");
@@ -64,7 +65,7 @@ class App extends PlayScreen {
 
         map = [];
         var set: Array<Int>;
-        if (saved != null && saved.map != null) {
+        if (saved != null && saved.map != null && cast(saved.map, Array<Dynamic>).length == columns * rows) {
             set = saved.map;
         } else {
             set = [];
@@ -88,8 +89,8 @@ class App extends PlayScreen {
                 map[i][j] = t;
             }
         }
-        var btnView = UiUtil.button(UiUtil.TOP_LEFT, null, "预览".i18n(), 0xFFFFFF, 36, "res/btn_dark.9.png", onView);
-        addTitleButton(btnView, UiUtil.RIGHT);
+//        var btnView = UiUtil.button(UiUtil.TOP_LEFT, null, "预览".i18n(), 0xFFFFFF, 36, "res/btn_dark.9.png", onView);
+//        addTitleButton(btnView, UiUtil.RIGHT);
     }
 
     private function onView(_) {

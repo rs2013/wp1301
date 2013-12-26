@@ -1,6 +1,10 @@
 package com.weiplus.client;
 
-using com.roxstudio.i18n.I18n;
+import ru.stablex.ui.widgets.Floating;
+import ru.stablex.ui.UIBuilder;
+import com.roxstudio.haxe.ui.RoxScreenManager;
+import nme.events.MouseEvent;
+import com.roxstudio.haxe.ui.UiUtil;
 import com.roxstudio.haxe.ui.RoxFlowPane;
 import com.roxstudio.haxe.game.ResKeeper;
 import com.roxstudio.haxe.game.ResKeeper;
@@ -8,6 +12,8 @@ import com.roxstudio.haxe.ui.RoxScreen;
 import nme.geom.Rectangle;
 import nme.display.Sprite;
 
+using com.roxstudio.haxe.ui.DipUtil;
+using com.roxstudio.i18n.I18n;
 using com.roxstudio.haxe.game.GfxUtil;
 using com.roxstudio.haxe.ui.UiUtil;
 
@@ -21,6 +27,8 @@ class BaseScreen extends RoxScreen {
     public var designHeight: Float;
     public var hasTitleBar: Bool = true;
     public var titleBar: Sprite;
+    public var buttonFontSize: Float = 36;
+    public var titleFontSize: Float = 36;
     public var d2rScale: Float;
     public var content: Sprite;
     public var title: Sprite;
@@ -29,24 +37,35 @@ class BaseScreen extends RoxScreen {
     private var titleBtnOffsetL: Float;
     private var titleBtnOffsetR: Float;
 
-    public function new() {
-        super();
+    override public function init(inManager: RoxScreenManager, inWidth: Float, inHeight: Float) {
+        super.init(inManager, inWidth, inHeight);
+        designWidth = DESIGN_WIDTH;
+        d2rScale = screenWidth / designWidth;
+        designHeight = screenHeight / d2rScale;
+        buttonFontSize = 32 * d2rScale;
+        titleFontSize = 32;
     }
 
     override public function onCreate() {
         super.onCreate();
-        designWidth = DESIGN_WIDTH;
-        d2rScale = screenWidth / designWidth;
-        designHeight = screenHeight / d2rScale;
+        var hideButton = null;
         if (hasTitleBar) {
             titleBar = UiUtil.bitmap("res/bg_main_top.png");
+            hideButton = new Sprite();
+            hideButton.graphics.rox_fillRect(0x01FFFFFF, 0, 0, 160, TOP_HEIGHT);
+            hideButton.mouseEnabled = true;
+            hideButton.addEventListener(MouseEvent.CLICK, function(_) {
+                onTitleClicked();
+            });
+            hideButton.rox_scale(d2rScale);
             titleBtnOffsetL = BTN_SPACING;
             titleBtnOffsetR = titleBar.width - BTN_SPACING;
             if (title != null) {
+                title.mouseEnabled = false;
                 titleBar.addChild(title.rox_anchor(UiUtil.CENTER).rox_move(titleBar.width / 2, titleBar.height / 2));
             }
             titleBar.rox_scale(d2rScale);
-            btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回".i18n(), 0xFFFFFF, 36, "res/btn_back.9.png", function(e) { finish(RoxScreen.CANCELED); } );
+            btnBack = UiUtil.button(UiUtil.TOP_LEFT, null, "返回".i18n(), 0xFFFFFF, titleFontSize, "res/btn_back.9.png", function(e) { finish(RoxScreen.CANCELED); } );
             if (hasBack) {
                 addTitleButton(btnBack, UiUtil.LEFT);
             }
@@ -56,7 +75,14 @@ class BaseScreen extends RoxScreen {
         content.rox_move(0, screenHeight - conth);
         addChild(content);
         drawBackground();
-        if (hasTitleBar) addChild(titleBar);
+        if (hasTitleBar) {
+            addChild(titleBar);
+            addChild(hideButton.rox_move((screenWidth - hideButton.width) / 2, 0));
+        }
+    }
+
+    public function onTitleClicked() {
+//        trace("onTitleClicked");
     }
 
     public function drawBackground() {

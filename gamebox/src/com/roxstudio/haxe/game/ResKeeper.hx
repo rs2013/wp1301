@@ -1,11 +1,13 @@
 package com.roxstudio.haxe.game;
 
+import com.roxstudio.haxe.io.IOUtil;
 import nme.media.Sound;
 import nme.text.Font;
 import com.roxstudio.haxe.game.GameUtil;
 import nme.Assets;
 import nme.display.BitmapData;
 import nme.display.BitmapDataChannel;
+import nme.geom.Matrix;
 import nme.geom.Point;
 import nme.geom.Rectangle;
 import nme.utils.ByteArray;
@@ -17,9 +19,18 @@ import sys.io.File;
 
 using StringTools;
 
+#if haxe3
+
+private typedef Hash<T> = Map<String, T>;
+private typedef IntHash<T> = Map<Int, T>;
+
+#end
+
 class ResKeeper {
 
     public static inline var DEFAULT_BUNDLE = "default";
+    public static inline var ASSETS_PROT = "assets://";
+    public static inline var FILE_PROT = "file://";
 
     public static var currentBundle(default, set_currentBundle): String;
 
@@ -47,16 +58,17 @@ class ResKeeper {
 
     public static function disposeBundle(bundleId: String) {
 #if debug
-        var buf = new StringBuf();
-        for (gid in bundles.keys()) {
-            buf.add("BUNDLE(" + gid + ")=[");
-            for (s in bundles.get(gid)) {
-                buf.add(s);
-                buf.add(",");
-            }
-            buf.add("],");
-        }
-        trace(">>>>disposing '" + bundleId + "' :{{ " + buf + " }}");
+//        var buf = new StringBuf();
+//        for (gid in bundles.keys()) {
+//            buf.add("BUNDLE(" + gid + ")=[");
+//            for (s in bundles.get(gid)) {
+//                buf.add(s);
+//                buf.add(",");
+//            }
+//            buf.add("],");
+//        }
+//        trace(">>>>disposing '" + bundleId + "' :{{ " + buf + " }}");
+        trace(">>>>ResKeeper: disposing '" + bundleId + "'");
 #end
         var arr = bundles.get(bundleId);
         if (arr == null) return;
@@ -101,11 +113,11 @@ class ResKeeper {
     * asset: id-prefix "assets://", e.g.: "assets://res/image.jpg"
     **/
     public static function getAssetImage(path: String, ?bundleId: String) : BitmapData {
-        var bmd: BitmapData = cast(get("assets://" + path));
+        var bmd: BitmapData = cast(get(ASSETS_PROT + path));
         if (bmd == null) {
             bmd = loadAssetImage(path);
             if (bmd != null) {
-                add("assets://" + path, bmd, bundleId);
+                add(ASSETS_PROT + path, bmd, bundleId);
             } else {
                 throw "Asset image " + path + " not exist.";
             }
@@ -114,11 +126,11 @@ class ResKeeper {
     }
 
     public static function getAssetFont(path: String, ?bundleId: String) : Font {
-        var font: Font = cast(get("assets://" + path));
+        var font: Font = cast(get(ASSETS_PROT + path));
         if (font == null) {
             font = loadAssetFont(path);
             if (font != null) {
-                add("assets://" + path, font, bundleId);
+                add(ASSETS_PROT + path, font, bundleId);
             } else {
                 throw "Asset font " + path + " not exist.";
             }
@@ -127,11 +139,11 @@ class ResKeeper {
     }
 
     public static function getAssetData(path: String, ?bundleId: String) : ByteArray {
-        var data: ByteArray = cast(get("assets://" + path));
+        var data: ByteArray = cast(get(ASSETS_PROT + path));
         if (data == null) {
             data = loadAssetData(path);
             if (data != null) {
-                add("assets://" + path, data, bundleId);
+                add(ASSETS_PROT + path, data, bundleId);
             } else {
                 throw "Asset data " + path + " not exist.";
             }
@@ -140,11 +152,11 @@ class ResKeeper {
     }
 
     public static function getAssetText(path: String, ?bundleId: String) : String {
-        var text: String = cast(get("assets://" + path));
+        var text: String = cast(get(ASSETS_PROT + path));
         if (text == null) {
             text = loadAssetText(path);
             if (text != null) {
-                add("assets://" + path, text, bundleId);
+                add(ASSETS_PROT + path, text, bundleId);
             } else {
                 throw "Asset text " + path + " not exist.";
             }
@@ -153,11 +165,11 @@ class ResKeeper {
     }
 
     public static function getAssetSound(path: String, ?bundleId: String) : Sound {
-        var snd: Sound = cast(get("assets://" + path));
+        var snd: Sound = cast(get(ASSETS_PROT + path));
         if (snd == null) {
             snd = loadAssetSound(path);
             if (snd != null) {
-                add("assets://" + path, snd, bundleId);
+                add(ASSETS_PROT + path, snd, bundleId);
             } else {
                 throw "Asset sound " + path + " not exist.";
             }
@@ -212,11 +224,29 @@ class ResKeeper {
         return data;
     }
 
-    public static inline function loadLocalImage(path: String) : BitmapData {
-        return if (FileSystem.exists(path)) {
-            var bb = File.getBytes(path);
-            bb != null ? BitmapData.loadFromHaxeBytes(bb) : null;
-        } else null;
+    public static function loadLocalImage(path: String, ?maxPixels: Int = 0) : BitmapData {
+        if (FileSystem.exists(path)) {
+            var bytes = File.getBytes(path);
+            if (bytes == null) return null;
+            var ba = IOUtil.rox_toByteArray(bytes);
+            if (ba[0] == 'G'.code && ba[1] == 'I'.code && ba[2] == 'F'.code) {
+//                var gifdec = new GIFDecoder();
+//                gifdec.read(ba);
+//                return gifdec.getFrameCount() > 0 ? gifdec.getImage().bitmapData : null;
+                return null;
+            } else {
+                var bmd = BitmapData.loadFromBytes(ba);
+                if (maxPixels > 0 && bmd.width * bmd.height > maxPixels) { // too large
+                    var ratio = Math.sqrt(maxPixels / (bmd.width * bmd.height));
+                    var newbmd = new BitmapData(Std.int(bmd.width * ratio), Std.int(bmd.height * ratio), true, 0);
+                    newbmd.draw(bmd, new Matrix(ratio, 0, 0, ratio), true);
+                    bmd.dispose();
+                    bmd = newbmd;
+                }
+                return bmd;
+            }
+        }
+        return null;
     }
 
     public static inline function loadLocalText(path: String) : String {
@@ -239,10 +269,10 @@ class ResKeeper {
 #if windows
         path = path.replace("\\", "/");
         if (path.length <= 3 || path.substr(1, 2) != ":/") path = FileSystem.fullPath(path);
-        return "file:///" + path.replace("\\", "/");
+        return FILE_PROT + "/" + path.replace("\\", "/");
 #else
         if (!path.startsWith("/")) path = FileSystem.fullPath(path);
-        return "file://" + path;
+        return FILE_PROT + path;
 #end
     }
 

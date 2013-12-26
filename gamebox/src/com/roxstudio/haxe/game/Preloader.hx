@@ -1,9 +1,5 @@
 package com.roxstudio.haxe.game;
 
-#if cpp
-import com.roxstudio.haxe.utils.SimpleJob;
-import com.roxstudio.haxe.utils.Worker;
-#end
 import com.roxstudio.haxe.game.ResKeeper;
 import com.roxstudio.haxe.io.FileUtil;
 import com.roxstudio.haxe.io.Unzipper;
@@ -28,7 +24,7 @@ class Preloader extends EventDispatcher {
     private var idmap: Hash<String>;
     private var timer: Timer;
 #if cpp
-    private var worker: Worker;
+    private var worker: com.roxstudio.haxe.utils.Worker;
 #end
 
     public function new(urls: Array<String>, ?ids: Array<String>, ?bundleId: String, ?autoUnzip: Bool = false) {
@@ -53,7 +49,24 @@ class Preloader extends EventDispatcher {
                     download(url);
                 case "file://":
 #if cpp
-                    worker.addJob(new SimpleJob<Dynamic>({ url: url, data: null }, load, loadComplete));
+                    worker.addJob(new com.roxstudio.haxe.utils.SimpleJob<Dynamic>({ url: url, data: null }, function(d: Dynamic) {
+//                      trace("load: d=" + d);
+                        var path = ResKeeper.url2path(d.url);
+                        var data: Dynamic = switch (FileUtil.fileExt(path, true)) {
+                            case DYN: {};
+                            case "png", "jpg", "jpeg", "gif": ResKeeper.loadLocalImage(path);
+                            case "txt", "xml", "json": ResKeeper.loadLocalText(path);
+                            default: ResKeeper.loadLocalData(path);
+                        }
+                        d.data = data;
+                    }, function(d: Dynamic) {
+//                      trace("loadComp: d=" + d);
+                        if (d.data != null) {
+                            addData(d.url, d.data);
+                        } else {
+                            throw "Preloader: load local file " + d.url + " failed.";
+                        }
+                    }));
 #end
                 case "assets:":
                     list.add(url.substr(9));
@@ -92,47 +105,20 @@ class Preloader extends EventDispatcher {
     private function download(url: String) {
 //        trace("download: url=" + url + ",ext="+FileUtil.fileExt(url, true));
         var type = switch (FileUtil.fileExt(url, true)) {
-            case "png", "jpg", "jpeg": RoxURLLoader.IMAGE;
+            case "png", "jpg", "jpeg", "gif": RoxURLLoader.IMAGE;
             case "txt", "xml", "json": RoxURLLoader.TEXT;
             default: RoxURLLoader.BINARY;
         }
-        var ldr = new RoxURLLoader(url, type);
-        ldr.addEventListener(Event.COMPLETE, downComplete);
-    }
-
-    private inline function downComplete(e: Dynamic) {
+        var ldr = new RoxURLLoader(url, type, function(isOk: Bool, data: Dynamic) {
 //        trace("downComplete: e.target=" + e.target);
-        var ldr = cast(e.target, RoxURLLoader);
-        if (ldr.status == RoxURLLoader.OK) {
-            addData(ldr.url, ldr.data);
+            if (isOk) {
+                addData(url, data);
         } else {
-            throw "Preloader: download " + ldr.url + " failed.";
+                throw "Preloader: download " + url + " failed.";
         }
+        });
+        ldr.start();
     }
-
-#if cpp
-    private function load(d: Dynamic) {
-//        trace("load: d=" + d);
-        var url = d.url;
-        var path = ResKeeper.url2path(url);
-        var data: Dynamic = switch (FileUtil.fileExt(path, true)) {
-            case DYN: {};
-            case "png", "jpg", "jpeg": ResKeeper.loadLocalImage(path);
-            case "txt", "xml", "json": ResKeeper.loadLocalText(path);
-            default: ResKeeper.loadLocalData(path);
-        }
-        d.data = data;
-    }
-
-    private function loadComplete(d: Dynamic) {
-//        trace("loadComp: d=" + d);
-        if (d.data != null) {
-            addData(d.url, d.data);
-        } else {
-            throw "Preloader: load local file " + d.url + " failed.";
-        }
-    }
-#end
 
     private function addData(id: String, data: Dynamic) {
         if (!autoUnzip || !id.endsWith(".zip")) {

@@ -1,13 +1,11 @@
 package com.roxstudio.haxe.gesture;
 
 import nme.ui.MultitouchInputMode;
-import flash.display.InteractiveObject;
 import nme.display.Sprite;
 import nme.display.DisplayObjectContainer;
-import com.eclecticdesignstudio.motion.actuators.GenericActuator;
-import com.eclecticdesignstudio.motion.Actuate;
+import motion.actuators.GenericActuator;
+import motion.Actuate;
 import com.roxstudio.haxe.gesture.RoxGestureEvent;
-import com.roxstudio.haxe.game.GameUtil;
 import haxe.Timer;
 import nme.Lib;
 import nme.display.InteractiveObject;
@@ -18,9 +16,9 @@ import nme.geom.Point;
 import nme.geom.Rectangle;
 import nme.ui.Multitouch;
 
-using Lambda;
-using com.roxstudio.haxe.game.GfxUtil;
-using com.roxstudio.haxe.ui.UiUtil;
+#if haxe3
+private typedef Hash<T> = Map<String, T>;
+#end
 
 class RoxGestureAgent {
 
@@ -40,20 +38,21 @@ class RoxGestureAgent {
     private static inline var BEGIN = 1;
     private static inline var TWO_FINGER_MOVE = 2;
     private static inline var MOVE = 4;
+    private static var R2D = 180 / Math.PI;
 
 //    private static inline var DOUBLE_TAP_DELAY = 0.3;
     private static inline var SWIPE_SCROLL_TIME = 2.0;
     private static inline var SWIPE_SAMPLE_TIME = 0.2;
-    private static inline var VELOCITY_RATIO = 1 / 4;
-    private static inline var touchEvents = [
+    private static inline var VELOCITY_RATIO = 0.25;
+    private static var touchEvents = [
         TouchEvent.TOUCH_BEGIN, TouchEvent.TOUCH_END, TouchEvent.TOUCH_MOVE, TouchEvent.TOUCH_OVER,
         TouchEvent.TOUCH_OUT, TouchEvent.TOUCH_ROLL_OVER, TouchEvent.TOUCH_ROLL_OUT, TouchEvent.TOUCH_TAP ];
-    private static inline var mouseEvents = [
+    private static var mouseEvents = [
         MouseEvent.MOUSE_DOWN, MouseEvent.MOUSE_UP, MouseEvent.MOUSE_MOVE, MouseEvent.MOUSE_OVER,
         MouseEvent.MOUSE_OUT, MouseEvent.ROLL_OVER, MouseEvent.ROLL_OUT, MouseEvent.CLICK ];
-    private static inline var geTouchEvents = [
+    private static var geTouchEvents = [
         TouchEvent.TOUCH_BEGIN, TouchEvent.TOUCH_END, TouchEvent.TOUCH_MOVE, TouchEvent.TOUCH_OUT ];
-    private static inline var geMouseEvents = [
+    private static var geMouseEvents = [
         MouseEvent.MOUSE_DOWN, MouseEvent.MOUSE_UP, MouseEvent.MOUSE_MOVE, MouseEvent.MOUSE_OUT ];
 
     private static var initialized = false;
@@ -109,7 +108,7 @@ class RoxGestureAgent {
     }
 
     public inline function getHandler(?flags: Int = PAN_XY) : Dynamic -> Void {
-        return callback(handleEvent, flags);
+        return #if haxe3 handleEvent.bind(flags) #else callback(handleEvent, flags) #end;
     }
 
     public inline function startTween(target: Dynamic, interval: Float, properties: Dynamic) {
@@ -167,14 +166,14 @@ class RoxGestureAgent {
                 var newpos = Point.polar(length, newang);
                 newpos.offset(e.stageX, e.stageY);
                 newpos = sp.parent.globalToLocal(newpos);
-                sp.rotation += GameUtil.R2D * angle;
+                sp.rotation += R2D * angle;
                 sp.x = newpos.x;
                 sp.y = newpos.y;
         }
     }
 
     private inline static function get_multitouchSupported() : Bool {
-        trace("multitouchSupported: isTouch=" + Multitouch.supportsTouchEvents + ",maxPoints=" + Multitouch.maxTouchPoints);
+//        trace("multitouchSupported: isTouch=" + Multitouch.supportsTouchEvents + ",maxPoints=" + Multitouch.maxTouchPoints);
         return Multitouch.supportsTouchEvents && Multitouch.maxTouchPoints > 1;
     }
 
@@ -196,7 +195,8 @@ class RoxGestureAgent {
 //        trace("onTouch:e=" + e +",touchId="+id);
         var prim = touch0 == null || touch0.tid == id;
         if (prim || (touch1 != null && touch1.tid == id) || (touch0 != null && touch1 == null && touch0.tid != id)) {
-            if (handleTouch(typeMap.get(e.type), e, prim, id)) e.rox_stopPropagation();
+//            if (handleTouch(typeMap.get(e.type), e, prim, id)) e.rox_stopPropagation();
+            handleTouch(typeMap.get(e.type), e, prim, id);
         }
 //        if (id <= 1) {
 //            if (handleTouch(typeMap.get(e.type), e, id == 0)) e.rox_stopPropagation();
@@ -207,7 +207,8 @@ class RoxGestureAgent {
 //        trace("onMouse:e=" + e);
         var t: String = e.type;
         if (t == MouseEvent.MOUSE_DOWN || t == MouseEvent.MOUSE_UP || e.buttonDown) {
-            if (handleTouch(typeMap.get(t), e, true, 0)) e.rox_stopPropagation();
+//            if (handleTouch(typeMap.get(t), e, true, 0)) e.rox_stopPropagation();
+            handleTouch(typeMap.get(t), e, true, 0);
         }
     }
 
@@ -229,7 +230,8 @@ class RoxGestureAgent {
                     if (overlay == null) {
                         overlay = new Sprite();
                         overlay.name = "overlay";
-                        overlay.graphics.rox_fillRect(0x01FFFFFF, 0, 0, stage.stageWidth, stage.stageHeight);
+                        overlay.graphics.beginFill(0xFFFFFF, 1 / 255);
+                        overlay.graphics.drawRect(0, 0, stage.stageWidth, stage.stageHeight);
                     }
                     stage.addChild(overlay);
                     for (type in listenEvents) overlay.addEventListener(type, handler);
@@ -335,7 +337,7 @@ class RoxGestureAgent {
         }
     }
 
-    private static inline var MAP: Array<String> = [
+    private static var MAP: Array<String> = [
         MouseEvent.MOUSE_DOWN, RoxGestureEvent.TOUCH_BEGIN,
         MouseEvent.MOUSE_UP, RoxGestureEvent.TOUCH_END,
         MouseEvent.MOUSE_MOVE, RoxGestureEvent.TOUCH_MOVE,

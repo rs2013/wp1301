@@ -30,4 +30,9 @@ class Status {
         return "Status{id:" + id +",text:" + text + ",createdAt:" + createdAt + ",user:\n" + user + "\n,appData:\n" + appData + "\n}";
     }
 
+    public inline function isGame() {
+        var type = appData != null ? appData.type : null;
+        return type != null && type != "" && type != AppData.IMAGE;
+    }
+
 }

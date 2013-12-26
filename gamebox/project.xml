@@ -1,40 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 
-    <app title="哈利波图游戏盒" file="harryphoto-gamebox"
-         main="com.weiplus.client.Main"
-         package="com.weiplus.client" version="1.0.0"
-         company="迈吉客科技（上海）有限公司" />
-    <window width="640" height="640" fps="30"
-            orientation="portrait" background="0xffffff" resizable="false"
-            hardware="true" />
-<!--          fullscreen="true" -->
+    <meta title="哈利波图游戏盒" package="com.weiplus.client" version="1.5.0" company="迈吉客科技（上海）有限公司" />
+    <app file="harryphoto-gamebox" main="com.weiplus.client.Main" />
+
+    <window fps="30" background="0xffffff" hardware="true" width="640" height="640" orientation="portrait" resizable="false" />
 
     <set name="BUILD_DIR" value="bin" />
-    <set name="BUILD_DIR" value="debug" if="debug"/>
+
     <set name="SWF_VERSION" value="10.1" if="flash" />
+
     <set name="SHOW_CONSOLE" value="1" />
     <setenv name="show_console" value="1" if="cpp" />
 
-    <classpath name="src" />
+    <source path="src" />
 
     <haxedef name="fdb" if="target_flash" />
     <haxedef name="network-sandbox" if="target_flash" />
     <haxedef name="js_can_implement_array_access" if="html5" />
-    <!--window borderless="true" /-->
 
-    <haxelib name="nme" />
+    <haxelib name="openfl" />
+    <haxelib name="openfl-compatibility" />
     <haxelib name="actuate" />
     <haxelib name="spritesheet" />
     <haxelib name="format" />
+    <haxelib name="stablexui" />
     <haxelib name="rox-i18n" />
     <compilerflag name="--macro com.roxstudio.i18n.I18n.locale('global')" />
     <compilerflag name="--macro com.roxstudio.i18n.I18n.assets('res/i18n')" />
 
     <icon path="res/icon/icon96.png" size="96"/>
+    
     <assets path="res" include="*" exclude="icon/*.*" />
 
-    <ndll name="std" />
-    <ndll name="nme" haxelib="nme" />
 
 </project>

@@ -101,11 +101,11 @@ class Tile extends Sprite {
             var mb = mbuf[i], bb = bbuf[i];// .readByte() & 0xFF, bb = bbuf.readByte() & 0xFF;
             if ((i & 0x3) == 0) { // alpha
                 obuf[i] = mb; // obuf.writeByte(mb);
-            } else if (mb > 100 && mb < 110) {
+            } else if (mb == 102) { //}> 100 && mb < 110) {
                 obuf[i] = bb; // obuf.writeByte(bb);
-            } else if (mb > 240) {
-                obuf[i] = 255;
-            } else { // mb != 127
+//            } else if (mb > 240) {
+//                obuf[i] = 255;
+            } else { // mb != 102
                 var v = (bb * (mb + 26)) >> 7;
                 obuf[i] = v > 255 ? 255 : v;
             }

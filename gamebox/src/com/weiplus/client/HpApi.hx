@@ -3,7 +3,11 @@ package com.weiplus.client;
 import haxe.Json;
 import nme.events.Event;
 import com.roxstudio.haxe.net.RoxURLLoader;
+#if haxe3
+import haxe.crypto.BaseCode;
+#else
 import haxe.BaseCode;
+#end
 
 class HpApi {
 
@@ -56,10 +60,12 @@ class HpApi {
         }
         for (k in Reflect.fields(params)) {
             var val = Reflect.field(params, k);
-            switch (true) {
-                case Std.is(val, Int), Std.is(val, Float): addBuf(buf, k, "" + val);
-                case Std.is(val, String): addBuf(buf, k, StringTools.urlEncode(cast val));
-                case val == null: addBuf(buf, k, "");
+            if (Std.is(val, Int) || Std.is(val, Float)) {
+                addBuf(buf, k, "" + val);
+            } else if (Std.is(val, String)) {
+                addBuf(buf, k, StringTools.urlEncode(cast val));
+            } else if (val == null) {
+                addBuf(buf, k, "");
             }
         }
         return buf.toString();
@@ -76,28 +82,27 @@ class HpApi {
         var url = makeUrl(uri);
         var qry = encodeParam(params);
         trace("HpApi.get: url=" + (url + "?" + qry));
-        var ldr = new RoxURLLoader(url + "?" + qry, RoxURLLoader.TEXT);
-        ldr.addEventListener(Event.COMPLETE, function(e: Dynamic) {
-            var status: Int = e.target.status;
+        var ldr = new RoxURLLoader(url + "?" + qry, RoxURLLoader.TEXT, function(isOk: Bool, response: Dynamic) {
             var code: Int = -1, data: Dynamic = null;
-            if (status == RoxURLLoader.OK) {
-                var jsonStr: String = e.target.data;
+            if (isOk) {
+                var jsonStr: String = cast response;
                 try {
                     var json = Json.parse(jsonStr);
                     code = json.code;
                     data = json;
                 } catch (e: Dynamic) {
                     code = -2;
-                    data = "Invalid return data format.";
+                    data = "Invalid response JSON data.";
                 }
             } else {
                 code = -1; // network error
-                data = "Network error.";
+                data = response.toString();
             }
             var datastr: String = "" + data;
-            trace("get.onComplete: code=" + code + ",data=" + (datastr.length > 80 ? datastr.substr(0, 80) + "..." : datastr));
+//            trace("get.onComplete: code=" + code + ",data=" + (datastr.length > 80 ? datastr.substr(0, 80) + "..." : datastr));
             onComplete(code, data);
         });
+        ldr.start();
     }
 
 //    private function complete()

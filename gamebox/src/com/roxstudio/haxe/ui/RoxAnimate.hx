@@ -12,9 +12,9 @@ class RoxAnimate {
     public static inline var ZOOM_OUT = 3; // shrink, arg: Rectangle
     public static inline var FADE = 4;
 
-    public static inline var SLIDE_LEFT = new RoxAnimate(SLIDE, "left");
-    public static inline var SLIDE_RIGHT = new RoxAnimate(SLIDE, "right");
-    public static inline var NO_ANIMATE = new RoxAnimate(NONE, null);
+    public static var SLIDE_LEFT = new RoxAnimate(SLIDE, "left");
+    public static var SLIDE_RIGHT = new RoxAnimate(SLIDE, "right");
+    public static var NO_ANIMATE = new RoxAnimate(NONE, null);
 
     public static inline var DEFAULT_INTERVAL = 0.4;
 
@@ -31,7 +31,7 @@ class RoxAnimate {
     public function getReverse() : RoxAnimate {
         return switch (type) {
             case SLIDE:
-                var newarg = switch (cast(arg, String)) { case "up": "down"; case "down": "up"; case "left": "right"; case "right": "left"; }
+                var newarg = switch (cast(arg, String)) { case "up": "down"; case "down": "up"; case "left": "right"; case "right": "left"; case _: ""; }
                 new RoxAnimate(SLIDE, newarg, interval);
             case ZOOM_IN:
                 new RoxAnimate(ZOOM_OUT, arg, interval);
@@ -39,7 +39,7 @@ class RoxAnimate {
                 new RoxAnimate(ZOOM_IN, arg, interval);
             case FADE:
                 new RoxAnimate(ZOOM_IN, arg, interval); // TODO
-            default:
+            #if haxe3 case _ #else default #end:
                 this;
         }
     }

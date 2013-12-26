@@ -4,18 +4,19 @@
     <t id="预览">预览</t><!--line 119-->
   </file>
   <file path="src/com/weiplus/apps/slidepuzzle/App.hx">
-    <t id="预览">预览</t><!--line 92-->
-  </file>
-  <file path="src/com/weiplus/apps/swappuzzle/App.hx">
-    <t id="预览">预览</t><!--line 91-->
+    <t id="预览">预览</t><!--line 93-->
   </file>
   <file path="src/com/weiplus/client/BaseScreen.hx">
-    <t id="返回">返回</t><!--line 49-->
+    <t id="返回">返回</t><!--line 68-->
+  </file>
+  <file path="src/com/weiplus/client/MyUtils.hx">
+    <t id="分钟前">分钟前</t><!--line 180-->
+    <t id="刚刚">刚刚</t><!--line 178-->
+    <t id="小时前">小时前</t><!--line 182-->
   </file>
   <file path="src/com/weiplus/client/PlayScreen.hx">
-    <t id="你太有才了！">你太有才了！</t><!--line 215-->
-    <t id="评论已经添加">评论已经添加</t><!--line 255-->
-    <t id="载入中">载入中</t><!--line 119-->
-    <t id="重玩">重玩</t><!--line 218-->
+    <t id="你太有才了！">你太有才了！</t><!--line 218-->
+    <t id="评论已经添加">评论已经添加</t><!--line 258-->
+    <t id="重玩">重玩</t><!--line 221-->
   </file>
 </strings>

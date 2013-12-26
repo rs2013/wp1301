@@ -18,7 +18,6 @@ class RoxScreen extends Sprite {
     public var manager(default, null): RoxScreenManager;
     public var screenWidth(default, null): Float;
     public var screenHeight(default, null): Float;
-    public var className(get_className, null): String;
     public var disposeAtFinish: Bool = true;
 
     public function new() {
@@ -29,10 +28,6 @@ class RoxScreen extends Sprite {
         this.manager = inManager;
         this.screenWidth = inWidth;
         this.screenHeight = inHeight;
-    }
-
-    public inline function get_className() : String {
-        return Type.getClassName(Type.getClass(this));
     }
 
     public function onCreate() {
@@ -66,9 +61,9 @@ class RoxScreen extends Sprite {
         return true;
     }
 
-    public function startScreen(screenClassName: String, ?finishToScreen: FinishToScreen, ?animate: RoxAnimate,
+    public function startScreen(screenClassName: String, ?screenId: String, ?finishToScreen: FinishToScreen, ?animate: RoxAnimate,
                                 ?requestCode: Int = 1, ?requestData: Dynamic) {
-        manager.startScreen(this, screenClassName, finishToScreen, requestCode, requestData, animate);
+        manager.startScreen(this, screenClassName, screenId, finishToScreen, requestCode, requestData, animate);
     }
 
     public function finish(?finishToScreen: FinishToScreen, ?animate: RoxAnimate,
@@ -77,7 +72,7 @@ class RoxScreen extends Sprite {
     }
 
     override public inline function toString() : String {
-        return get_className();
+        return Type.getClassName(Type.getClass(this)) + "(" + name + ")";
     }
 
 }
