@@ -203,9 +203,11 @@ class MagicEditor extends MakerScreen {
         if (currentCid >= 0) {
             currentCid = -1;
             showFolder(-1);
-            return false;
+        } else {
+            finish(RoxScreen.OK, createDrawingData());
+            onDestroy();
         }
-        return true;
+        return false;
     }
 
     private function folderLoaded(data: Dynamic) {

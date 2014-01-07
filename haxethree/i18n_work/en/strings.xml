@@ -108,6 +108,10 @@
   </file>
   <file path="src/com/weiplus/client/PostScreen.hx">
     <t id="#哈利波图#">#Magics#</t><!--line 115-->
+    <t id="Facebook">Facebook</t><!--line 246-->
+    <t id="Google+">Google+</t><!--line 249-->
+    <t id="Pinterest">Pinterest</t><!--line 248-->
+    <t id="Twitter">Twitter</t><!--line 247-->
     <t id="人人网">Renren</t><!--line 229-->
     <t id="发布">Post</t><!--line 48, 51-->
     <t id="发布中">Posting</t><!--line 173-->
@@ -154,8 +158,8 @@
   </file>
   <file path="src/com/weiplus/client/SettingScreen.hx">
     <t id="ABOUT">appMagics provides the magic camera to help user create amazing photos by putting virtual objects into reality, it’s a real time photo editor, which is transforming entertainment and shopping experiences by discovering different way of augmented reality, and deep integration and interactive with social networks.
-Version: 1.5.0
-Publish Date: 2013.12.20
+Version: 1.5.1
+Publish Date: 2014.1.7
 Feedback and Suggestion: support@appMagics.com
 Term of Use and Privacy Policy: http://www.appmagics.com/policies/en/terms/ http://www.appmagics.com/policies/en/privacy/
     </t>

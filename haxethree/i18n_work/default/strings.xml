@@ -4,9 +4,9 @@
     <t id="启动相机中">启动相机中</t><!--line 30-->
   </file>
   <file path="src/com/weiplus/client/BaseScreen.hx">
-    <t id="是否退出哈利波图？">是否退出哈利波图？</t><!--line 90-->
-    <t id="返回">返回</t><!--line 68-->
-    <t id="退出">退出</t><!--line 89-->
+    <t id="是否退出哈利波图？">是否退出哈利波图？</t><!--line 99-->
+    <t id="返回">返回</t><!--line 70-->
+    <t id="退出">退出</t><!--line 98-->
   </file>
   <file path="src/com/weiplus/client/CommentsScreen.hx">
     <t id="发表评论">发表评论</t><!--line 73-->
@@ -46,16 +46,16 @@
     <t id="腾讯微博账号登陆">腾讯微博账号登陆</t><!--line 37-->
   </file>
   <file path="src/com/weiplus/client/MagicEditor.hx">
-    <t id="@哈利波图">@哈利波图</t><!--line 556-->
-    <t id="个目录,">个目录,</t><!--line 683-->
-    <t id="个错误">个错误</t><!--line 683-->
-    <t id="个魔贴,遇到">个魔贴,遇到</t><!--line 683-->
-    <t id="保存中">保存中</t><!--line 531-->
-    <t id="已开始在后台更新魔贴，此过程可能需要几分钟">已开始在后台更新魔贴，此过程可能需要几分钟</t><!--line 671-->
-    <t id="成功保存在">成功保存在</t><!--line 535-->
-    <t id="更新魔贴完成, 更新了">更新魔贴完成, 更新了</t><!--line 683-->
-    <t id="正在更新魔贴中">正在更新魔贴中</t><!--line 668-->
-    <t id="获取目录失败，更新已停止. code=">获取目录失败，更新已停止. code=</t><!--line 691-->
+    <t id="@哈利波图">@哈利波图</t><!--line 558-->
+    <t id="个目录,">个目录,</t><!--line 685-->
+    <t id="个错误">个错误</t><!--line 685-->
+    <t id="个魔贴,遇到">个魔贴,遇到</t><!--line 685-->
+    <t id="保存中">保存中</t><!--line 533-->
+    <t id="已开始在后台更新魔贴，此过程可能需要几分钟">已开始在后台更新魔贴，此过程可能需要几分钟</t><!--line 673-->
+    <t id="成功保存在">成功保存在</t><!--line 537-->
+    <t id="更新魔贴完成, 更新了">更新魔贴完成, 更新了</t><!--line 685-->
+    <t id="正在更新魔贴中">正在更新魔贴中</t><!--line 670-->
+    <t id="获取目录失败，更新已停止. code=">获取目录失败，更新已停止. code=</t><!--line 693-->
   </file>
   <file path="src/com/weiplus/client/MakerScreen.hx">
     <t id="下一步">下一步</t><!--line 49-->
@@ -149,8 +149,8 @@
   </file>
   <file path="src/com/weiplus/client/SettingScreen.hx">
     <t id="ABOUT">appMagics定位于提供创新的应用模式，结合增强现实场景使用户可以基于自己的照片，声音，文本等创造神奇的内容，并与其各类社交网络结合以产生深层面的互动。
-版本号: 1.5.0
-发布日期: 2013.12.20
+版本号: 1.5.1
+发布日期: 2014.1.7
 反馈和建议: support@appMagics.com 或用应用内的反馈功能
 服务条款和隐私政策: http://www.appmagics.com/policies/en/terms/ http://www.appmagics.com/policies/en/privacy/
     </t><!--line 78-->
@@ -204,7 +204,7 @@
     <t id="确认">确认</t><!--line 176-->
   </file>
   <file path="ui/confirm_dialog.xml">
-    <t id="取消">取消</t><!--line 235, 235-->
+    <t id="取消">取消</t><!--line 246, 246-->
     <t id="确认">确认</t><!--line 190, 190-->
   </file>
   <file path="ui/magic_editor.xml">

@@ -24,6 +24,7 @@
         <Widget left="3.dp()" w="574.dp()" h="(2).dp()" skin:Paint-color="0x888888" />
 
         <Button widthPt="100" h="(80).dp()"
+                skin:Paint-color="0xFFFFFF" skin:Paint-alpha="0.01"
                 format-font="$Main.getFont()" format-size="(30).dp()" format-color="0xFFFFFF"
                 text="@okButtonText != null ? @okButtonText : '确认'.i18n()"
                 on-click="#Floating(alert_dialog).hide(); #alert_dialog.free();"/>

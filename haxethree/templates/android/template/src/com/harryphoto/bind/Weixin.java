@@ -95,8 +95,12 @@ public class Weixin extends Binding {
                     req.transaction = buildTransaction("webpage");
                     req.message = msg;
                     req.scene = /*isTimelineCb.isChecked() ? */SendMessageToWX.Req.WXSceneTimeline/* : SendMessageToWX.Req.WXSceneSession*/;
-                    api.sendReq(req);
-                    listener.onComplete("ok");
+                    boolean result = api.sendReq(req);
+                    if (result) {
+                        listener.onComplete("ok");
+                    } else {
+                        listener.onError(new HpException("sendReq failed"));
+                    }
                     if (bmp != null) bmp.recycle();
                     if (newbmp != null) newbmp.recycle();
                 } catch (Throwable e) {

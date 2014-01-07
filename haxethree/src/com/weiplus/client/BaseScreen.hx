@@ -37,6 +37,8 @@ class BaseScreen extends RoxScreen {
     private var titleBtnOffsetL: Float;
     private var titleBtnOffsetR: Float;
 
+    private var exitDialog: Floating = null;
+
     override public function init(inManager: RoxScreenManager, inWidth: Float, inHeight: Float) {
         super.init(inManager, inWidth, inHeight);
         designWidth = DESIGN_WIDTH;
@@ -83,15 +85,22 @@ class BaseScreen extends RoxScreen {
 
     override public function onBackKey() {
 //        trace("stacksize="+manager.stackSize());
-        if (manager.stackSize() == 1) {
-            var dialog: Floating = null;
-            dialog = cast UIBuilder.buildFn("ui/confirm_dialog.xml")( {
+        var hideDialog = function(exit: Bool) {
+            exitDialog.free();
+            exitDialog = null;
+            if (exit) Sys.exit(0);
+        };
+        if (exitDialog != null) {
+            hideDialog(false);
+            return false;
+        } else if (manager.stackSize() == 1) {
+            exitDialog = cast UIBuilder.buildFn("ui/confirm_dialog.xml")( {
                 title: "退出".i18n(),
                 message: "是否退出哈利波图？".i18n(),
-                onOk: function() { dialog.free(); Sys.exit(0); },
-                onCancel: function() { dialog.free(); }
+                onOk: hideDialog.bind(true),
+                onCancel: hideDialog.bind(false)
             } );
-            dialog.show();
+            exitDialog.show();
             return false;
         }
         return true;

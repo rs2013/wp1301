@@ -162,9 +162,9 @@ class App extends PlayScreen {
         board = new Sprite();
         board.graphics.rox_fillRect(0x01FFFFFF, -500, -500, 1000 + viewWidth, 1000 + designHeight * d2rScale);
 
-        var agent = new RoxGestureAgent(board);
-        board.addEventListener(RoxGestureEvent.GESTURE_PAN, agent.getHandler());
-        board.addEventListener(RoxGestureEvent.GESTURE_PINCH, agent.getHandler());
+//        var agent = new RoxGestureAgent(board);
+//        board.addEventListener(RoxGestureEvent.GESTURE_PAN, agent.getHandler());
+//        board.addEventListener(RoxGestureEvent.GESTURE_PINCH, agent.getHandler());
         content.addChild(board);
         return content;
     }
