@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+
+    <meta title="哈利波图游戏盒" package="com.weiplus.client" version="1.5.0" company="迈吉客科技（上海）有限公司" />
+    <app file="harryphoto-gamebox" main="com.weiplus.client.Main" />
+
+<!--    <window fps="30" background="0xffffff" hardware="true" width="0" height="0" orientation="portrait" resizable="true" />-->
+    <window fps="30" background="0xffffff" width="640" height="640" fullscreen="false" />
+
+    <set name="BUILD_DIR" value="bin" />
+
+    <set name="SWF_VERSION" value="10.1" if="flash" />
+
+    <set name="SHOW_CONSOLE" value="1" />
+    <setenv name="show_console" value="1" if="cpp" />
+
+    <source path="src" />
+
+    <haxedef name="fdb" if="target_flash" />
+    <haxedef name="network-sandbox" if="target_flash" />
+    <haxedef name="js_can_implement_array_access" if="html5" />
+
+    <haxelib name="openfl" />
+    <haxelib name="openfl-compatibility" />
+<!--    <haxelib name="openfl-bitfive" if="html5" /> -->
+    <haxelib name="actuate" />
+    <haxelib name="spritesheet" />
+    <haxelib name="format" />
+    <haxelib name="stablexui" />
+    <haxelib name="rox-i18n" />
+    <compilerflag name="--macro com.roxstudio.i18n.I18n.locale('global')" />
+    <compilerflag name="--macro com.roxstudio.i18n.I18n.assets('res/i18n')" />
+
+    <icon path="res/icon/icon96.png" size="96"/>
+    
+    <assets path="res" include="*" exclude="icon/*.*" />
+
+    <template path="templates" />
+
+</project>

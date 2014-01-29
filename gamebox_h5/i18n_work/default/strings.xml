@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<strings>
+  <file path="src/com/weiplus/apps/jigsaw/App.hx">
+    <t id="预览">预览</t><!--line 121-->
+  </file>
+  <file path="src/com/weiplus/apps/slidepuzzle/App.hx">
+    <t id="预览">预览</t><!--line 94-->
+  </file>
+  <file path="src/com/weiplus/apps/swappuzzle/App.hx">
+    <t id="预览">预览</t><!--line 93-->
+  </file>
+  <file path="src/com/weiplus/client/BaseScreen.hx">
+    <t id="返回">返回</t><!--line 68-->
+  </file>
+  <file path="src/com/weiplus/client/MyUtils.hx">
+    <t id="分钟前">分钟前</t><!--line 180-->
+    <t id="刚刚">刚刚</t><!--line 178-->
+    <t id="小时前">小时前</t><!--line 182-->
+  </file>
+  <file path="src/com/weiplus/client/PlayScreen.hx">
+    <t id="你太有才了！">你太有才了！</t><!--line 224-->
+    <t id="游戏加载失败，请刷新重试.">游戏加载失败，请刷新重试.</t><!--line 299-->
+    <t id="评论已经添加">评论已经添加</t><!--line 265-->
+    <t id="重玩">重玩</t><!--line 227-->
+  </file>
+</strings>
